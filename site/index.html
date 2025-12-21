@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Web Template Foundation</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Source+Sans+Pro:wght@400;600&display=swap"
+        rel="stylesheet">
+
+    <script>
+        // Tailwind Configuration to implement custom fonts and colors
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        // Source Sans Pro for text
+                        sans: ['"Source Sans Pro"', 'sans-serif'],
+                        // Roboto for titles and headlines
+                        serif: ['Roboto', 'sans-serif'],
+                    },
+                    colors: {
+                        pastel: {
+                            50: '#F5F9FB', // Light pastel background
+                        },
+                        primary: {
+                            DEFAULT: '#006D77', // Deep Teal/Ocean Blue
+                            light: '#83C5BE',
+                        },
+                    },
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Apply smooth transition for component effects */
+        .transition-all {
+            transition: all 0.3s ease;
+        }
+    </style>
+</head>
+
+<body class="min-h-screen font-sans bg-pastel-50 text-gray-800">
+
+    <div id="app">
+
+        <header class="bg-white shadow-md py-3 px-4 md:px-8 sticky top-0 z-10">
+            <div class="container mx-auto flex justify-between items-center">
+                <div class="text-xl font-serif font-bold text-primary">
+                    Template Project
+                </div>
+                <nav class="space-x-4">
+                    <a href="./page1.html" class="text-gray-600 hover:text-primary transition duration-200">
+                        <i class="fas fa-home"></i> Home
+                    </a>
+                    <a href="./page2.html" class="text-gray-600 hover:text-primary transition duration-200">
+                        <i class="fas fa-list-alt"></i> Docs
+                    </a>
+                </nav>
+            </div>
+        </header>
+
+        <main class="container mx-auto p-4 md:p-8">
+            <h1 class="text-3xl md:text-5xl font-serif text-primary mb-8 border-b border-primary-light pb-2">
+                Template Component Test Bed
+            </h1>
+
+            <section class="mb-8 p-4 bg-white rounded-lg shadow-sm">
+                <h2 class="text-2xl font-serif mb-3">Breadcrumbs</h2>
+                <nav class="flex" aria-label="Breadcrumb">
+                    <ol class="inline-flex items-center space-x-1 md:space-x-3">
+                        <li class="inline-flex items-center">
+                            <a href="#"
+                                class="text-sm font-medium text-gray-600 hover:text-primary inline-flex items-center">
+                                <i class="fas fa-layer-group w-4 h-4 mr-2"></i>
+                                Template
+                            </a>
+                        </li>
+                        <li>
+                            <div class="flex items-center">
+                                <i class="fas fa-chevron-right w-3 h-3 text-gray-400 mx-1"></i>
+                                <a href="#" class="text-sm font-medium text-gray-600 hover:text-primary">Components</a>
+                            </div>
+                        </li>
+                        <li aria-current="page">
+                            <div class="flex items-center">
+                                <i class="fas fa-chevron-right w-3 h-3 text-gray-400 mx-1"></i>
+                                <span class="text-sm font-medium text-primary">Overview</span>
+                            </div>
+                        </li>
+                    </ol>
+                </nav>
+            </section>
+
+            <section class="mb-8 p-4 bg-white rounded-lg shadow-sm">
+                <h2 class="text-2xl font-serif mb-3">Badges</h2>
+                <div class="flex space-x-3">
+                    <span
+                        class="inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium bg-primary-light text-primary">
+                        <i class="fas fa-check mr-1.5"></i> Active
+                    </span>
+                    <span
+                        class="inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800">
+                        <i class="fas fa-exclamation-triangle mr-1.5"></i> Warning
+                    </span>
+                    <span
+                        class="inline-flex items-center px-3 py-0.5 rounded-full text-xs font-semibold uppercase tracking-wider bg-gray-100 text-gray-600">
+                        New Feature
+                    </span>
+                </div>
+            </section>
+
+            <section class="mb-8 p-4 bg-white rounded-lg shadow-sm">
+                <h2 class="text-2xl font-serif mb-4">Accordion</h2>
+                <div class="border border-gray-200 rounded-lg overflow-hidden">
+                    <accordion-item v-for="(item, index) in accordionItems" :key="index" :title="item.title"
+                        :content="item.content" :index="index" :active-index="activeAccordionIndex"
+                        @toggle="toggleAccordion">
+                    </accordion-item>
+                </div>
+            </section>
+
+            <section class="mb-8 p-4 bg-white rounded-lg shadow-sm">
+                <h2 class="text-2xl font-serif mb-4">Tabs</h2>
+                <div class="w-full">
+                    <div class="flex border-b border-gray-200">
+                        <button v-for="(tab, index) in tabs" :key="index" @click="activeTabIndex = index" :class="['py-2 px-4 font-medium transition-all text-sm', 
+                                    activeTabIndex === index 
+                                        ? 'border-b-2 border-primary text-primary font-bold' 
+                                        : 'text-gray-500 hover:text-primary']">
+                            {{ tab.name }}
+                        </button>
+                    </div>
+                    <div class="mt-4 p-4 border border-gray-100 bg-pastel-50 rounded-b-lg">
+                        <div v-html="tabs[activeTabIndex].content"></div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="mt-auto bg-white py-4 px-4 md:px-8 border-t border-gray-200">
+            <div class="container mx-auto text-center text-sm text-gray-500">
+                &copy; 2025 Modern Web Template. Designed with Tailwind & Vue.
+            </div>
+        </footer>
+
+        <div v-if="toast.isVisible" :class="['fixed bottom-5 right-5 w-80 p-4 rounded-lg shadow-xl transition-all', 
+                      toast.isError ? 'bg-red-500' : 'bg-green-500']">
+            <div class="flex items-start">
+                <div class="flex-shrink-0">
+                    <i :class="[toast.isError ? 'fas fa-times-circle' : 'fas fa-check-circle']"
+                        class="text-white text-xl mr-3"></i>
+                </div>
+                <div class="ml-3 text-white">
+                    <p class="font-bold font-serif">{{ toast.title }}</p>
+                    <p class="text-sm mt-1">{{ toast.message }}</p>
+                </div>
+            </div>
+        </div>
+
+        <button @click="showToast('Success!', 'Data saved successfully.', false)"
+            class="fixed bottom-5 left-5 bg-primary text-white py-2 px-4 rounded shadow-lg hover:bg-opacity-90 transition">
+            Show Success Toast
+        </button>
+    </div>
+
+    <script>
+        const { createApp, ref } = Vue;
+
+        // ACCORDION ITEM COMPONENT
+        const AccordionItem = {
+            props: ['title', 'content', 'index', 'activeIndex'],
+            emits: ['toggle'],
+            template: `
+                <div>
+                    <button @click="$emit('toggle', index)"
+                            class="flex justify-between items-center w-full p-4 text-left font-semibold text-lg text-primary bg-white hover:bg-pastel-50 transition border-b border-gray-100">
+                        <span>{{ title }}</span>
+                        <i :class="['fas', activeIndex === index ? 'fa-minus' : 'fa-plus', 'text-sm transition-transform']"></i>
+                    </button>
+                    <div v-show="activeIndex === index" class="p-4 bg-gray-50 transition-all overflow-hidden text-gray-600">
+                        {{ content }}
+                    </div>
+                </div>
+            `
+        };
+
+        createApp({
+            components: {
+                'accordion-item': AccordionItem
+            },
+            setup() {
+                // --- TOAST STATE ---
+                const toast = ref({
+                    isVisible: false,
+                    isError: false,
+                    title: '',
+                    message: ''
+                });
+
+                const showToast = (title, message, isError) => {
+                    toast.value.title = title;
+                    toast.value.message = message;
+                    toast.value.isError = isError;
+                    toast.value.isVisible = true;
+
+                    setTimeout(() => {
+                        toast.value.isVisible = false;
+                    }, 4000); // Toast disappears after 4 seconds
+                };
+
+                // --- ACCORDION STATE ---
+                const activeAccordionIndex = ref(0);
+                const accordionItems = [
+                    { title: 'Section 1: Modern Design', content: 'This template leverages utility-first design principles for fast, responsive development.' },
+                    { title: 'Section 2: Component-Based', content: 'Vue components ensure reusability and maintainability across the application.' },
+                    { title: 'Section 3: Framework Integration', content: 'Using Tailwind and Vue 3 provides a powerful and modern stack.' },
+                ];
+                const toggleAccordion = (index) => {
+                    activeAccordionIndex.value = activeAccordionIndex.value === index ? null : index;
+                };
+
+                // --- TABS STATE ---
+                const activeTabIndex = ref(0);
+                const tabs = [
+                    { name: 'Dashboard', content: '<p>The **Dashboard** content focuses on key performance indicators (KPIs) and recent activity.</p>' },
+                    { name: 'Settings', content: '<p>The **Settings** tab contains configuration options for the user profile and application.</p>' },
+                    { name: 'Activity Log', content: '<p>The **Activity Log** shows a chronological list of user actions and system events.</p>' },
+                ];
+
+                return {
+                    // Toast
+                    toast,
+                    showToast,
+                    // Accordion
+                    accordionItems,
+                    activeAccordionIndex,
+                    toggleAccordion,
+                    // Tabs
+                    tabs,
+                    activeTabIndex,
+                };
+            }
+        }).mount('#app');
+    </script>
+</body>
+
+</html>
