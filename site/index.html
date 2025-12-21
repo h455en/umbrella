@@ -1,256 +1,2142 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="fr">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Modern Web Template Foundation</title>
-
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Events Viewer</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-
-    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-
-    <link
-        href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Source+Sans+Pro:wght@400;600&display=swap"
-        rel="stylesheet">
-
-    <script>
-        // Tailwind Configuration to implement custom fonts and colors
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        // Source Sans Pro for text
-                        sans: ['"Source Sans Pro"', 'sans-serif'],
-                        // Roboto for titles and headlines
-                        serif: ['Roboto', 'sans-serif'],
-                    },
-                    colors: {
-                        pastel: {
-                            50: '#F5F9FB', // Light pastel background
-                        },
-                        primary: {
-                            DEFAULT: '#006D77', // Deep Teal/Ocean Blue
-                            light: '#83C5BE',
-                        },
-                    },
-                }
-            }
-        }
-    </script>
+    <script src='https://api.mapbox.com/mapbox-gl-js/v3.1.2/mapbox-gl.js'></script>
+    <link href='https://api.mapbox.com/mapbox-gl-js/v3.1.2/mapbox-gl.css' rel='stylesheet' />
 
     <style>
-        /* Apply smooth transition for component effects */
-        .transition-all {
-            transition: all 0.3s ease;
+        :root {
+            --indigo: #4f46e5;
+            --muted: #6b7280;
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --sidebar-bg: #eef2ff;
+            --accent: #eef2ff;
+        }
+
+        html,
+        body {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        body {
+            font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial;
+            font-size: 14px;
+            /* MODIFIED: Reduced base font size */
+            background: var(--bg);
+            margin: 0;
+            color: #0f172a;
+        }
+
+        /* Top nav */
+        header.app-header {
+            background: var(--card);
+            border-bottom: 1px solid #e6edf3;
+            position: sticky;
+            top: 0;
+            z-index: 40;
+        }
+
+        .topbar {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            padding: 8px 16px;
+            /* MODIFIED: Reduced vertical padding */
+            position: relative;
+            /* For search container absolute positioning */
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-shrink: 0;
+        }
+
+        .brand svg {
+            width: 28px;
+            /* Adjusted icon size */
+            height: 28px;
+            /* Adjusted icon size */
+        }
+
+        .brand h1 {
+            margin: 0;
+            font-size: 16px;
+            /* MODIFIED: Reduced font size */
+            font-weight: 600;
+            color: #0b1220;
+        }
+
+        /* --- MENU STYLE --- */
+        nav.topnav {
+            display: flex;
+            gap: 0px;
+            align-items: center;
+            border: 1px solid #e6edf3;
+            border-radius: 8px;
+            padding: 0;
+            background: #f8fafc;
+            flex-shrink: 0;
+        }
+
+        .topnav button {
+            background: transparent;
+            border: none;
+            padding: 6px 10px;
+            /* MODIFIED: Reduced padding */
+            border-radius: 0;
+            cursor: pointer;
+            color: #1f2937;
+            font-weight: 500;
+            transition: background 0.15s ease;
+            font-size: 13px;
+            /* MODIFIED: Reduced font size */
+            white-space: nowrap;
+        }
+
+        .topnav button:hover {
+            background: #eef2ff;
+            color: var(--indigo);
+        }
+
+        /* Apply rounded corners to first and last buttons */
+        .topnav button:first-child {
+            border-radius: 8px 0 0 8px;
+        }
+
+        .topnav button:last-child {
+            border-radius: 0 8px 8px 0;
+        }
+
+        .topnav .active {
+            color: white;
+            background: var(--indigo);
+            font-weight: 600;
+        }
+
+        .topnav .active:hover {
+            background: var(--indigo);
+            color: white;
+        }
+
+        /* Search Collapse Logic */
+        #search-input-wrapper {
+            transition: width 0.3s ease, border 0.3s ease;
+        }
+
+        #search-input-wrapper.search-collapsed {
+            width: 0;
+            overflow: hidden;
+            border: 1px solid transparent;
+        }
+
+        #search-input-wrapper:not(.search-collapsed) {
+            width: 300px;
+            border: 1px solid #e6edf3;
+        }
+
+
+        /* progress line */
+        #progress-wrap {
+            height: 4px;
+            width: 100%;
+            background: transparent;
+            overflow: hidden;
+            display: block;
+        }
+
+        #progress {
+            height: 4px;
+            width: 0%;
+            transition: width 260ms linear;
+            border-radius: 2px;
+        }
+
+        /* Main layout - Sidebar removed, so no need for complex row/column layouts */
+        .layout {
+            flex: 1;
+            display: block;
+            max-width: 1200px;
+            margin: 18px auto;
+            padding: 0 16px;
+        }
+
+        /* Content card - MORE PRONOUNCED BORDER */
+        .card {
+            flex: 1;
+            background: var(--card);
+            border-radius: 12px;
+            padding: 18px;
+            border: 1px solid #d0d0d0;
+            /* ADDED: Distinct border */
+            box-shadow: 0 6px 20px rgba(12, 18, 35, 0.08);
+            /* MODIFIED: Increased shadow opacity */
+            min-width: 0;
+        }
+
+        /* month tabs */
+        .month-tabs {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 6px;
+            margin-bottom: 12px;
+        }
+
+        .month-tab {
+            padding: 6px 10px;
+            /* MODIFIED: Reduced padding */
+            border-radius: 999px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            flex-shrink: 0;
+            font-size: 13px;
+            /* MODIFIED: Reduced font size */
+        }
+
+        .month-tab:hover {
+            transform: translateY(-2px);
+            transition: transform .14s ease;
+            opacity: 0.95;
+        }
+
+        /* events - MORE PRONOUNCED BORDER */
+        .day-card {
+            border-radius: 12px;
+            border: 2px solid #ccd8ff;
+            /* MODIFIED: Thicker, slightly darker blue border */
+            margin-bottom: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(12, 18, 35, 0.08);
+            /* MODIFIED: Increased shadow opacity */
+        }
+
+        .day-head {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            padding: 10px 14px;
+            /* MODIFIED: Reduced padding */
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .day-head strong {
+            font-size: 16px;
+            /* MODIFIED: Reduced font size */
+            font-weight: 700;
+        }
+
+        .day-head span {
+            font-size: 12px !important;
+            /* Keep count small */
+        }
+
+        .day-content {
+            padding: 10px;
+            /* MODIFIED: Reduced padding */
+            display: block;
+            border-top: 1px solid rgba(224, 231, 255, 0.5);
+        }
+
+        /* Event Row Styling - MORE PRONOUNCED BORDER */
+        .event-row {
+            background: white;
+            border: 1px solid #e6e6e6;
+            /* MODIFIED: Thicker border */
+            padding: 10px;
+            /* MODIFIED: Reduced padding */
+            border-radius: 8px;
+            margin-bottom: 8px;
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+            box-shadow: 0 2px 5px rgba(12, 18, 35, 0.04);
+            /* MODIFIED: Increased shadow opacity */
+        }
+
+        .event-row button {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+        }
+
+        /* Title: Made bigger (18px) and bolder (700) */
+        .event-row .title {
+            font-weight: 700;
+            color: #0b1220;
+            text-decoration: none;
+            font-size: 16px;
+            /* MODIFIED: Reduced font size */
+            display: block;
+            line-height: 1.3;
+        }
+
+        /* Meta/Address: Made smaller (14px) and normal weight */
+        .event-row .meta {
+            color: var(--muted);
+            font-size: 13px;
+            /* MODIFIED: Reduced font size */
+            font-weight: 500;
+            line-height: 1.3;
+            margin-top: 2px;
+            /* MODIFIED: Reduced margin */
+        }
+
+        /* Map Section Styling */
+        #map-container {
+            height: 60vh;
+            min-height: 350px;
+            background: #f8fafc;
+            border-radius: 10px;
+            border: 1px solid #eef2f8;
+            transition: opacity 0.3s ease;
+        }
+
+        /* config list - MODIFIED FOR SMALLER BUTTONS AND GRID LAYOUT */
+        .config-row {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            /* 1fr for content, auto for buttons */
+            gap: 8px;
+            /* MODIFIED: Reduced gap */
+            align-items: center;
+            padding: 6px;
+            /* MODIFIED: Reduced padding */
+            border-radius: 8px;
+            background: #f8fafc;
+            border: 1px solid #eef2f8;
+            font-size: 13px;
+        }
+
+        .config-content {
+            /* NEW: Wrapper for name, URL, and Copy button */
+            display: flex;
+            align-items: center;
+            font-size: 12px;
+            /* Smaller font for URL */
+            word-break: break-all;
+            line-height: 1.4;
+        }
+
+        .config-content span:first-child {
+            font-weight: 600;
+            margin-right: 8px;
+            white-space: nowrap;
+            flex-shrink: 0;
+            font-size: 13px;
+            /* Name back to 13px */
+        }
+
+        /* Copy button style inside config-content */
+        .config-content button {
+            margin-left: 8px;
+            padding: 0px 4px !important;
+            font-size: 10px !important;
+            height: 20px;
+            width: 20px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .config-content button svg {
+            width: 13px;
+            height: 13px;
+        }
+
+
+        .cfg-actions {
+            display: flex;
+            flex-wrap: nowrap;
+            gap: 4px;
+            /* MODIFIED: Reduced gap */
+            justify-content: flex-end;
+            flex-shrink: 0;
+        }
+
+        .cfg-actions button {
+            font-size: 11px;
+            /* MODIFIED: Reduced font size */
+            padding: 3px 6px !important;
+            /* MODIFIED: Reduced padding */
+            border-radius: 6px;
+            margin-left: 0 !important;
+            white-space: nowrap;
+        }
+
+        /* toast */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 10px 12px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            box-shadow: 0 8px 24px rgba(2, 6, 23, 0.12);
+            opacity: 0;
+            transform: translateY(-10px) scale(.98);
+            transition: all .22s ease;
+            z-index: 60;
+            pointer-events: none;
+            font-size: 13px;
+            /* MODIFIED: Reduced font size */
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            pointer-events: auto;
+        }
+
+        .toast.ok {
+            background: #16a34a;
+        }
+
+        /* green */
+        .toast.err {
+            background: #dc2626;
+        }
+
+        /* red */
+
+        /* progress color states */
+        #progress.ok {
+            background: #16a34a;
+        }
+
+        #progress.err {
+            background: #dc2626;
+        }
+
+        #progress.loading {
+            background: linear-gradient(90deg, rgba(79, 70, 229, 0.95), rgba(99, 102, 241, 0.95));
+            animation: prog 1.3s linear infinite;
+        }
+
+        @keyframes prog {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            100% {
+                background-position: 100% 50%;
+            }
+        }
+
+        /* Footer style */
+        footer.app-footer {
+            background: var(--card);
+            border-top: 1px solid #e6edf3;
+            padding: 6px 16px;
+            /* MODIFIED: Reduced vertical padding */
+            flex-shrink: 0;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            font-size: 11px;
+            color: var(--muted);
+            width: 100%;
+        }
+
+
+        /* responsive */
+        @media (max-width: 900px) {
+            .layout {
+                padding: 0 8px;
+                margin-top: 12px;
+            }
+
+            /* Topbar adjustments for mobile */
+            .topbar {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 8px;
+                padding: 8px 8px;
+                /* MODIFIED: Reduced padding */
+            }
+
+            .topbar .brand {
+                flex-basis: 100%;
+                justify-content: center;
+                margin-bottom: 4px;
+                /* MODIFIED: Reduced margin */
+            }
+
+            .topnav {
+                order: 3;
+                /* Move to the bottom row */
+                flex-basis: 100%;
+                justify-content: flex-start;
+                /* Align left for scroll */
+                overflow-x: auto;
+                padding: 0;
+            }
+
+            .topnav button {
+                font-size: 12px;
+                /* MODIFIED: Reduced font size */
+                padding: 5px 8px;
+                /* MODIFIED: Reduced padding */
+            }
+
+            /* Mobile Search Styles (Expanded) */
+            #search-container {
+                order: 2;
+                /* Move below brand */
+                flex: 1;
+                margin: 0;
+                justify-content: flex-start;
+                position: static !important;
+                /* Overrides desktop absolute positioning */
+                margin-bottom: 4px;
+            }
+
+            #search-toggle-btn {
+                display: none !important;
+                /* Always hidden on mobile */
+            }
+
+            #search-input-wrapper {
+                position: static !important;
+                /* Overrides desktop absolute positioning */
+                width: 100% !important;
+                overflow: visible !important;
+                border: 1px solid #e6edf3 !important;
+                background: white !important;
+            }
+
+            #search-input-wrapper.search-collapsed {
+                width: 100% !important;
+                /* Ensure full width even if class is present */
+                border: 1px solid #e6edf3 !important;
+                overflow: visible !important;
+            }
+
+
+            #filter-input {
+                min-width: 100% !important;
+                flex: 1 !important;
+                margin: 0;
+                padding: 6px 10px !important;
+                font-size: 13px !important;
+            }
+
+            .topbar>div:last-child {
+                order: 4;
+                /* Move file input/load button down */
+                flex-basis: 100%;
+                justify-content: center;
+            }
+
+            .topbar>div:last-child button {
+                padding: 6px 8px !important;
+                /* MODIFIED: Reduced padding for load button */
+                font-size: 13px;
+                /* MODIFIED: Reduced font size */
+            }
+
+            #map-container {
+                height: 50vh;
+                min-height: 300px;
+            }
+
+            .cfg-actions button {
+                margin-left: 0 !important;
+                flex-basis: auto;
+                /* Let button size auto-adjust */
+            }
         }
     </style>
 </head>
 
-<body class="min-h-screen font-sans bg-pastel-50 text-gray-800">
+<body>
 
-    <div id="app">
-
-        <header class="bg-white shadow-md py-3 px-4 md:px-8 sticky top-0 z-10">
-            <div class="container mx-auto flex justify-between items-center">
-                <div class="text-xl font-serif font-bold text-primary">
-                    Template Project
-                </div>
-                <nav class="space-x-4">
-                    <a href="./page1.html" class="text-gray-600 hover:text-primary transition duration-200">
-                        <i class="fas fa-home"></i> Home
-                    </a>
-                    <a href="./page2.html" class="text-gray-600 hover:text-primary transition duration-200">
-                        <i class="fas fa-list-alt"></i> Docs
-                    </a>
-                </nav>
+    <header class="app-header">
+        <div class="topbar">
+            <div class="brand">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+                    <rect width="24" height="24" rx="6" fill="#eef2ff" />
+                    <path d="M7 12h10M7 8h10M7 16h10" stroke="#4f46e5" stroke-width="1.6" stroke-linecap="round" />
+                </svg>
+                <h1>VG</h1>
             </div>
-        </header>
 
-        <main class="container mx-auto p-4 md:p-8">
-            <h1 class="text-3xl md:text-5xl font-serif text-primary mb-8 border-b border-primary-light pb-2">
-                Template Component Test Bed
-            </h1>
+            <nav class="topnav" aria-label="Main navigation">
+                <button id="nav-events" class="active" onclick="showSection('events')">Events</button>
+                <button id="nav-map" onclick="showSection('map')">Map</button>
+                <button id="nav-route" onclick="openRoute('Route.html')">Route</button>
+                <button id="nav-best" onclick="showSection('best')">Best</button>
+                <button id="nav-routeplan" onclick="openRoute('RoutePlan.html')">Route Plan</button>
+            </nav>
 
-            <section class="mb-8 p-4 bg-white rounded-lg shadow-sm">
-                <h2 class="text-2xl font-serif mb-3">Breadcrumbs</h2>
-                <nav class="flex" aria-label="Breadcrumb">
-                    <ol class="inline-flex items-center space-x-1 md:space-x-3">
-                        <li class="inline-flex items-center">
-                            <a href="#"
-                                class="text-sm font-medium text-gray-600 hover:text-primary inline-flex items-center">
-                                <i class="fas fa-layer-group w-4 h-4 mr-2"></i>
-                                Template
-                            </a>
-                        </li>
-                        <li>
-                            <div class="flex items-center">
-                                <i class="fas fa-chevron-right w-3 h-3 text-gray-400 mx-1"></i>
-                                <a href="#" class="text-sm font-medium text-gray-600 hover:text-primary">Components</a>
-                            </div>
-                        </li>
-                        <li aria-current="page">
-                            <div class="flex items-center">
-                                <i class="fas fa-chevron-right w-3 h-3 text-gray-400 mx-1"></i>
-                                <span class="text-sm font-medium text-primary">Overview</span>
-                            </div>
-                        </li>
-                    </ol>
-                </nav>
-            </section>
+            <div id="search-container"
+                style="display:flex; align-items:center; position:relative; flex-shrink: 0; margin-left: 8px;">
+                <button id="search-toggle-btn" onclick="toggleSearch(true)" title="Search Events"
+                    style="background:transparent; border:none; padding: 6px; cursor:pointer; flex-shrink: 0; display:block;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                        stroke="#4f46e5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                </button>
 
-            <section class="mb-8 p-4 bg-white rounded-lg shadow-sm">
-                <h2 class="text-2xl font-serif mb-3">Badges</h2>
-                <div class="flex space-x-3">
-                    <span
-                        class="inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium bg-primary-light text-primary">
-                        <i class="fas fa-check mr-1.5"></i> Active
-                    </span>
-                    <span
-                        class="inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800">
-                        <i class="fas fa-exclamation-triangle mr-1.5"></i> Warning
-                    </span>
-                    <span
-                        class="inline-flex items-center px-3 py-0.5 rounded-full text-xs font-semibold uppercase tracking-wider bg-gray-100 text-gray-600">
-                        New Feature
-                    </span>
+                <div id="search-input-wrapper" class="search-collapsed"
+                    style="position:absolute; right: 0; transition: width 0.3s ease, border 0.3s ease; display:flex; align-items:center; border-radius: 8px; background: white; z-index: 10;">
+                    <input id="filter-input" placeholder="Rechercher titre, adresse ou ville..."
+                        style="padding:6px 10px; border: none; flex: 1; min-width: 200px; font-size:13px;"
+                        oninput="applyFilter()" />
+
+                    <button id="search-clear-btn" onclick="clearSearch()" title="Clear and Close"
+                        style="background:transparent; border:none; padding: 0 8px; cursor:pointer; display:none; flex-shrink: 0;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                            stroke="#6b7280" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    </button>
                 </div>
-            </section>
-
-            <section class="mb-8 p-4 bg-white rounded-lg shadow-sm">
-                <h2 class="text-2xl font-serif mb-4">Accordion</h2>
-                <div class="border border-gray-200 rounded-lg overflow-hidden">
-                    <accordion-item v-for="(item, index) in accordionItems" :key="index" :title="item.title"
-                        :content="item.content" :index="index" :active-index="activeAccordionIndex"
-                        @toggle="toggleAccordion">
-                    </accordion-item>
-                </div>
-            </section>
-
-            <section class="mb-8 p-4 bg-white rounded-lg shadow-sm">
-                <h2 class="text-2xl font-serif mb-4">Tabs</h2>
-                <div class="w-full">
-                    <div class="flex border-b border-gray-200">
-                        <button v-for="(tab, index) in tabs" :key="index" @click="activeTabIndex = index" :class="['py-2 px-4 font-medium transition-all text-sm', 
-                                    activeTabIndex === index 
-                                        ? 'border-b-2 border-primary text-primary font-bold' 
-                                        : 'text-gray-500 hover:text-primary']">
-                            {{ tab.name }}
-                        </button>
-                    </div>
-                    <div class="mt-4 p-4 border border-gray-100 bg-pastel-50 rounded-b-lg">
-                        <div v-html="tabs[activeTabIndex].content"></div>
-                    </div>
-                </div>
-            </section>
-        </main>
-
-        <footer class="mt-auto bg-white py-4 px-4 md:px-8 border-t border-gray-200">
-            <div class="container mx-auto text-center text-sm text-gray-500">
-                &copy; 2025 Modern Web Template. Designed with Tailwind & Vue.
             </div>
-        </footer>
 
-        <div v-if="toast.isVisible" :class="['fixed bottom-5 right-5 w-80 p-4 rounded-lg shadow-xl transition-all', 
-                      toast.isError ? 'bg-red-500' : 'bg-green-500']">
-            <div class="flex items-start">
-                <div class="flex-shrink-0">
-                    <i :class="[toast.isError ? 'fas fa-times-circle' : 'fas fa-check-circle']"
-                        class="text-white text-xl mr-3"></i>
-                </div>
-                <div class="ml-3 text-white">
-                    <p class="font-bold font-serif">{{ toast.title }}</p>
-                    <p class="text-sm mt-1">{{ toast.message }}</p>
-                </div>
+            <div style="display:flex;align-items:center;gap:12px;">
+                <label style="font-size:12px;color:var(--muted);">
+                    <input id="json-file-input" type="file" multiple accept=".json" style="display:none">
+                    <button class="btn" onclick="document.getElementById('json-file-input').click()"
+                        style="background:var(--indigo); color:white; border:none; border-radius:8px; padding:6px 8px; font-size:13px;">Load
+                        files</button>
+                </label>
             </div>
         </div>
 
-        <button @click="showToast('Success!', 'Data saved successfully.', false)"
-            class="fixed bottom-5 left-5 bg-primary text-white py-2 px-4 rounded shadow-lg hover:bg-opacity-90 transition">
-            Show Success Toast
-        </button>
+        <div id="progress-wrap" aria-hidden="true">
+            <div id="progress"></div>
+        </div>
+    </header>
+
+    <div class="layout">
+
+        <div class="card">
+            <section id="section-events">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+                    <div style="display:flex;gap:12px;align-items:center;">
+                        <h2 style="margin:0;font-size:16px;font-weight:700" id="events-header">Événements</h2>
+                    </div>
+                    <div></div>
+                </div>
+
+                <div class="month-tabs" id="month-tabs" aria-label="Months"></div>
+
+                <div id="month-content"></div>
+                <p id="no-events" style="color:var(--muted); display:none; font-size: 13px;">Aucun événement trouvé.</p>
+            </section>
+
+            <section id="section-map" class="hidden" aria-hidden="true">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                    <h3 style="margin:0; font-size:16px;">Carte des événements du weekend</h3>
+                    <select id="weekend-select" onchange="updateMapFromDropdown()"
+                        style="padding:4px 8px; border-radius:6px; border:1px solid #e6edf3; font-size:13px;"></select>
+                </div>
+                <div id="map-container">
+                </div>
+            </section>
+
+            <section id="section-best" class="hidden" aria-hidden="true">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+                    <h3 style="margin-top:0; font-size:16px;">My Best Events</h3>
+                    <button onclick="clearAllBestEvents()"
+                        style="background:#dc2626; color:white; border:none; padding:4px 8px; border-radius:6px; font-size:13px; font-weight:600; cursor:pointer;">Clear
+                        All</button>
+                </div>
+                <div id="best-events-list">
+                </div>
+                <p id="no-best-events" style="color:var(--muted); display:none; margin-top:12px; font-size: 13px;">No
+                    events saved to
+                    Best
+                    list yet.</p>
+            </section>
+
+        </div>
     </div>
 
-    <script>
-        const { createApp, ref } = Vue;
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
-        // ACCORDION ITEM COMPONENT
-        const AccordionItem = {
-            props: ['title', 'content', 'index', 'activeIndex'],
-            emits: ['toggle'],
-            template: `
-                <div>
-                    <button @click="$emit('toggle', index)"
-                            class="flex justify-between items-center w-full p-4 text-left font-semibold text-lg text-primary bg-white hover:bg-pastel-50 transition border-b border-gray-100">
-                        <span>{{ title }}</span>
-                        <i :class="['fas', activeIndex === index ? 'fa-minus' : 'fa-plus', 'text-sm transition-transform']"></i>
-                    </button>
-                    <div v-show="activeIndex === index" class="p-4 bg-gray-50 transition-all overflow-hidden text-gray-600">
-                        {{ content }}
-                    </div>
+    <footer class="app-footer">
+        <div class="footer-content">
+            <div id="footer-status-all" style="flex:1;">Initializing...</div>
+
+            <button id="toggle-config-btn" onclick="toggleConfig()"
+                style="background:var(--indigo);color:white;border:none;padding:4px 8px;border-radius:6px;font-size:11px;font-weight:600;margin-left:10px; flex-shrink: 0;">
+                Config
+            </button>
+        </div>
+    </footer>
+
+    <section id="section-config" class="hidden" aria-hidden="true"
+        style="position:fixed; bottom:-100%; left:0; right:0; z-index:50; background:var(--card); border-top:1px solid #e6edf3; box-shadow: 0 -4px 12px rgba(12, 18, 35, 0.1); transition: bottom 0.3s ease-out; padding:10px 16px 20px 16px; width:100%;">
+        <div style="max-width:1200px; margin:0 auto;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                <h3 style="margin-top:0; font-size:14px;">Source Configuration</h3>
+                <button onclick="toggleConfig()"
+                    style="background:var(--indigo);color:white;border:none;padding:4px 8px;border-radius:6px;font-size:12px;font-weight:600; cursor:pointer;">Close</button>
+            </div>
+            <form id="source-form" style="display:grid;grid-template-columns:1fr 1fr auto;gap:10px;margin-top:12px;"
+                onsubmit="return saveSource(event)">
+                <input id="src-name" placeholder="Name e.g. Vg" required
+                    style="padding:6px;border-radius:8px;border:1px solid #e6edf3; font-size:13px;" />
+                <input id="src-url" placeholder="https://jsonhosting.com/api/json/..." required
+                    style="padding:6px;border-radius:8px;border:1px solid #e6edf3; font-size:13px;" />
+                <div style="display:flex;gap:8px; flex-shrink:0;">
+                    <button type="submit"
+                        style="background:var(--indigo);color:white;border:none;padding:6px 10px;border-radius:8px; cursor:pointer; font-size:13px;">Save</button>
+                    <button type="button" onclick="resetForm()"
+                        style="background:white;border:1px solid #e6edf3;padding:6px 10px;border-radius:8px; cursor:pointer; font-size:13px;">Reset</button>
                 </div>
-            `
+            </form>
+
+            <div id="config-list" style="margin-top:12px;display:flex;flex-direction:column;gap:8px"></div>
+        </div>
+    </section>
+
+    <script>
+        /* --- Config --- */
+        const PROXY = 'https://api.codetabs.com/v1/proxy/?quest=';
+        const STORAGE_KEY = 'eventsviewer_sources_v3';
+        const BEST_KEY = 'eventsviewer_best_v1';
+        const MONTH_ABBR = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+        const DAY_MAP = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
+
+        // MODIFIED: Use softer colors
+        const DAY_COLORS = {
+            'Samedi': '#CCE5FF', // Pale Blue (Lighter, softer)
+            'Dimanche': '#FFF5CC' // Pale Yellow (Softer, less saturated)
+        };
+        const OTHER_DAY_COLOR = '#F0F0F0'; // Very pale gray/white
+
+        const TAB_COLORS = ['#4f46e5', '#2563eb', '#16a34a', '#0ea5a4', '#06b6d4', '#db2777', '#f59e0b', '#7c3aed', '#10b981', '#ef4444', '#0ea5a4', '#f97316'];
+        const START_ADDRESS = "5 rue victor considérant 75014 paris"; // Default origin address for maps
+        const NOMINATIM_URL = 'https://nominatim.openstreetmap.org/search?format=json&limit=1';
+
+        /* --- State --- */
+        let activeSource = null;
+        let activeFilterQuery = '';
+
+        // Global state for source data and status
+        const sourceCounts = {};
+        let lastUpdate = 'N/A';
+        let bestEventsState = loadBestEvents(); // Load 'Best' state on start
+        let initialSourcesCount = 0; // NEW: Counter for total remote sources to load
+        let sourcesLoadedCount = 0; // NEW: Counter for loaded remote sources
+
+        // Map State
+        // IMPORTANT: REPLACE 'YOUR_MAPBOX_ACCESS_TOKEN_HERE' with your actual Mapbox Public Access Token
+        mapboxgl.accessToken = 'YOUR_MAPBOX_ACCESS_TOKEN_HERE';
+        let mapInstance = null;
+        let mapLibsLoaded = true; // Mapbox is loaded synchronously from <head>
+        let mapMarkers = []; // Mapbox markers will be stored here
+        let geocodingCache = {}; // Cache for lat/lon lookup
+        let currentMonthTab = null; // To track the currently selected month tab
+
+        // NEW: Map Weekend State
+        let availableWeekends = [];
+        let currentMapWeekend = null;
+
+
+        /* --- Helpers --- */
+        const $ = id => document.getElementById(id);
+        const safeId = s => String(s).replace(/[^a-z0-9]/gi, '_');
+
+        function showToast(message, status = 'ok', ms = 2200) {
+            const t = $('toast');
+            t.textContent = message;
+            t.className = 'toast show ' + (status === 'err' ? 'err' : 'ok');
+            t.setAttribute('aria-label', message);
+            clearTimeout(t._h);
+            t._h = setTimeout(() => t.className = 'toast', ms);
+        }
+
+        function updateFooterStatus() {
+            const parts = Object.entries(sourceCounts)
+                .filter(([name, details]) =>
+                    details && (details.count > 0 || name === activeSource)
+                )
+                .map(([name, details]) =>
+                    `${name} (${details.count})`
+                );
+
+            const lastUpdateDisplay = lastUpdate === 'N/A' ? 'N/A' : new Date(lastUpdate).toLocaleString('fr-FR');
+
+            let footerContent = parts.join(' | ');
+
+            if (footerContent) {
+                footerContent += ' | ';
+            } else {
+                footerContent = 'No data loaded. | ';
+            }
+
+            footerContent += `Last update : ${lastUpdateDisplay}`;
+
+            $('footer-status-all').textContent = footerContent;
+        }
+
+        function updateEventsHeader() {
+            const header = $('events-header');
+            if (activeSource) {
+                const count = sourceCounts[activeSource]?.count || 0;
+                header.textContent = `Événements - ${activeSource} (${count})`;
+            } else {
+                header.textContent = `Événements`;
+            }
+        }
+
+
+        function getFrenchDay(date) {
+            if (!date) return '';
+            return DAY_MAP[date.getDay()];
+        }
+
+        function getDirectionsUrl(eventAddress) {
+            const origin = encodeURIComponent(START_ADDRESS);
+            const destination = encodeURIComponent(eventAddress);
+            // FIX: Corrected to standard Google Maps Directions URL
+            return `https://www.google.com/maps/dir/${origin}/${destination}`;
+        }
+
+        // NEW: Map of French characters with diacritics to their base characters for regex
+        const DIACRITIC_MAP = {
+            'a': '[aàáâãäå]', 'e': '[eèéêë]', 'i': '[iìíîï]', 'o': '[oòóôõö]', 'u': '[uùúûü]',
+            'c': '[cç]', 'y': '[yýÿ]', 'n': '[nñ]', 'A': '[AÀÁÂÃÄÅ]', 'E': '[EÈÉÊË]', 'I': '[IÌÍÎÏ]',
+            'O': '[OÒÓÔÕÖ]', 'U': '[UÙÚÛÜ]', 'C': '[CÇ]', 'Y': '[YÝŸ]', 'N': '[NÑ]'
         };
 
-        createApp({
-            components: {
-                'accordion-item': AccordionItem
-            },
-            setup() {
-                // --- TOAST STATE ---
-                const toast = ref({
-                    isVisible: false,
-                    isError: false,
-                    title: '',
-                    message: ''
+        // NEW: Function to create accent-insensitive regex for highlighting
+        function createAccentedRegex(query) {
+            let pattern = '';
+            for (const char of query) {
+                const lowerChar = char.toLowerCase();
+                if (DIACRITIC_MAP[lowerChar]) {
+                    // Replace character with its accent-insensitive character set, e.g., 'e' -> '[eèéêë]'
+                    pattern += DIACRITIC_MAP[lowerChar];
+                } else if (/[a-z]/i.test(char)) {
+                    // For other letters (not in map), use a case-insensitive match
+                    pattern += `[${char.toLowerCase()}${char.toUpperCase()}]`;
+                } else {
+                    // For non-letters, escape regex special characters
+                    pattern += char.replace(/([.?*+^$[\]\\(){}|-])/g, "\\$1");
+                }
+            }
+            return new RegExp(pattern, 'gi');
+        }
+
+        // MODIFIED: highlightText to use accent-insensitive regex
+        function highlightText(text, query) {
+            if (!query) return text;
+            // Use the custom function to create an accent-insensitive regex pattern
+            const regex = createAccentedRegex(query);
+            return text.replace(regex, match => `<mark style="background-color: #ffffe0; padding: 0 2px;">${match}</mark>`);
+        }
+
+        // NEW: Function to normalize string for accent-insensitive comparison
+        function normalizeString(str) {
+            return String(str || '')
+                .normalize("NFD")
+                .replace(/[\u0300-\u036f]/g, "") // Remove combining diacritical marks
+                .toLowerCase();
+        }
+
+        /* --- Progress bar --- */
+        const progressEl = (() => $('progress'))();
+        function progressStart() {
+            progressEl.className = 'loading';
+            progressEl.style.width = '6%';
+            setTimeout(() => progressEl.style.width = '35%', 80);
+        }
+        function progressSetOk() {
+            progressEl.className = 'ok';
+            progressEl.style.width = '100%';
+            setTimeout(() => { progressEl.style.width = '0%'; progressEl.className = ''; }, 700);
+        }
+        function progressSetErr() {
+            progressEl.className = 'err';
+            progressEl.style.width = '100%';
+            setTimeout(() => { progressEl.style.width = '0%'; progressEl.className = ''; }, 1200);
+        }
+
+        /* --- Date parsing & grouping --- */
+        function parseEventDate(str) {
+            if (!str) return null;
+
+            const match = str.match(/(?:[a-zA-ZÀ-ÿ]+\s+)*(\d{1,2})\s+([a-zéûäàîôA-Z]+)\s+(\d{4})/i);
+
+            if (!match) return null;
+
+            const d = +match[1];
+            const monthStr = match[2].toLowerCase();
+            const y = +match[3];
+
+            const map = {
+                janvier: 0, février: 1, fevrier: 1, mars: 2, avril: 3, mai: 4, juin: 5,
+                juillet: 6, août: 7, aout: 7, septembre: 8, octobre: 9, novembre: 10, décembre: 11, decembre: 11,
+                january: 0, february: 1, march: 2, april: 3, may: 4, june: 5, july: 6, august: 7,
+                september: 8, october: 9, november: 10, december: 11
+            };
+
+            const mo = map[monthStr];
+
+            const date = typeof mo === 'number' ? new Date(y, mo, d) : null;
+            if (date) {
+                date.setHours(0, 0, 0, 0); // Normalize time
+            }
+            return date;
+        }
+
+        function formatMonthKey(d) { return `${MONTH_ABBR[d.getMonth()]} ${d.getFullYear()}`; }
+
+        function extractEvents(node, out) {
+            if (!node) return;
+
+            const eventKeys = ["Titre", "Ville", "Adresse", "Exposants", "ManifDate", "ManifLink"];
+            const requiredKeys = ["Titre", "Adresse", "ManifDate"];
+
+            const normalizeEvent = (item) => {
+                const event = {};
+                eventKeys.forEach(k => {
+                    if (item.hasOwnProperty(k)) event[k] = item[k];
+                });
+                return event;
+            };
+
+            if (Array.isArray(node)) {
+                const validEvents = node.filter(item =>
+                    typeof item === 'object' && requiredKeys.every(k => item.hasOwnProperty(k))
+                ).map(normalizeEvent);
+
+                if (validEvents.length > 0) {
+                    out.push(...validEvents);
+                } else {
+                    node.forEach(v => extractEvents(v, out));
+                }
+            }
+            else if (typeof node === 'object') {
+                if (requiredKeys.every(k => node.hasOwnProperty(k))) {
+                    out.push(normalizeEvent(node));
+                }
+
+                Object.values(node).forEach(v => extractEvents(v, out));
+            }
+        }
+
+        function groupEvents(evts) {
+            const g = {};
+            for (const e of evts) {
+                const d = parseEventDate(e.ManifDate);
+                if (!d) continue;
+                const m = formatMonthKey(d);
+                g[m] ??= {};
+                g[m][e.ManifDate] ??= [];
+                g[m][e.ManifDate].push(e);
+            }
+            return g;
+        }
+        function sortGrouped(g) {
+            const out = {};
+            Object.keys(g).sort((a, b) => {
+                const [ma, ya] = a.split(' '), [mb, yb] = b.split(' ');
+                const ia = MONTH_ABBR.indexOf(ma), ib = MONTH_ABBR.indexOf(mb);
+                return (+ya - +yb) || ia - ib;
+            }).forEach(m => {
+                out[m] = {};
+                Object.keys(g[m]).sort((a, b) => parseEventDate(a) - parseEventDate(b))
+                    .forEach(d => out[m][d] = [...g[m][d]]);
+            });
+            return out;
+        }
+
+        function toggleDayCollapse(currentDayCard, monthPanelId) {
+            const currentContent = currentDayCard.querySelector('.day-content');
+            const isOpen = currentContent.style.display === 'block';
+
+            const monthPanel = $(monthPanelId);
+            if (monthPanel) {
+                // Collapse all day cards in this panel first
+                monthPanel.querySelectorAll('.day-card').forEach(dayCard => {
+                    const content = dayCard.querySelector('.day-content');
+                    if (content) {
+                        content.style.display = 'none';
+                    }
+                });
+            }
+
+            // Open the clicked one if it was closed
+            if (!isOpen) {
+                currentContent.style.display = 'block';
+            }
+        }
+
+        // NEW: Function to check if all initial remote sources have been processed
+        function checkAllSourcesLoaded() {
+            sourcesLoadedCount++;
+            if (sourcesLoadedCount >= initialSourcesCount) {
+                // Gather all events from all successfully loaded remote sources
+                const allEvents = Object.values(sourceCounts)
+                    .filter(data => data.status === 'ok')
+                    .flatMap(data => data.rawEvents)
+                    .filter((value, index, self) =>
+                        // Deduplicate events based on a unique ID (Titre|Adresse|ManifDate)
+                        index === self.findIndex((t) => getEventId(t) === getEventId(value))
+                    );
+
+                if (allEvents.length > 0) {
+                    calculateInitialBestEvents(allEvents);
+                }
+            }
+        }
+
+        // NEW: Function to calculate initial Best Events (Top 3 Exposants per day group)
+        function calculateInitialBestEvents(allEvents) {
+            const dayTypeGroups = {
+                'Samedi': [],
+                'Dimanche': [],
+                'Other': []
+            };
+
+            for (const event of allEvents) {
+                const dateObj = parseEventDate(event.ManifDate);
+                if (!dateObj) continue;
+
+                const frenchDay = getFrenchDay(dateObj);
+                const exposantCount = parseInt(event.Exposants) || 0;
+                event.ExposantCount = exposantCount; // Store count for sorting
+
+                if (frenchDay === 'Samedi') {
+                    dayTypeGroups.Samedi.push(event);
+                } else if (frenchDay === 'Dimanche') {
+                    dayTypeGroups.Dimanche.push(event);
+                } else {
+                    dayTypeGroups.Other.push(event);
+                }
+            }
+
+            let newBestEvents = [];
+
+            // For each day type, sort by ExposantCount descending and take the top 3
+            ['Samedi', 'Dimanche', 'Other'].forEach(dayType => {
+                dayTypeGroups[dayType].sort((a, b) => b.ExposantCount - a.ExposantCount);
+                const top3 = dayTypeGroups[dayType].slice(0, 3);
+                newBestEvents.push(...top3);
+            });
+
+            // Overwrite the bestEventsState and save it to localStorage
+            bestEventsState = newBestEvents;
+            saveBestEvents();
+        }
+
+        /* --- Best Events Logic --- */
+        function loadBestEvents() {
+            try {
+                return JSON.parse(localStorage.getItem(BEST_KEY) || '[]');
+            } catch {
+                return [];
+            }
+        }
+
+        function saveBestEvents() {
+            localStorage.setItem(BEST_KEY, JSON.stringify(bestEventsState));
+            // Only re-render the best section if it is currently visible (SILENTLY FILL)
+            if ($('section-best') && !$('section-best').classList.contains('hidden')) {
+                renderBestSection();
+            }
+        }
+
+        /**
+         * Generates a unique ID for an event based on its core properties.
+         * @param {object} event 
+         * @returns {string}
+         */
+        function getEventId(event) {
+            // Concatenate unique properties to form a simple ID for comparison
+            return `${event.Titre || ''}|${event.Adresse || ''}|${event.ManifDate || ''}`;
+        }
+
+        function isEventInBest(event) {
+            const id = getEventId(event);
+            return bestEventsState.some(e => getEventId(e) === id);
+        }
+
+        function toggleBestEvent(event) {
+            const id = getEventId(event);
+            const index = bestEventsState.findIndex(e => getEventId(e) === id);
+
+            if (index > -1) {
+                // Remove
+                bestEventsState.splice(index, 1);
+                showToast('Event removed from Best', 'ok', 1500);
+            } else {
+                // Add
+                bestEventsState.push(event);
+                showToast('Event added to Best', 'ok', 1500);
+            }
+            saveBestEvents();
+
+            // Re-render the current events view to update the button icon instantly
+            if ($('section-events') && !$('section-events').classList.contains('hidden')) {
+                applyFilter(); // This will re-render the event list with updated buttons
+            }
+        }
+
+        // NEW: Function to clear all best events
+        function clearAllBestEvents() {
+            bestEventsState = [];
+            saveBestEvents();
+            renderBestSection();
+            showToast('All Best Events cleared.', 'ok', 1500);
+        }
+
+        /* --- Render functions --- */
+        function renderSources() {
+            const s = loadSources();
+            const cfg = $('config-list'); cfg.innerHTML = '';
+
+            if (Object.keys(s).length === 0) {
+                s['Vg'] = 'https://jsonhosting.com/api/json/c3cdf9e5';
+                s['Broc'] = 'https://jsonhosting.com/api/json/2ea29f9a';
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(s));
+            }
+
+            Object.keys(s).forEach(name => {
+                const url = s[name];
+
+                // config row (used by all source management now)
+                const row = document.createElement('div'); row.className = 'config-row';
+                row.dataset.sourceName = name; // Helpful for debugging/targeting
+
+                // NEW: Div to hold name and URL with Copy URL button
+                const configContentDiv = document.createElement('div'); configContentDiv.className = 'config-content';
+
+                const nameSpan = document.createElement('span');
+                nameSpan.textContent = name;
+
+                const urlSpan = document.createElement('span');
+                urlSpan.textContent = url;
+
+                configContentDiv.appendChild(nameSpan);
+                configContentDiv.appendChild(urlSpan);
+
+                // Copy URL button
+                const copyUrlBtn = document.createElement('button');
+                copyUrlBtn.textContent = '';
+                copyUrlBtn.title = 'Copy URL';
+                copyUrlBtn.style.background = 'transparent';
+                copyUrlBtn.style.border = 'none';
+                copyUrlBtn.style.cursor = 'pointer';
+                copyUrlBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#4f46e5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1"></rect></svg>`;
+                copyUrlBtn.onclick = () => copyToClipboard(url);
+
+                if (!url.startsWith('local://')) {
+                    configContentDiv.appendChild(copyUrlBtn);
+                }
+
+                const right = document.createElement('div'); right.className = 'cfg-actions';
+
+                // NEW: View button - this now handles source selection logic
+                const vBtn = document.createElement('button'); vBtn.textContent = 'View'; vBtn.onclick = () => selectSource(name);
+
+                const eBtn = document.createElement('button'); eBtn.textContent = 'Edit'; eBtn.onclick = () => editSource(name);
+                const dBtn = document.createElement('button'); dBtn.textContent = 'Delete'; dBtn.onclick = () => removeSource(name);
+
+                // NEW: Download button
+                const dlBtn = document.createElement('button'); dlBtn.textContent = 'Download';
+                if (url.startsWith('http')) {
+                    // Assuming the raw URL is the one without the proxy for downloading
+                    dlBtn.onclick = () => downloadSource(name, url);
+                } else {
+                    dlBtn.disabled = true;
+                    dlBtn.style.opacity = 0.5;
+                    dlBtn.title = 'Only remote sources can be downloaded.';
+                }
+
+                [vBtn, eBtn, dBtn, dlBtn].forEach(b => {
+                    b.style.border = '1px solid #e6edf3';
+                    b.style.borderRadius = '6px';
+                    b.style.background = 'white';
+                    b.style.cursor = b.disabled ? 'default' : 'pointer';
                 });
 
-                const showToast = (title, message, isError) => {
-                    toast.value.title = title;
-                    toast.value.message = message;
-                    toast.value.isError = isError;
-                    toast.value.isVisible = true;
+                // Highlight the active source's button
+                if (activeSource === name) {
+                    // FIX: Must wrap 'var(...)' in quotes when assigning to style property in JS
+                    vBtn.style.background = 'var(--accent)';
+                    vBtn.style.color = 'var(--indigo)';
+                    vBtn.style.fontWeight = 600;
+                }
 
-                    setTimeout(() => {
-                        toast.value.isVisible = false;
-                    }, 4000); // Toast disappears after 4 seconds
-                };
+                right.appendChild(vBtn);
+                right.appendChild(eBtn);
+                right.appendChild(dBtn);
+                right.appendChild(dlBtn);
 
-                // --- ACCORDION STATE ---
-                const activeAccordionIndex = ref(0);
-                const accordionItems = [
-                    { title: 'Section 1: Modern Design', content: 'This template leverages utility-first design principles for fast, responsive development.' },
-                    { title: 'Section 2: Component-Based', content: 'Vue components ensure reusability and maintainability across the application.' },
-                    { title: 'Section 3: Framework Integration', content: 'Using Tailwind and Vue 3 provides a powerful and modern stack.' },
-                ];
-                const toggleAccordion = (index) => {
-                    activeAccordionIndex.value = activeAccordionIndex.value === index ? null : index;
-                };
+                row.appendChild(configContentDiv);
+                row.appendChild(right);
+                cfg.appendChild(row);
+            });
+        }
 
-                // --- TABS STATE ---
-                const activeTabIndex = ref(0);
-                const tabs = [
-                    { name: 'Dashboard', content: '<p>The **Dashboard** content focuses on key performance indicators (KPIs) and recent activity.</p>' },
-                    { name: 'Settings', content: '<p>The **Settings** tab contains configuration options for the user profile and application.</p>' },
-                    { name: 'Activity Log', content: '<p>The **Activity Log** shows a chronological list of user actions and system events.</p>' },
-                ];
+        function renderTabsForGrouped(g) {
+            const tabs = $('month-tabs'); tabs.innerHTML = '';
+            const months = Object.keys(g);
+            if (!months.length) { $('no-events').style.display = 'block'; return; } else $('no-events').style.display = 'none';
 
-                return {
-                    // Toast
-                    toast,
-                    showToast,
-                    // Accordion
-                    accordionItems,
-                    activeAccordionIndex,
-                    toggleAccordion,
-                    // Tabs
-                    tabs,
-                    activeTabIndex,
-                };
+            months.forEach((m, i) => {
+                const btn = document.createElement('div');
+                btn.className = 'month-tab';
+                btn.style.background = TAB_COLORS[i % TAB_COLORS.length];
+                btn.textContent = m;
+                btn.onclick = () => openMonth(m);
+                btn.dataset.month = m;
+                tabs.appendChild(btn);
+            });
+        }
+
+        /**
+         * Renders grouped events into a container. This is used for both 'Events' and 'Best' sections.
+         * @param {Object} g - The grouped and sorted events.
+         * @param {string} containerId - The ID of the container element (e.g., 'month-content', 'best-events-list').
+         * @param {string} prefixId - Prefix for month and day panel IDs (e.g., 'panel_', 'best_panel_').
+         * @param {boolean} showMonthHeader - If true, displays the month name before event days.
+         */
+        function renderGroupedEvents(g, containerId, prefixId, showMonthHeader = false) {
+            const container = $(containerId); container.innerHTML = '';
+
+            Object.keys(g).forEach(month => {
+                const monthId = prefixId + safeId(month);
+
+                // Add month header for the 'Best' section where all months are displayed
+                if (showMonthHeader) {
+                    const monthHeader = document.createElement('h4');
+                    monthHeader.textContent = month;
+                    monthHeader.style.cssText = 'margin:12px 0 6px 0; font-size:14px; font-weight:700; color:var(--indigo); border-bottom:1px solid #eef2f8; padding-bottom:4px;'; // MODIFIED: Reduced size/margin
+                    container.appendChild(monthHeader);
+                }
+
+                const panel = document.createElement('div'); panel.id = monthId;
+                panel.dataset.monthName = month; // Used by openMonth for 'Events' section
+
+                Object.keys(g[month]).sort((a, b) => parseEventDate(a) - parseEventDate(b)).forEach(day => {
+                    const dateObj = parseEventDate(day);
+                    const frenchDay = getFrenchDay(dateObj);
+                    const displayDate = day.replace(new RegExp(`^${frenchDay}\\s+`, 'i'), '');
+
+                    const color = DAY_COLORS[frenchDay] || OTHER_DAY_COLOR;
+
+                    const dayDiv = document.createElement('div'); dayDiv.className = 'day-card';
+                    const head = document.createElement('div'); head.className = 'day-head';
+                    head.style.background = color;
+
+                    head.innerHTML = `<div><strong>${frenchDay} ${displayDate}</strong> <span style="color:#1f2937;font-size:12px;font-weight:500">(${g[month][day].length})</span></div>`;
+
+                    head.onclick = () => toggleDayCollapse(dayDiv, monthId);
+
+                    const content = document.createElement('div'); content.className = 'day-content';
+                    content.style.display = 'none'; // Always start collapsed
+
+                    // add events
+                    g[month][day].forEach(ev => {
+
+                        const directionsAddress = (ev.Adresse || '').trim() + (ev.Ville ? ', ' + ev.Ville : '');
+                        const directionsUrl = getDirectionsUrl(directionsAddress);
+
+                        const metaAddress = (ev.Adresse || '').trim().replace(/,\s*$/g, '');
+
+                        const evRow = document.createElement('div'); evRow.className = 'event-row';
+
+                        // 0. Best Button (Add/Remove)
+                        const isBest = isEventInBest(ev);
+                        const bestBtn = document.createElement('button'); bestBtn.className = 'best-toggle-btn';
+                        bestBtn.title = isBest ? 'Remove from Best' : 'Add to Best';
+                        bestBtn.style.flexShrink = 0;
+                        bestBtn.style.marginRight = '4px';
+
+                        // Use Plus/Minus icons
+                        bestBtn.innerHTML = isBest
+                            ? `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line></svg>` // Minus/Red
+                            : `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>`; // Plus/Green
+
+                        bestBtn.onclick = () => toggleBestEvent(ev);
+
+
+                        // 1. Copy Address button
+                        const clipBtn = document.createElement('button'); clipBtn.className = 'copy-addr-btn'; clipBtn.title = 'Copy address';
+                        clipBtn.style.flexShrink = 0;
+                        clipBtn.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#4f46e5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1"></rect></svg>`;
+                        clipBtn.onclick = () => copyToClipboard(metaAddress);
+
+                        // 2. Copy Event Link button
+                        const linkBtn = document.createElement('button'); linkBtn.className = 'copy-link-btn'; linkBtn.title = 'Copy event link';
+                        linkBtn.style.flexShrink = 0;
+                        linkBtn.style.marginLeft = '4px';
+                        linkBtn.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#4f46e5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.74 1.74"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>`;
+                        linkBtn.onclick = () => copyToClipboard(ev.ManifLink || window.location.href);
+
+                        // 3. Event Body (Title + Meta)
+                        const body = document.createElement('div'); body.style.flex = '1';
+
+                        // Title Format: Titre (Ville) 
+                        const newTitleText = `${ev.Titre || 'Sans titre'} ${ev.Ville ? `(${ev.Ville})` : ''}`.trim();
+
+                        const title = document.createElement('a');
+                        title.href = ev.ManifLink || '#';
+                        title.target = '_blank';
+                        title.className = 'title';
+                        title.innerHTML = highlightText(newTitleText, activeFilterQuery);
+
+                        // Exposants logic and formatting
+                        const exposantCount = parseInt(ev.Exposants) || 0;
+                        let exposantDisplay = '';
+                        let exposantColor = 'inherit';
+
+                        if (exposantCount > 0) {
+                            if (exposantCount >= 300) {
+                                exposantColor = '#dc2626'; // Red
+                            } else if (exposantCount >= 101) {
+                                exposantColor = '#f59e0b'; // Orange
+                            }
+                            exposantDisplay = `<span style="font-weight:700; color:${exposantColor};">${exposantCount}</span> | `;
+                        }
+
+                        // Meta Format: <Exposant Count> | Adresse
+                        const metaText = `${exposantDisplay}${metaAddress}`;
+
+                        const meta = document.createElement('div');
+                        meta.className = 'meta';
+                        meta.innerHTML = highlightText(metaText, activeFilterQuery);
+
+                        body.appendChild(title);
+                        body.appendChild(meta);
+
+                        // 4. Directions icon button
+                        const mapBtn = document.createElement('button'); mapBtn.className = 'map-btn'; mapBtn.title = 'Itinéraire Google Maps';
+                        mapBtn.style.flexShrink = 0;
+                        mapBtn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4f46e5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"></polygon></svg>`;
+                        mapBtn.onclick = () => window.open(directionsUrl, '_blank');
+
+                        evRow.appendChild(bestBtn);
+                        evRow.appendChild(clipBtn);
+                        evRow.appendChild(linkBtn);
+                        evRow.appendChild(body);
+                        evRow.appendChild(mapBtn);
+                        content.appendChild(evRow);
+                    });
+
+                    dayDiv.appendChild(head); dayDiv.appendChild(content);
+                    panel.appendChild(dayDiv);
+                });
+
+                container.appendChild(panel);
+            });
+
+        }
+
+        function updateEventUI(r, g, name) {
+            renderTabsForGrouped(g);
+            renderGroupedEvents(g, 'month-content', 'panel_', false); // Use new generic renderer
+            updateEventsHeader();
+            renderSources(); // Re-render source list in config to update active button
+
+            // Open the first month by default if not already set, or re-open the current one
+            const months = Object.keys(g);
+            if (months.length > 0) {
+                const monthToOpen = currentMonthTab && months.includes(currentMonthTab) ? currentMonthTab : months[0];
+                openMonth(monthToOpen);
             }
-        }).mount('#app');
+
+            // Clear map on data change (will be re-rendered on map section display)
+            if (mapInstance) {
+                mapMarkers.forEach(m => m.remove());
+                mapMarkers = [];
+            }
+        }
+
+        function renderBestSection() {
+            const container = $('best-events-list');
+            const noEvents = $('no-best-events');
+            const bestEvents = loadBestEvents();
+
+            if (bestEvents.length === 0) {
+                container.innerHTML = '';
+                noEvents.style.display = 'block';
+                return;
+            }
+
+            noEvents.style.display = 'none';
+
+            // Group and sort best events by date
+            const grouped = sortGrouped(groupEvents(bestEvents));
+
+            // Use the same renderer as the events section, but show month headers
+            renderGroupedEvents(grouped, 'best-events-list', 'best_panel_', true);
+        }
+
+
+        function openMonth(month) {
+            currentMonthTab = month;
+
+            document.querySelectorAll('.month-tab').forEach(tb => tb.classList.remove('active'));
+            const tab = [...document.querySelectorAll('.month-tab')].find(x => x.textContent === month);
+            if (tab) tab.classList.add('active');
+
+            // Find all month panels in the events section
+            document.querySelectorAll('#month-content > div').forEach(el => {
+                el.style.display = 'none';
+            });
+
+            const panel = document.querySelector(`#month-content > div[data-month-name="${month}"]`);
+
+            if (panel) {
+                panel.style.display = 'block';
+                // Automatically open the first day of the newly opened month panel
+                const firstDayCard = panel.querySelector('.day-card');
+                if (firstDayCard) {
+                    const firstDayContent = firstDayCard.querySelector('.day-content');
+                    if (firstDayContent) {
+                        firstDayContent.style.display = 'block';
+                    }
+                }
+            }
+        }
+
+        /* --- Sources storage CRUD & Download --- */
+        function loadSources() {
+            try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); } catch { return {}; }
+        }
+        function saveSources(obj) { localStorage.setItem(STORAGE_KEY, JSON.stringify(obj)); renderSources(); }
+
+        function saveSource(e) {
+            e.preventDefault();
+            const name = $('src-name').value.trim();
+            const url = $('src-url').value.trim();
+            if (!name || !url) return false;
+            const s = loadSources(); s[name] = url; saveSources(s);
+            $('src-name').value = ''; $('src-url').value = '';
+            showToast('Source saved', 'ok');
+            selectSource(name);
+            return false;
+        }
+        function resetForm() { $('src-name').value = ''; $('src-url').value = ''; }
+        function editSource(name) {
+            const s = loadSources();
+            if (!s[name]) return showToast('Source not found', 'err');
+            $('src-name').value = name; $('src-url').value = s[name];
+        }
+        function removeSource(name) {
+            const s = loadSources(); if (!s[name]) return;
+            delete s[name]; saveSources(s);
+            delete sourceCounts[name];
+            updateFooterStatus();
+            showToast('Source removed', 'ok');
+            if (activeSource === name) {
+                const remainingSources = Object.keys(loadSources());
+                if (remainingSources.length > 0) {
+                    selectSource(remainingSources[0]);
+                } else {
+                    activeSource = null;
+                    updateEventUI([], {}, null);
+                }
+            }
+        }
+
+        /**
+         * Downloads the raw JSON from the source URL.
+         * @param {string} name - Source name.
+         * @param {string} url - Source URL.
+         */
+        async function downloadSource(name, url) {
+            progressStart();
+
+            try {
+                const res = await fetch(url);
+                if (!res.ok) throw new Error('HTTP ' + res.status);
+
+                const blob = await res.blob();
+
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = `${name}_events_${new Date().toISOString().substring(0, 10)}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(a.href);
+
+                progressSetOk();
+                showToast(`Successfully downloaded ${name}.json`, 'ok', 3000);
+
+            } catch (err) {
+                progressSetErr();
+                showToast(`Download failed for ${name}. Check URL or CORS settings.`, 'err', 5000);
+                console.error(`Download failed for ${name}:`, err);
+            }
+        }
+
+
+        /* --- Core Fetching Logic --- */
+        async function fetchSource(name, url, isInitialLoad = false) {
+            const fetchUrl = url.startsWith('http') ? PROXY + encodeURIComponent(url) : url;
+
+            if (isInitialLoad) progressStart();
+
+            console.log(`[DEBUG: ${name}] Starting fetch from: ${fetchUrl}`);
+
+            try {
+                const res = await fetch(fetchUrl);
+                if (!res.ok) throw new Error('HTTP ' + res.status);
+
+                const text = await res.text();
+                const json = JSON.parse(text);
+
+                const r = [];
+                extractEvents(json, r);
+                const g = sortGrouped(groupEvents(r));
+
+                const now = new Date().toISOString();
+                lastUpdate = now;
+
+                // Store raw event data with coordinates pre-populated later by renderMap
+                sourceCounts[name] = { count: r.length, loadedAt: now, status: 'ok', rawEvents: r, grouped: g, mappedEvents: [] };
+
+                if (activeSource === name) {
+                    updateEventUI(r, g, name);
+                }
+
+                updateFooterStatus();
+                if (isInitialLoad) progressSetOk();
+
+                if (r.length > 0 && activeSource === name) {
+                    showToast(`Events data loaded. Total: ${r.length} events.`, 'ok', 3000);
+                }
+
+                // NEW: Check for Best Events calculation only for remote sources
+                if (url.startsWith('http')) checkAllSourcesLoaded();
+
+            } catch (err) {
+                sourceCounts[name] = { count: 0, loadedAt: new Date().toISOString(), status: 'error', rawEvents: [], grouped: {} };
+                const errorMessage = `Load error for ${name} (Proxy/CORS/JSON parse failure).`;
+
+                if (activeSource === name) {
+                    updateEventUI([], {}, name);
+                }
+
+                updateFooterStatus();
+                if (isInitialLoad) progressSetErr();
+                if (activeSource === name) showToast(errorMessage, 'err');
+                console.error(`Fetch failed for ${name}:`, err);
+
+                // NEW: Check for Best Events calculation even on error for remote sources
+                if (url.startsWith('http')) checkAllSourcesLoaded();
+            }
+        }
+
+        async function selectSource(name) {
+            const all = loadSources();
+            if (!all[name]) return showToast('Source not found', 'err');
+
+            // If we are already on this source and data is loaded, just update UI
+            if (activeSource === name && sourceCounts[name]?.status === 'ok') {
+                updateEventUI(sourceCounts[name].rawEvents, sourceCounts[name].grouped, name);
+                if (mapLibsLoaded) updateMapForWeekend(currentMapWeekend);
+                return;
+            }
+
+            activeSource = name;
+            renderSources(); // Re-render config list to highlight active source
+            updateEventsHeader();
+
+            $('filter-input').value = '';
+            activeFilterQuery = '';
+            applyFilter(); // Reset filter/search UI
+
+            const loadedData = sourceCounts[name];
+
+            if (loadedData && loadedData.status === 'ok') {
+                updateEventUI(loadedData.rawEvents, loadedData.grouped, name);
+                if (mapLibsLoaded) updateMapForWeekend(currentMapWeekend);
+            } else if (all[name].startsWith('local://') && loadedData) {
+                // Already loaded local file data, but maybe not rendered yet
+                updateEventUI(loadedData.rawEvents, loadedData.grouped, name);
+            } else {
+                updateEventUI([], {}, name);
+            }
+            updateFooterStatus();
+
+            if (all[name].startsWith('http')) {
+                await fetchSource(name, all[name], true);
+            }
+        }
+
+        /* --- Map Weekend Selection Logic --- */
+        function getNextSaturday(date = new Date()) {
+            const d = new Date(date);
+            d.setHours(0, 0, 0, 0); // Normalize time
+            const day = d.getDay(); // 0 = Sunday, 6 = Saturday
+            let daysToAdd = (6 - day + 7) % 7; // Days until next Saturday (0 if today is Saturday)
+
+            if (day === 0) { // If today is Sunday, add 6 days to get next Saturday
+                daysToAdd = 6;
+            } else if (day === 6) { // If today is Saturday, use today
+                daysToAdd = 0;
+            }
+
+            d.setDate(d.getDate() + daysToAdd);
+
+            // If the calculated Saturday is today, check if it's already past (for cases where user opens on Saturday evening)
+            if (daysToAdd === 0 && d.getDay() === 6 && d.getTime() < new Date().getTime()) {
+                d.setDate(d.getDate() + 7); // Go to next week
+            }
+
+            return d;
+        }
+
+        function findNextWeekends(count = 5) {
+            let saturday = getNextSaturday(new Date());
+
+            const weekends = [];
+            for (let i = 0; i < count; i++) {
+                const sunday = new Date(saturday);
+                sunday.setDate(saturday.getDate() + 1);
+
+                // Format: Sat Day/Mon - Sun Day/Mon/Year
+                const label = `${saturday.toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' })} - ${sunday.toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' })}`;
+                const value = `${saturday.getTime()}|${sunday.getTime()}`;
+
+                weekends.push({ label, value, start: saturday, end: sunday });
+
+                saturday.setDate(saturday.getDate() + 7); // Move to next Saturday
+            }
+            return weekends;
+        }
+
+        function filterEventsByWeekend(weekendValue, events) {
+            if (!events || !weekendValue) return [];
+
+            const [startMs, endMs] = weekendValue.split('|').map(Number);
+            if (isNaN(startMs) || isNaN(endMs)) return [];
+
+            const startDate = new Date(startMs);
+            const endDate = new Date(endMs);
+
+            return events.filter(e => {
+                const eventDate = parseEventDate(e.ManifDate);
+                if (!eventDate) return false;
+
+                // Simple date comparison without time (as eventDate is normalized)
+                const isSameDay = (d1, d2) => d1.getFullYear() === d2.getFullYear() && d1.getMonth() === d2.getMonth() && d1.getDate() === d2.getDate();
+
+                return isSameDay(eventDate, startDate) || isSameDay(eventDate, endDate);
+            });
+        }
+
+        function populateWeekendDropdown() {
+            availableWeekends = findNextWeekends();
+            const select = $('weekend-select');
+            select.innerHTML = ''; // Clear existing options
+
+            if (!currentMapWeekend) {
+                currentMapWeekend = availableWeekends[0]?.value; // Set default to next weekend
+            }
+
+            availableWeekends.forEach(wk => {
+                const option = document.createElement('option');
+                option.value = wk.value;
+                option.textContent = wk.label;
+                select.appendChild(option);
+            });
+
+            if (currentMapWeekend) {
+                select.value = currentMapWeekend;
+            }
+        }
+
+        function updateMapFromDropdown() {
+            currentMapWeekend = $('weekend-select').value;
+            updateMapForWeekend(currentMapWeekend);
+        }
+
+        function updateMapForWeekend(weekendValue) {
+            if (!mapInstance) return;
+
+            // Clear existing markers
+            mapMarkers.forEach(m => m.remove()); // Use remove() for Mapbox Marker
+            mapMarkers = [];
+
+            if (!activeSource || !sourceCounts[activeSource] || sourceCounts[activeSource].status !== 'ok') {
+                mapInstance.flyTo({ center: [1.888334, 46.603354], zoom: 5.5 });
+                showToast(`No data available for the active source to map.`, 'err', 3000);
+                return;
+            }
+
+            const eventsToMap = filterEventsByWeekend(weekendValue, sourceCounts[activeSource].rawEvents);
+
+            if (eventsToMap.length === 0) {
+                mapInstance.flyTo({ center: [1.888334, 46.603354], zoom: 5.5 });
+                showToast(`No events found for this weekend in the selected source.`, 'err', 3000);
+                return;
+            }
+
+            renderMap(eventsToMap); // renderMap will handle the actual marker placement
+        }
+
+        /* --- Map Geocoding and Rendering (Mapbox GL JS) --- */
+        async function geocodeAddress(address) {
+            if (geocodingCache[address]) return geocodingCache[address];
+
+            try {
+                const url = NOMINATIM_URL + '&q=' + encodeURIComponent(address);
+                const res = await fetch(url);
+                const json = await res.json();
+
+                if (json && json.length > 0) {
+                    const result = { lat: parseFloat(json[0].lat), lon: parseFloat(json[0].lon) };
+                    geocodingCache[address] = result;
+                    return result;
+                }
+            } catch (error) {
+                console.error('Geocoding error:', error);
+            }
+            geocodingCache[address] = null;
+            return null;
+        }
+
+        function initMap() {
+            if (mapInstance) {
+                // If map exists, just update content
+                updateMapForWeekend(currentMapWeekend);
+                return;
+            }
+
+            if (!mapboxgl.accessToken || mapboxgl.accessToken === 'YOUR_MAPBOX_ACCESS_TOKEN_HERE') {
+                return showToast("Mapbox access token is missing or not set. Please replace the placeholder in the code.", 'err', 8000);
+            }
+
+            try {
+                // Initialize mapboxgl map instance
+                mapInstance = new mapboxgl.Map({
+                    container: 'map-container', // container ID
+                    style: 'mapbox://styles/mapbox/streets-v12', // style URL
+                    center: [1.888334, 46.603354], // Center of France (lon, lat)
+                    zoom: 5.5 // Default zoom level
+                });
+
+                // Add navigation control (zoom and rotation)
+                mapInstance.addControl(new mapboxgl.NavigationControl(), 'top-left');
+
+                // If a source is active, render its data immediately
+                if (activeSource && sourceCounts[activeSource] && sourceCounts[activeSource].status === 'ok') {
+                    updateMapForWeekend(currentMapWeekend);
+                }
+
+                // Fix map tile rendering issue in hidden containers by forcing an update
+                setTimeout(() => mapInstance.resize(), 100);
+
+            } catch (e) {
+                console.error("Map initialization failed. Did you replace 'YOUR_MAPBOX_ACCESS_TOKEN_HERE'?", e);
+                showToast("Map failed to load. Check Mapbox token or console for errors.", 'err', 5000);
+            }
+        }
+
+        async function renderMap(events) {
+            if (!mapInstance || !events) return;
+
+            // Clear existing markers (Mapbox needs to manage the layer/element)
+            mapMarkers.forEach(m => m.remove());
+            mapMarkers = [];
+
+            const coordinates = [];
+            let mappedCount = 0;
+
+            for (const ev of events) {
+                const fullAddress = `${ev.Adresse || ''}, ${ev.Ville || ''}, France`.trim();
+                if (!fullAddress) continue;
+
+                const coords = await geocodeAddress(fullAddress); // Geocoding is independent
+
+                if (coords) {
+                    mappedCount++;
+
+                    // Mapbox uses [lon, lat]
+                    const lon = coords.lon;
+                    const lat = coords.lat;
+                    coordinates.push([lon, lat]);
+
+                    const titleText = `${ev.Titre || 'Sans titre'} (${ev.Ville || '?'})`;
+                    const metaText = `${ev.Exposants || '?'} | ${ev.Adresse || '?'}`;
+
+                    const directionsAddress = (ev.Adresse || '').trim() + (ev.Ville ? ', ' + ev.Ville : '');
+                    const directionsUrl = getDirectionsUrl(directionsAddress);
+
+                    // Create a DOM element for the marker's popup
+                    const popup = new mapboxgl.Popup({ offset: 25, closeButton: false })
+                        .setHTML(`
+                            <div style="max-width:250px;">
+                                <h4 style="font-weight:700; font-size:14px; margin:0; line-height: 1.2;">${titleText}</h4>
+                                <p style="font-size:11px; color:#666; margin:2px 0;">${ev.ManifDate}</p>
+                                <p style="font-size:12px; margin:0 0 6px 0;">${metaText}</p>
+                                <a href="${ev.ManifLink || '#'}" target="_blank" style="color:var(--indigo); font-size:12px; font-weight:600;">Voir l'événement</a>
+                                <span style="margin: 0 4px; color: #ccc;">|</span>
+                                <a href="${directionsUrl}" target="_blank" style="color:#0ea5a4; font-size:12px; font-weight:600;">Itinéraire</a>
+                            </div>
+                        `);
+
+                    const marker = new mapboxgl.Marker({ color: '#4f46e5' })
+                        .setLngLat([lon, lat])
+                        .setPopup(popup)
+                        .addTo(mapInstance);
+
+                    mapMarkers.push(marker);
+                }
+            }
+
+            if (coordinates.length > 0) {
+                // Calculate bounds to fit all markers
+                const bounds = new mapboxgl.LngLatBounds(coordinates[0], coordinates[0]);
+                for (const coord of coordinates) {
+                    bounds.extend(coord);
+                }
+                mapInstance.fitBounds(bounds, {
+                    padding: { top: 50, bottom: 50, left: 50, right: 50 },
+                    maxZoom: 14 // Don't zoom in too close
+                });
+            } else {
+                // Default view: Center of France
+                mapInstance.flyTo({ center: [1.888334, 46.603354], zoom: 5.5 });
+            }
+
+            if (mappedCount > 0) {
+                showToast(`${mappedCount} events were mapped successfully!`, 'ok', 4000);
+            } else if (events.length > 0) {
+                showToast(`Could not geocode and map any of the ${events.length} selected events.`, 'err', 4000);
+            }
+        }
+
+        /* --- Nav / Route / Config --- */
+        function showSection(name) {
+            // Main sections in the 'card'
+            ['events', 'map', 'best'].forEach(s => {
+                const el = document.getElementById('section-' + s);
+                if (!el) return;
+                if (s === name) {
+                    el.classList.remove('hidden');
+                    el.removeAttribute('aria-hidden');
+                }
+                else {
+                    el.classList.add('hidden');
+                    el.setAttribute('aria-hidden', 'true');
+                }
+            });
+
+            // MODIFIED: Logic for sliding the config panel down
+            const configSection = $('section-config');
+            if (configSection && !configSection.classList.contains('hidden')) {
+                configSection.style.bottom = '-100%'; // Start slide down
+                $('toggle-config-btn').textContent = 'Config';
+                setTimeout(() => {
+                    configSection.classList.add('hidden');
+                    configSection.setAttribute('aria-hidden', 'true');
+                }, 300); // Wait for transition
+            }
+
+            document.querySelectorAll('.topnav button').forEach(b => b.classList.remove('active'));
+            const navBtn = document.getElementById('nav-' + name);
+            if (navBtn) navBtn.classList.add('active');
+
+            if (name === 'map') {
+                populateWeekendDropdown();
+                initMap();
+
+                // Fix map tile rendering issue in hidden containers by forcing an update
+                if (mapInstance) {
+                    setTimeout(() => mapInstance.resize(), 100);
+                }
+            } else if (name === 'best') {
+                renderBestSection();
+            }
+        }
+
+        function openRoute(filename) {
+            window.open(filename, '_blank');
+        }
+
+        // MODIFIED: Logic for sliding the config panel up/down
+        function toggleConfig() {
+            const configSection = $('section-config');
+            const btn = $('toggle-config-btn');
+            const isHidden = configSection.classList.contains('hidden');
+
+            if (isHidden) {
+                configSection.classList.remove('hidden');
+                configSection.removeAttribute('aria-hidden');
+                btn.textContent = 'Close Config';
+                // Slide up from bottom
+                setTimeout(() => {
+                    configSection.style.bottom = '0';
+                }, 10);
+            } else {
+                // Slide down
+                configSection.style.bottom = '-100%';
+                btn.textContent = 'Config';
+                setTimeout(() => {
+                    configSection.classList.add('hidden');
+                    configSection.setAttribute('aria-hidden', 'true');
+                }, 300); // Must wait for transition to finish
+            }
+        }
+
+
+        /* --- Local file handling (input) --- */
+        function handleFiles(fileList) {
+            if (!fileList || fileList.length === 0) return showToast('No files selected', 'err');
+            const files = Array.from(fileList).filter(f => f.name.toLowerCase().endsWith('.json'));
+            if (!files.length) {
+                $('json-file-input').value = '';
+                return showToast('No JSON files found', 'err');
+            }
+
+            progressStart();
+            const sourceName = 'Local';
+
+            const accum = [];
+            let processed = 0;
+
+            files.forEach(f => {
+                const r = new FileReader();
+                r.onload = e => {
+                    try {
+                        const js = JSON.parse(e.target.result);
+                        extractEvents(js, accum);
+                    } catch (ex) {
+                        console.warn('invalid json', f.name, ex);
+                        showToast(`Invalid JSON in ${f.name}`, 'err', 4000);
+                    }
+                    processed++;
+                    if (processed === files.length) {
+
+                        const s = loadSources();
+                        s[sourceName] = 'local://loaded:' + files.length;
+                        saveSources(s);
+
+                        activeSource = sourceName;
+
+                        const g = sortGrouped(groupEvents(accum));
+
+                        const now = new Date().toISOString();
+                        lastUpdate = now;
+
+                        sourceCounts[sourceName] = { count: accum.length, loadedAt: now, status: 'ok', rawEvents: accum, grouped: g, mappedEvents: [] };
+
+                        updateEventUI(accum, g, sourceName);
+                        updateFooterStatus();
+                        if (mapLibsLoaded) updateMapForWeekend(currentMapWeekend);
+
+                        progressSetOk();
+                        showToast(`Local files loaded. Found ${accum.length} events.`, 'ok');
+                    }
+                };
+                r.onerror = e => {
+                    processed++;
+                    console.error('File read error', f.name, e);
+                    showToast(`File read error for ${f.name}`, 'err', 4000);
+                    if (processed === files.length) {
+                        progressSetErr();
+                        updateFooterStatus();
+                    }
+                }
+                r.readAsText(f);
+            });
+            $('json-file-input').value = '';
+        }
+
+        /* --- File input wiring --- */
+        $('json-file-input').addEventListener('change', ev => {
+            handleFiles(ev.target.files);
+        });
+
+        /* --- Clipboard --- */
+        function copyToClipboard(txt) {
+            navigator.clipboard.writeText(txt).then(() => {
+                showToast('Copied to clipboard', 'ok');
+            }).catch(err => {
+                console.error('Could not copy text: ', err);
+                const textarea = document.createElement('textarea');
+                textarea.value = txt;
+                document.body.appendChild(textarea);
+                textarea.focus();
+                textarea.select();
+                try {
+                    document.execCommand('copy');
+                    showToast('Copied to clipboard (fallback)', 'ok');
+                } catch (e) {
+                    showToast('Copy failed', 'err');
+                }
+                document.body.removeChild(textarea);
+            });
+        }
+
+        /* --- Search Collapse/Clear Logic --- */
+
+        function toggleSearch(forceOpen) {
+            const wrapper = $('search-input-wrapper');
+            const input = $('filter-input');
+            const toggleBtn = $('search-toggle-btn');
+            const clearBtn = $('search-clear-btn');
+            const isCollapsed = wrapper.classList.contains('search-collapsed');
+
+            // Do nothing on mobile (screen width <= 900px)
+            if (window.innerWidth <= 900) return;
+
+            if (forceOpen && isCollapsed) {
+                // Expand
+                wrapper.classList.remove('search-collapsed');
+                toggleBtn.style.display = 'none';
+                input.focus();
+                if (input.value.trim()) clearBtn.style.display = 'block';
+            } else if (!forceOpen && !isCollapsed) {
+                // Collapse only if input is empty
+                if (!input.value.trim()) {
+                    wrapper.classList.add('search-collapsed');
+                    toggleBtn.style.display = 'block';
+                    clearBtn.style.display = 'none';
+                }
+            }
+        }
+
+        function clearSearch() {
+            const input = $('filter-input');
+            input.value = '';
+            applyFilter(); // Triggers re-render with no filter
+            // Collapse only on desktop
+            if (window.innerWidth > 900) {
+                toggleSearch(false);
+            }
+        }
+
+
+        /* --- Filter --- */
+        // MODIFIED: applyFilter to use accent-insensitive search
+        function applyFilter() {
+            const q = $('filter-input').value.trim();
+            activeFilterQuery = q; // Keep the original query for highlighting
+
+            const normalizedQuery = normalizeString(q); // Use normalized query for filtering
+
+            // Toggle the clear button visibility
+            const clearBtn = $('search-clear-btn');
+            if (clearBtn) clearBtn.style.display = q ? 'block' : 'none';
+
+            // If empty on desktop, collapse after a slight delay for better UX
+            if (!q && window.innerWidth > 900) {
+                setTimeout(() => toggleSearch(false), 300);
+            }
+
+
+            const loadedData = sourceCounts[activeSource];
+            if (!loadedData || loadedData.status !== 'ok') {
+                renderTabsForGrouped({});
+                renderGroupedEvents({}, 'month-content', 'panel_', false);
+                return;
+            }
+
+            const rawEventsToFilter = loadedData.rawEvents;
+
+            const filtered = rawEventsToFilter.filter(e =>
+                normalizeString(e.Titre).includes(normalizedQuery) ||
+                normalizeString(e.Adresse).includes(normalizedQuery) ||
+                normalizeString(e.Ville).includes(normalizedQuery)
+            );
+
+            const g = sortGrouped(groupEvents(filtered));
+
+            renderTabsForGrouped(g);
+            renderGroupedEvents(g, 'month-content', 'panel_', false);
+
+            // Re-select the month to open the corresponding tab/panel
+            const months = Object.keys(g);
+            if (months.length > 0) {
+                const monthToOpen = currentMonthTab && months.includes(currentMonthTab) ? currentMonthTab : months[0];
+                openMonth(monthToOpen);
+            }
+        }
+
+        /* --- Init --- */
+        function init() {
+            renderSources();
+            const s = loadSources();
+            const sourceNames = Object.keys(s);
+
+            // NEW: Initialize weekend data
+            availableWeekends = findNextWeekends();
+            currentMapWeekend = availableWeekends[0]?.value;
+
+            // NEW: Count only remote sources for initial loading check
+            initialSourcesCount = sourceNames.filter(name => s[name].startsWith('http')).length;
+
+            // 1. Initialize sourceCounts structure and start fetching all remote sources
+            sourceNames.forEach(name => {
+                sourceCounts[name] = { count: 0, loadedAt: new Date().toISOString(), status: 'idle', rawEvents: [], grouped: {}, mappedEvents: [] };
+                if (!s[name].startsWith('local://') && name !== sourceNames[0]) {
+                    // Fetch all *other* remote sources in the background. The first one will be fetched by selectSource.
+                    fetchSource(name, s[name], false);
+                }
+            });
+
+            // 2. Select the first source to display its events immediately (will trigger fetchSource for the first remote source)
+            if (sourceNames.length > 0) {
+                selectSource(sourceNames[0]);
+            } else {
+                updateEventsHeader();
+                updateEventUI([], {}, null);
+            }
+
+            // Load initial state for the best events, even if the section is not visible
+            bestEventsState = loadBestEvents();
+
+            updateFooterStatus();
+
+            // NEW: Set initial search state based on screen size
+            if (window.innerWidth > 900) {
+                // Start collapsed on desktop
+                $('search-input-wrapper').classList.add('search-collapsed');
+                $('search-toggle-btn').style.display = 'block';
+            } else {
+                // Start expanded on mobile
+                $('search-input-wrapper').classList.remove('search-collapsed');
+                $('search-toggle-btn').style.display = 'none';
+                $('search-input-wrapper').style.width = '100%';
+                $('search-input-wrapper').style.position = 'static';
+                $('search-input-wrapper').style.border = '1px solid #e6edf3';
+            }
+        }
+        init();
+
     </script>
 </body>
 
