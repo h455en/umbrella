@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Route Planner</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        'primary-blue': '#4F46E5',
+                        'secondary-gray': '#F9FAFB',
+                        'rain-red': '#DC2626',
+                        'rain-green': '#10B981',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Styles pour rendre la police encore plus petite et compacte */
+        body {
+            font-size: 0.75rem;
+        }
+
+        .text-lg {
+            font-size: 1rem;
+        }
+
+        .text-xl {
+            font-size: 1.25rem;
+        }
+
+        .input-container input,
+        .input-container textarea,
+        #arrivalDate,
+        #arrivalTime,
+        #travelMode {
+            font-size: 0.75rem !important;
+            padding: 4px;
+        }
+
+        header span,
+        header strong {
+            font-size: 0.75rem !important;
+        }
+
+        .w-3 {
+            width: 0.75rem;
+        }
+
+        .h-3 {
+            height: 0.75rem;
+        }
+
+        .input-action-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            position: absolute;
+            padding: 2px;
+            border-radius: 4px;
+            transition: background-color 0.2s ease;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .copy-btn {
+            right: 4px;
+        }
+
+        .clear-btn {
+            right: 25px;
+            z-index: 10;
+        }
+
+        .form-group-textarea .clear-btn {
+            right: 4px;
+            top: 6px;
+            transform: translateY(0);
+        }
+
+        #startAddress,
+        #destinationAddress {
+            padding-right: 55px;
+        }
+
+        #otherStops {
+            padding-right: 30px;
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .favorite-location-item {
+            position: relative;
+            padding: 2px 6px;
+            display: flex;
+            align-items: center;
+        }
+
+        .favorite-location-item span,
+        .route-link {
+            font-size: 0.75rem;
+        }
+
+        .fav-icon-container {
+            display: flex;
+            align-items: center;
+            flex-shrink: 0;
+            margin-right: 6px;
+        }
+
+        .fav-icon-container button {
+            position: static;
+            transform: none;
+            padding: 2px;
+            margin-right: 4px;
+        }
+
+        .favorite-location-item .address-text {
+            flex-grow: 1;
+            word-break: break-word;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 p-2 sm:p-4 flex justify-center text-gray-700 font-sans min-h-screen">
+    <div class="w-full max-w-7xl">
+        <header
+            class="flex justify-between items-center p-1.5 mb-2 bg-white rounded-lg shadow-sm border border-gray-200">
+            <div id="weatherInfo" class="flex items-center text-xs font-medium text-gray-600 space-x-1.5">
+                <span>Chargement météo...</span>
+            </div>
+
+            <div id="dateInfo" class="flex items-center text-xs font-medium text-gray-600">
+                <svg class="w-3 h-3 mr-1 text-indigo-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                    fill="currentColor">
+                    <path
+                        d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7zm-2-5v11h14V5H5z" />
+                </svg>
+                <span>Chargement date...</span>
+            </div>
+        </header>
+
+        <div class="flex flex-col gap-4 lg:flex-row lg:items-start max-w-6xl mx-auto">
+
+            <div class="bg-white rounded-lg shadow-lg p-4 lg:p-5 flex-1">
+                <h1 class="text-xl font-bold text-center text-gray-800 mb-3">Route Planner</h1>
+
+                <div class="form-group flex items-center gap-2 mb-3">
+                    <svg class="w-3.5 h-3.5 text-green-500 flex-shrink-0" xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24" fill="currentColor">
+                        <path
+                            d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5s2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
+                    </svg>
+                    <div class="input-container w-full relative">
+                        <input type="text" id="startAddress" placeholder="Adresse de départ (p. ex., Paris, France)"
+                            class="w-full border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500 transition duration-150">
+                        <button class="input-action-btn clear-btn text-gray-500 hover:bg-gray-100"
+                            data-target-id="startAddress">
+                            <svg class="w-3.5 h-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                                fill="currentColor">
+                                <path
+                                    d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
+                            </svg>
+                        </button>
+                        <button class="input-action-btn copy-btn text-gray-500 hover:bg-gray-100"
+                            data-target-id="startAddress">
+                            <svg class="w-3.5 h-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                                fill="currentColor">
+                                <path
+                                    d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-group flex items-center gap-2 mb-3">
+                    <svg class="w-3.5 h-3.5 text-red-500 flex-shrink-0" xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24" fill="currentColor">
+                        <path
+                            d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5s2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
+                    </svg>
+                    <div class="input-container w-full relative">
+                        <input type="text" id="destinationAddress"
+                            placeholder="Adresse de destination (p. ex., Rome, Italie)"
+                            class="w-full border border-gray-300 rounded-md focus:ring-red-500 focus:border-red-500 transition duration-150">
+                        <button class="input-action-btn clear-btn text-gray-500 hover:bg-gray-100"
+                            data-target-id="destinationAddress">
+                            <svg class="w-3.5 h-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                                fill="currentColor">
+                                <path
+                                    d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
+                            </svg>
+                        </button>
+                        <button class="input-action-btn copy-btn text-gray-500 hover:bg-gray-100"
+                            data-target-id="destinationAddress">
+                            <svg class="w-3.5 h-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                                fill="currentColor">
+                                <path
+                                    d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-group-textarea mb-4">
+                    <label for="otherStops" class="block mb-1 text-gray-800 font-medium">Stops (un par
+                        ligne)</label>
+                    <div class="input-container relative">
+                        <textarea id="otherStops" placeholder="p. ex.,
+Lyon, France
+Genève, Suisse
+Milan, Italie" class="w-full border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 transition duration-150"></textarea>
+                        <button class="input-action-btn clear-btn text-gray-500 hover:bg-gray-100"
+                            data-target-id="otherStops">
+                            <svg class="w-3.5 h-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                                fill="currentColor">
+                                <path
+                                    d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="mt-4 pt-3 border-t border-gray-200">
+                    <h2 class="text-lg font-semibold text-gray-800 mb-2">Options de Route</h2>
+
+                    <div class="flex flex-col sm:flex-row gap-3">
+                        <div class="flex-1">
+                            <label for="travelMode" class="block text-gray-800 font-medium mb-1">Mode de
+                                Transport</label>
+                            <select id="travelMode"
+                                class="w-full border border-gray-300 rounded-md py-1.5 focus:ring-indigo-500 focus:border-indigo-500 transition duration-150">
+                                <option value="driving">Voiture</option>
+                                <option value="transit">Transports en commun</option>
+                            </select>
+                        </div>
+
+                        <div id="arrivalOptions" class="flex-1 grid grid-cols-2 gap-3" style="display:none;">
+                            <div class="col-span-1">
+                                <label for="arrivalDate" class="block text-gray-800 font-medium mb-1">Date
+                                    d'arrivée</label>
+                                <input type="date" id="arrivalDate"
+                                    class="w-full border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 transition duration-150">
+                            </div>
+                            <div class="col-span-1">
+                                <label for="arrivalTime" class="block text-gray-800 font-medium mb-1">Heure
+                                    d'arrivée</label>
+                                <input type="time" id="arrivalTime"
+                                    class="w-full border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 transition duration-150">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <button
+                    class="btn-generate w-full py-2 mt-4 bg-indigo-600 text-white font-bold rounded-md shadow-xl hover:bg-indigo-700 transition-colors duration-200 focus:outline-none focus:ring-4 focus:ring-indigo-500 focus:ring-opacity-50"
+                    id="generateBtn">
+                    <span id="buttonText">Générer la feuille de route</span>
+                </button>
+
+                <div class="mt-5 pt-3 border-t border-gray-200">
+                    <h2 class="text-lg font-semibold text-gray-800 mb-2">Favorites</h2>
+                    <div class="space-y-2" id="favoritesList">
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-secondary-gray rounded-lg shadow-inner p-3 flex-1 lg:sticky lg:top-3 max-h-[85vh] overflow-y-auto"
+                id="routePlan" style="display:none;">
+                <h2 class="text-lg font-semibold text-gray-800 mb-3 text-center">Votre feuille de route</h2>
+                <ol id="routeList" class="space-y-3 list-none pl-0">
+                </ol>
+                <div id="noRouteMessage" class="text-center text-gray-500 mt-3" style="display:none;">
+                    L'itinéraire s'affichera ici.
+                </div>
+            </div>
+
+        </div>
+        <footer class="mt-3 p-1 text-center text-gray-500 text-xs flex justify-center items-center gap-1 w-full">
+            <svg class="w-3 h-3 text-indigo-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                fill="currentColor">
+                <path
+                    d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm.8 14.2L11 11.4V7h2v5.19L14.7 14.7l-1.9 1.5z" />
+            </svg>
+            <span>Durée d'arrêt min. :</span>
+            <input type="number" id="minDuration" value="30"
+                class="w-10 text-right p-0.5 text-xs border border-gray-300 rounded-md">
+            <span>min</span>
+        </footer>
+    </div>
+
+    <div class="message-box fixed top-3 left-1/2 -translate-x-1/2 bg-yellow-300 text-gray-900 px-3 py-1.5 rounded-lg shadow-xl text-xs opacity-0 transition-opacity duration-500 z-50"
+        id="messageBox"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // =========================================================================
+            // 1. CONFIGURATION CENTRALISÉE (FACILE À MODIFIER)
+            // =========================================================================
+            const addressConfig = {
+                start: "5 Rue Victor Considérant, 75014 Paris", // Adresse de DÉPART
+                destination: "2 Place d'Aligre, 75012 Paris",  // Adresse de DESTINATION
+                initialStops: [ // Arrêts initiaux pour la démo
+                    "3 Rue Bordier, 93300 Aubervilliers",
+                    "Place de la Bastille, Paris"
+                ],
+                favorites: [
+                    "3 rue bordier 93300 aubervilliers",
+                    "12 rue godefroy cavaignac 75011 paris",
+                    "8 boulevard de Belleville 75020 Paris",
+                    "10 rue des Pyrénées 75020 Paris"
+                ]
+            };
+
+            const dhuhrTimes = {
+                "November_2025": {
+                    "2": "12:34",
+                    "9": "12:34",
+                    "16": "12:35",
+                    "23": "12:37",
+                    "30": "12:39"
+                },
+                "December_2025": {
+                    "7": "12:42",
+                    "14": "12:45",
+                    "21": "12:49",
+                    "28": "12:52"
+                },
+                "January_2025": {
+                    "4": "12:56",
+                    "11": "12:58",
+                    "18": "13:01",
+                    "25": "13:03"
+                }
+            };
+            // =========================================================================
+            // FIN DE LA CONFIGURATION
+            // =========================================================================
+
+
+            const generateBtn = document.getElementById('generateBtn');
+            const buttonText = document.getElementById('buttonText');
+            const startAddress = document.getElementById('startAddress');
+            const destinationAddress = document.getElementById('destinationAddress');
+            const otherStops = document.getElementById('otherStops');
+            const travelModeSelect = document.getElementById('travelMode');
+            const arrivalOptionsDiv = document.getElementById('arrivalOptions');
+            const arrivalDateInput = document.getElementById('arrivalDate');
+            const arrivalTimeInput = document.getElementById('arrivalTime');
+            const routePlanSection = document.getElementById('routePlan');
+            const routeList = document.getElementById('routeList');
+            const messageBox = document.getElementById('messageBox');
+            const dateInfo = document.getElementById('dateInfo');
+            const weatherInfo = document.getElementById('weatherInfo');
+            const favoritesList = document.getElementById('favoritesList');
+            const monthsAbbr = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc'];
+
+            const PARIS_LAT = 48.8566;
+            const PARIS_LON = 2.3522;
+            const CIRCLE_NUMBERS = ['⓪', '①', '②', '③', '④', '⑤', '⑥', '⑦', '⑧', '⑨', '⑩'];
+
+            // Fonction pour afficher/masquer les options d'arrivée
+            const toggleArrivalOptions = () => {
+                if (travelModeSelect.value === 'transit') {
+                    arrivalOptionsDiv.style.display = 'grid';
+                } else {
+                    arrivalOptionsDiv.style.display = 'none';
+                    // Réinitialiser les champs pour éviter d'envoyer des paramètres inutiles en mode driving
+                    // On ne réinitialise pas la valeur car on la garde pour l'initialisation.
+                    // arrivalDateInput.value = ''; 
+                    // arrivalTimeInput.value = '';
+                }
+            };
+
+            travelModeSelect.addEventListener('change', toggleArrivalOptions);
+
+            const addFavoriteToStops = (address) => {
+                const textarea = otherStops;
+                const currentValue = textarea.value;
+                const cursorPosition = textarea.selectionStart;
+
+                let newValue = currentValue;
+                const newLine = (currentValue.length > 0 && currentValue[currentValue.length - 1] !== '\n') ? '\n' : '';
+
+                if (cursorPosition >= currentValue.length) {
+                    newValue += newLine + address;
+                } else if (cursorPosition === 0) {
+                    newValue = address + '\n' + currentValue;
+                } else {
+                    const before = currentValue.substring(0, cursorPosition);
+                    const after = currentValue.substring(cursorPosition);
+                    const prefix = (before.length > 0 && !before.endsWith('\n')) ? '\n' : '';
+                    const suffix = (after.length > 0 && !after.startsWith('\n')) ? '\n' : '';
+                    newValue = before + prefix + address + suffix + after;
+                }
+
+                newValue = newValue.replace(/\n{3,}/g, '\n\n').trim();
+
+                textarea.value = newValue;
+                showMessage(`"${address}" ajouté aux stops!`, 'success');
+
+                textarea.focus();
+                const newCursorPosition = (newValue.lastIndexOf(address) + address.length);
+                textarea.setSelectionRange(newCursorPosition, newCursorPosition);
+            };
+
+
+            const initializeAddresses = () => {
+                startAddress.value = addressConfig.start;
+                destinationAddress.value = addressConfig.destination;
+                otherStops.value = addressConfig.initialStops.join('\n'); // Initialisation des stops
+
+                // Initialisation des champs de date/heure 
+                const nextSaturday = getWeekendDates().saturday;
+                const dateString = nextSaturday.toISOString().split('T')[0];
+                arrivalDateInput.value = dateString;
+                arrivalTimeInput.value = "15:00"; // Heure d'arrivée par défaut (3 PM)
+
+                // Création dynamique de la liste des favoris 
+                favoritesList.innerHTML = '';
+                addressConfig.favorites.forEach((address, index) => {
+                    const favId = `favAddress_${index}`;
+                    const favItem = document.createElement('div');
+                    favItem.className = 'relative bg-secondary-gray rounded-md favorite-location-item';
+
+                    favItem.innerHTML = `
+                        <div class="fav-icon-container">
+                            <button class="input-action-btn copy-btn text-gray-500 hover:bg-gray-300"
+                                data-target-id="${favId}">
+                                <svg class="w-3.5 h-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                                    fill="currentColor">
+                                    <path
+                                        d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z" />
+                                </svg>
+                            </button>
+
+                            <button class="input-action-btn add-to-stops-btn text-indigo-500 hover:bg-gray-300" 
+                                    data-address="${address}">
+                                <svg class="w-3.5 h-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <span class="font-medium text-gray-700 address-text" id="${favId}">${address}</span>
+                    `;
+                    favoritesList.appendChild(favItem);
+                });
+            };
+
+            const showMessage = (message, type = 'warning') => {
+                messageBox.textContent = message;
+
+                let bgColor = '';
+                let textColor = 'text-gray-900';
+
+                if (type === 'success') {
+                    bgColor = 'bg-green-500';
+                    textColor = 'text-white';
+                } else if (type === 'warning') {
+                    bgColor = 'bg-yellow-300';
+                } else if (type === 'error') {
+                    bgColor = 'bg-red-500';
+                    textColor = 'text-white';
+                }
+
+                messageBox.className = `message-box fixed top-3 left-1/2 -translate-x-1/2 px-3 py-1.5 rounded-lg shadow-xl text-xs opacity-100 transition-opacity duration-500 z-50 ${bgColor} ${textColor}`;
+
+                setTimeout(() => {
+                    messageBox.classList.remove('opacity-100');
+                    messageBox.classList.add('opacity-0');
+                }, 3000);
+            };
+
+            const copyText = (elementId) => {
+                const element = document.getElementById(elementId);
+                let textToCopy;
+                if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
+                    textToCopy = element.value;
+                    element.select();
+                    document.execCommand('copy');
+                } else {
+                    textToCopy = element.textContent.trim();
+                    navigator.clipboard.writeText(textToCopy);
+                }
+                showMessage('Adresse copiée!', 'success');
+            };
+
+            const clearText = (elementId) => {
+                const element = document.getElementById(elementId);
+                element.value = '';
+                showMessage('Champ effacé!', 'success');
+            };
+
+
+            // =========================================================================
+            // FONCTION DE GENERATION DE LIEN CORRIGÉE (Gère la simplification pour Transit + Heure)
+            // =========================================================================
+            const generateFullMapsLink = (origin, destination, stops, mode, arrivalDate, arrivalTime) => {
+                let routePath;
+                let queryParams = `?travelmode=${mode}`;
+
+                if (mode === 'driving') {
+                    // Mode Voiture : inclut tous les stops
+                    const fullRouteParts = [origin.trim(), ...stops.map(stop => stop.trim()), destination.trim()]
+                        .map(encodeURIComponent);
+                    routePath = fullRouteParts.join('/');
+
+                } else if (mode === 'transit') {
+                    // Mode Transit avec heure d'arrivée : ne doit inclure que Départ et Arrivée pour la stabilité.
+                    routePath = `${encodeURIComponent(origin.trim())}/${encodeURIComponent(destination.trim())}`;
+
+                    // Ajouter les contraintes de temps si spécifiées
+                    if (arrivalDate && arrivalTime) {
+
+                        // Format Google Maps pour la date: MM/DD/YYYY
+                        const [year, month, day] = arrivalDate.split('-');
+                        const mapsDate = `${month}/${day}/${year}`;
+                        const mapsTime = arrivalTime;
+
+                        // Ajout des paramètres d'arrivée
+                        queryParams += `&dir_action=navigate&ttype=arr&date=${encodeURIComponent(mapsDate)}&time=${encodeURIComponent(mapsTime)}`;
+                    }
+                } else {
+                    // Fallback
+                    routePath = `${encodeURIComponent(origin.trim())}/${encodeURIComponent(destination.trim())}`;
+                }
+
+
+                return `https://www.google.com/maps/dir/${routePath}${queryParams}`;
+            };
+
+            // --- Fonctions Météo et Dhuhr (inchangées) ---
+            const getWeekendDates = () => {
+                const today = new Date();
+                const dayOfWeek = today.getDay();
+                let daysUntilSaturday = dayOfWeek === 6 ? 0 : 6 - dayOfWeek;
+                let daysUntilSunday = daysUntilSaturday + 1;
+                if (dayOfWeek === 0 && today.getHours() >= 14) {
+                    daysUntilSaturday += 7;
+                    daysUntilSunday += 7;
+                }
+                const saturday = new Date(today.getFullYear(), today.getMonth(), today.getDate() + daysUntilSaturday);
+                const sunday = new Date(today.getFullYear(), today.getMonth(), today.getDate() + daysUntilSunday);
+                return { saturday, sunday };
+            };
+
+            const getDhuhrTime = (sundayDate) => {
+                const year = sundayDate.getFullYear();
+                const monthIndex = sundayDate.getMonth();
+                const day = sundayDate.getDate();
+                const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+                const monthKey = `${monthNames[monthIndex]}_${year}`;
+                if (dhuhrTimes[monthKey] && dhuhrTimes[monthKey][day]) {
+                    return dhuhrTimes[monthKey][day];
+                }
+                return "N/A";
+            };
+
+            const fetchWeatherAndDhuhr = async () => {
+                const { saturday, sunday } = getWeekendDates();
+                const satDate = saturday.getDate();
+                const sunDate = sunday.getDate();
+                const monthAbbr = monthsAbbr[saturday.getMonth()];
+                const year = saturday.getFullYear();
+
+                dateInfo.innerHTML = `
+                    <svg class="w-3 h-3 mr-1 text-indigo-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7zm-2-5v11h14V5H5z"/>
+                    </svg>
+                    <span>WE ${satDate}/${sunDate} ${monthAbbr} ${year}</span>
+                `;
+
+                const dhuhrTime = getDhuhrTime(sunday);
+                const startDay = saturday.toISOString().split('T')[0];
+                const endDay = sunday.toISOString().split('T')[0];
+                const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${PARIS_LAT}&longitude=${PARIS_LON}&hourly=precipitation_probability&start_date=${startDay}&end_date=${endDay}&timezone=Europe%2FParis`;
+
+                let rainProbSat = 'N/A';
+                let rainProbSun = 'N/A';
+
+                try {
+                    const response = await fetch(weatherUrl);
+                    if (!response.ok) throw new Error('API Météo non disponible');
+                    const data = await response.json();
+
+                    const hourlyData = data.hourly.precipitation_probability;
+                    const hourlyTime = data.hourly.time;
+
+                    const maxProbForDay = (date, data, time) => {
+                        let maxP = -1;
+                        for (let h = 9; h <= 14; h++) {
+                            const targetTime = new Date(date);
+                            targetTime.setHours(h, 0, 0, 0);
+                            const targetTimeString = targetTime.toISOString().slice(0, 13) + ":00";
+                            const index = time.indexOf(targetTimeString);
+                            if (index !== -1 && hourlyData[index] !== undefined) {
+                                if (hourlyData[index] > maxP) {
+                                    maxP = hourlyData[index];
+                                }
+                            }
+                        }
+                        return maxP > -1 ? maxP : 0;
+                    };
+
+                    rainProbSat = maxProbForDay(saturday, hourlyData, hourlyTime);
+                    rainProbSun = maxProbForDay(sunday, hourlyData, hourlyTime);
+
+                } catch (error) {
+                    console.error("Erreur de récupération météo :", error);
+                }
+
+                const getRainColor = (prob) => {
+                    if (prob === 'N/A') return 'text-gray-600';
+                    if (prob > 50) return 'text-rain-red';
+                    if (prob >= 0 && prob <= 40) return 'text-rain-green';
+                    return 'text-yellow-600';
+                };
+
+                const satColor = getRainColor(rainProbSat);
+                const sunColor = getRainColor(rainProbSun);
+
+                const rainIconSvg = `
+                    <svg class="w-3 h-3 text-blue-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M19.35 10.04C18.91 7.21 16.59 5 13.75 5c-2.4 0-4.44 1.72-4.91 4.02C5.9 9.69 4 11.81 4 14c0 3.31 2.69 6 6 6h8c2.21 0 4-1.79 4-4 0-2.09-1.54-3.8-3.65-3.96zM17 14c0 1.66-1.34 3-3 3s-3-1.34-3-3 1.34-3 3-3 3 1.34 3 3z"/>
+                    </svg>
+                `;
+                const dhuhrIconSvg = `
+                    <svg class="w-3 h-3 text-indigo-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm.8 14.2L11 11.4V7h2v5.19L14.7 14.7l-1.9 1.5z" />
+                    </svg>
+                `;
+
+                weatherInfo.innerHTML = `
+                    ${rainIconSvg}
+                    <span>Sam: <strong class="${satColor}">${rainProbSat}${rainProbSat !== 'N/A' ? '%' : ''}</strong></span>
+                    <span>Dim: <strong class="${sunColor}">${rainProbSun}${rainProbSun !== 'N/A' ? '%' : ''}</strong></span>
+                    <span class="text-gray-300">|</span>
+                    ${dhuhrIconSvg}
+                    <span>Dhuhr (Dim): <strong class="text-indigo-600">${dhuhrTime}</strong></span>
+                `;
+            };
+
+            // =========================================================================
+            // Initialisation et Event Listeners
+            // =========================================================================
+
+            const attachDynamicListeners = () => {
+                document.querySelectorAll('.copy-btn').forEach(button => {
+                    button.addEventListener('click', () => {
+                        copyText(button.getAttribute('data-target-id'));
+                    });
+                });
+                document.querySelectorAll('.clear-btn').forEach(button => {
+                    button.addEventListener('click', () => {
+                        clearText(button.getAttribute('data-target-id'));
+                    });
+                });
+                document.querySelectorAll('.add-to-stops-btn').forEach(button => {
+                    button.addEventListener('click', () => {
+                        const address = button.getAttribute('data-address');
+                        addFavoriteToStops(address);
+                    });
+                });
+            };
+
+            // 1. Initialiser les adresses, y compris les champs de temps 
+            initializeAddresses();
+
+            // 2. Initialisation de l'en-tête (Dhuhr et Météo)
+            fetchWeatherAndDhuhr();
+
+            // 3. Attacher les listeners (y compris le toggle initial)
+            attachDynamicListeners();
+            toggleArrivalOptions(); // Afficher/Masquer au chargement
+
+            generateBtn.addEventListener('click', () => {
+                const start = startAddress.value.trim();
+                const destination = destinationAddress.value.trim();
+                const stops = otherStops.value.split('\n').map(stop => stop.trim()).filter(stop => stop !== '');
+                const mode = travelModeSelect.value;
+                const arrivalDate = arrivalDateInput.value;
+                const arrivalTime = arrivalTimeInput.value;
+
+                if (!start || !destination) {
+                    showMessage('Veuillez saisir une adresse de départ et de destination.', 'warning');
+                    return;
+                }
+
+                // Validation supplémentaire pour le mode Transit
+                if (mode === 'transit' && (!arrivalDate || !arrivalTime)) {
+                    showMessage("Veuillez saisir la **date et l'heure d'arrivée** souhaitées pour les transports en commun.", 'warning');
+                    return;
+                }
+
+                // Show loading state
+                buttonText.textContent = 'Génération en cours...';
+                generateBtn.classList.add('opacity-75', 'cursor-not-allowed');
+                generateBtn.disabled = true;
+
+                // Clear previous list
+                routeList.innerHTML = '';
+
+                // Build the full route array for iteration
+                const fullRoute = [start, ...stops, destination];
+
+
+                // =========================================================================
+                // 1. LIEN GLOBAL (GÈRE VOITURE OU TRANSIT + HEURE)
+                // =========================================================================
+                const fullRouteLink = generateFullMapsLink(start, destination, stops, mode, arrivalDate, arrivalTime);
+
+                const liGlobal = document.createElement('li');
+                liGlobal.className = 'text-sm text-gray-800 font-semibold mb-3 border-b border-indigo-200 pb-3';
+
+                const linkGlobal = document.createElement('a');
+
+                // Adapter le style du bouton au mode de transport
+                let buttonStyle = 'bg-red-600 hover:bg-red-700';
+                let buttonTextContent = 'Itinéraire COMPLET (Voiture)';
+                let buttonIcon = `
+                    <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm.2-7H5.3l1.45-4.38c.18-.54.67-.92 1.25-.92h7.6c.58 0 1.07.38 1.25.92L18.7 9z"/>
+                    </svg>
+                `;
+
+                if (mode === 'transit') {
+                    buttonStyle = 'bg-blue-600 hover:bg-blue-700';
+                    buttonTextContent = 'Itinéraire COMPLET (Transit)';
+                    buttonIcon = `
+                        <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5s2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5zm0-8.5c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6 2.69-6 6-6zM11 11h2v-2h-2zm0 4h2v-2h-2z"/>
+                        </svg>
+                    `;
+                    if (arrivalDate && arrivalTime) {
+                        buttonTextContent += ` (Arrivée avant ${arrivalTime})`;
+                    } else {
+                        buttonTextContent += ` (Départ immédiat)`;
+                    }
+
+                    // Avertissement pour le mode transit avec plusieurs stops
+                    if (stops.length > 0) {
+                        const liWarning = document.createElement('li');
+                        liWarning.className = 'text-xs text-red-600 bg-red-100 p-2 rounded-md mb-2';
+                        liWarning.innerHTML = '⚠️ **Attention:** Les transports en commun ne supportent pas les arrêts intermédiaires dans l\'URL avec contrainte horaire. Seuls le départ et l\'arrivée sont inclus.';
+                        routeList.appendChild(liWarning);
+                    }
+                }
+
+                linkGlobal.className = `route-link block p-3 text-white font-bold rounded-md transition-colors shadow-lg text-center flex items-center justify-center space-x-2 ${buttonStyle}`;
+                linkGlobal.href = fullRouteLink;
+                linkGlobal.target = "_blank";
+                linkGlobal.innerHTML = buttonIcon + `<span>${buttonTextContent}</span>`;
+
+                liGlobal.appendChild(linkGlobal);
+                routeList.appendChild(liGlobal);
+
+
+                // =========================================================================
+                // 2. ÉTAPES DÉTAILLÉES (Transit par défaut, sans heure/date)
+                // =========================================================================
+                if (fullRoute.length > 2) {
+                    const liDivider = document.createElement('li');
+                    liDivider.className = 'text-center text-gray-500 text-xs my-3 uppercase tracking-wider';
+                    liDivider.textContent = '--- Étapes détaillées (Transit par défaut) ---';
+                    routeList.appendChild(liDivider);
+
+                    for (let i = 0; i < fullRoute.length - 1; i++) {
+                        const legStart = fullRoute[i];
+                        const legEnd = fullRoute[i + 1];
+
+                        const li = document.createElement('li');
+                        li.className = 'text-xs text-gray-800';
+
+                        const link = document.createElement('a');
+                        link.className = 'route-link block p-2 bg-white rounded-md hover:bg-gray-100 transition-colors shadow-sm';
+
+                        // Les étapes individuelles sont générées en mode transit SANS heure/date pour rester simple.
+                        link.href = generateFullMapsLink(legStart, legEnd, [], 'transit', null, null);
+                        link.target = "_blank";
+
+                        let legContent = '';
+                        let stepNumberText = '';
+
+                        if (i === 0) {
+                            stepNumberText = '<span class="font-bold text-green-600">DÉPART: </span>';
+                            legContent += stepNumberText;
+                        } else {
+                            const circleNumber = CIRCLE_NUMBERS[i] || `[${i}]`;
+                            stepNumberText = `<span class="font-bold text-indigo-600">${circleNumber} ÉTAPE : </span>`;
+                            legContent += stepNumberText;
+                        }
+
+                        const destinationText = (i === fullRoute.length - 2) ?
+                            `<span class="font-bold text-red-600">${legEnd}</span>` :
+                            legEnd;
+
+                        legContent += `${legStart} <span class="text-gray-400 font-normal mx-0.5">→</span> ${destinationText}`;
+
+
+                        link.innerHTML = legContent;
+
+                        li.appendChild(link);
+                        routeList.appendChild(li);
+                    }
+                }
+
+                // Reset button state
+                buttonText.textContent = 'Générer la feuille de route';
+                generateBtn.classList.remove('opacity-75', 'cursor-not-allowed');
+                generateBtn.disabled = false;
+
+
+                // Show the route plan section
+                routePlanSection.style.display = 'block';
+                showMessage('Itinéraire généré et prêt!', 'success');
+            });
+        });
+    </script>
+</body>
+
+</html>
