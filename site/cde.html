@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu CDE</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 text-gray-900 flex flex-col min-h-screen font-sans">
+
+    <header class="border-b border-gray-100 py-3 px-6 bg-white">
+        <h1 class="text-[10px] font-semibold tracking-[0.2em] uppercase text-gray-400">Umbrella / Service CDE</h1>
+    </header>
+
+    <main class="flex-grow flex items-center justify-center p-6">
+        <div class="max-w-sm w-full bg-white border border-gray-200 shadow-sm rounded-xl p-10 text-center">
+            <div class="mb-4">
+                <span class="inline-block p-3 bg-gray-50 rounded-full mb-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="I9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                </span>
+                <h2 class="text-xl font-semibold text-gray-800">Menu de la cantine</h2>
+                <p class="text-sm text-gray-400 mt-1">Consultez le menu du jour</p>
+            </div>
+            
+            <div class="mt-8 flex flex-col gap-3">
+                <a href="./menu_cde_15_fev_2026.pdf" target="_blank" class="bg-black text-white text-sm font-medium py-3 px-6 rounded-lg hover:bg-gray-800 transition-all duration-200 shadow-lg shadow-black/10">
+                    Ouvrir le menu (PDF)
+                </a>
+                
+                <a href="./menu_cde_15_fev_2026.pdf" download class="flex items-center justify-center gap-2 text-xs text-gray-500 hover:text-black transition-colors py-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                    </svg>
+                    Télécharger le fichier
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <footer class="border-t border-gray-100 py-3 px-6 text-center bg-white">
+        <p class="text-[10px] text-gray-400 font-light italic">
+            Mise à jour automatique • 11:16
+        </p>
+    </footer>
+
+</body>
+</html>
