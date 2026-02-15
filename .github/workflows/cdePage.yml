@@ -1,0 +1,42 @@
+name: CDE PDF to Pages
+
+on:
+  schedule:
+    # Paris Time (UTC+1 Winter)
+    - cron: '0 8 * * 1' # Monday 09:00
+    - cron: '0 7 * * 4' # Thursday 08:00
+    - cron: '0 7 * * 5' # Friday 08:00
+  workflow_dispatch: # This enables the manual "Run workflow" button
+
+jobs:
+  deploy:
+    runs-on: windows-latest
+    permissions:
+      contents: write # Essential to allow the bot to push files to your repo
+    
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Execute PowerShell Script
+        shell: pwsh
+        run: tools/cde.ps1
+
+      - name: Check if files were generated
+        shell: pwsh
+        run: |
+          if (Test-Path "docs/cde.html") {
+              Write-Host "Success: cde.html found in docs/" -ForegroundColor Green
+          } else {
+              Write-Error "Error: cde.html was not generated!"
+              exit 1
+          }
+
+      - name: Commit and Push to GitHub Pages
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/*
+          # The '|| true' prevents the action from failing if there are no changes to commit
+          git commit -m "Update CDE Menu: ${{ env.ARTIFACT_NAME }}" || true
+          git push
