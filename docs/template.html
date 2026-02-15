@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu CDE</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 text-gray-900 flex flex-col min-h-screen font-sans">
+    <header class="border-b border-gray-200 py-2 px-4 bg-white">
+        <h1 class="text-xs font-light tracking-widest uppercase text-gray-400">Umbrella / CDE</h1>
+    </header>
+
+    <main class="flex-grow flex items-center justify-center p-6">
+        <div class="max-w-sm w-full bg-white border border-gray-100 shadow-sm rounded-lg p-8 text-center">
+            <h2 class="text-xl font-medium mb-1">Menu du Jour</h2>
+            <p class="text-sm text-gray-500 mb-6">{{FULL_DATE}}</p>
+            
+            <div class="flex flex-col gap-3">
+                <a href="./{{FILENAME}}" target="_blank" class="bg-black text-white text-sm py-2 px-4 rounded hover:bg-gray-800 transition">
+                    Ouvrir le PDF
+                </a>
+                <a href="./{{FILENAME}}" download class="text-xs text-gray-400 hover:text-black underline transition">
+                    Télécharger directement
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <footer class="border-t border-gray-200 py-2 px-4 text-center">
+        <p class="text-[10px] text-gray-300 italic">Dernière mise à jour : {{TIME}}</p>
+    </footer>
+</body>
+</html>
