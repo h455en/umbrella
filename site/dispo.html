@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Disponibilités après Prière - 2026</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: #f8fafc;
+            color: #1e2937;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+        header {
+            background: #1e2937;
+            color: white;
+            padding: 10px 16px;
+            font-size: 1rem;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .container {
+            max-width: 1100px;
+            margin: 20px auto;
+            padding: 0 15px;
+        }
+        h1 { 
+            text-align: center; 
+            margin: 15px 0 8px; 
+            font-size: 1.75rem; 
+        }
+        .subtitle { 
+            text-align: center; 
+            color: #64748b; 
+            margin-bottom: 20px; 
+        }
+
+        .date-controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        .date-controls button {
+            background: #2563eb;
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 1.4rem;
+            cursor: pointer;
+        }
+        .date-controls input[type="date"] {
+            padding: 10px 14px;
+            font-size: 1.05rem;
+            border-radius: 10px;
+            border: 1px solid #cbd5e1;
+        }
+
+        .prayer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+            gap: 14px;
+        }
+        .card {
+            background: white;
+            border-radius: 14px;
+            padding: 16px 18px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.07);
+        }
+        .card.next {
+            border: 2px solid #2563eb;
+            background: #f0f9ff;
+        }
+        .prayer-name {
+            font-size: 1.22rem;
+            font-weight: 600;
+            margin: 0 0 8px 0;
+        }
+        .prayer-time {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #334155;
+            margin-bottom: 12px;
+        }
+        .kpi {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 14px;
+            border-radius: 12px;
+            margin: 8px 0;
+            font-weight: 600;
+        }
+        .kpi-from { background: #ecfdf5; color: #0f766e; }
+        .kpi-until { background: #f0f9ff; color: #1e40af; }
+        .kpi-label { font-size: 0.85rem; font-weight: 500; }
+        .kpi-value { font-size: 1.32rem; font-weight: 700; }
+        .remaining {
+            font-size: 0.9rem;
+            color: #64748b;
+            text-align: center;
+            margin-top: 4px;
+        }
+        .friday-note {
+            margin-top: 12px;
+            padding: 8px;
+            background: #fefce8;
+            color: #854d0e;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+
+        .settings {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            box-shadow: 0 -4px 25px rgba(0,0,0,0.18);
+            padding: 24px;
+            border-radius: 24px 24px 0 0;
+            transform: translateY(100%);
+            transition: transform 0.4s ease;
+            z-index: 200;
+        }
+        .settings.open { transform: translateY(0); }
+        .settings-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 2rem;
+            cursor: pointer;
+            color: #64748b;
+        }
+        .footer-bar {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #2563eb;
+            color: white;
+            padding: 13px 30px;
+            border-radius: 50px;
+            box-shadow: 0 6px 20px rgba(37,99,235,0.35);
+            font-weight: 600;
+            cursor: pointer;
+            z-index: 150;
+        }
+    </style>
+</head>
+<body>
+    <header><span id="currentTime"></span></header>
+
+    <div class="container">
+        <h1>Disponibilités après Prière</h1>
+        <p class="subtitle">Avril — Décembre 2026</p>
+
+        <div class="date-controls">
+            <button onclick="prevDay()">←</button>
+            <input type="date" id="datePicker" onchange="loadSelectedDate()">
+            <button onclick="nextDay()">→</button>
+        </div>
+
+        <div class="prayer-grid" id="prayerGrid"></div>
+    </div>
+
+    <!-- Settings -->
+    <div class="settings" id="settingsPanel">
+        <div class="settings-header">
+            <h2>Paramètres</h2>
+            <button class="close-btn" onclick="toggleSettings()">×</button>
+        </div>
+        
+        <div style="margin-bottom:24px;">
+            <label style="display:block; margin-bottom:8px; font-weight:500;">Délai après la prière</label>
+            <input type="number" id="delayAfter" value="30" min="0" max="180" style="width:110px; padding:12px; font-size:1.1rem;">
+            <span style="margin-left:10px;">minutes</span>
+        </div>
+
+        <div>
+            <label style="display:block; margin-bottom:8px; font-weight:500;">Temps avant la prière ("jusqu'à")</label>
+            <input type="number" id="delayBefore" value="15" min="0" max="60" style="width:110px; padding:12px; font-size:1.1rem;">
+            <span style="margin-left:10px;">minutes</span>
+        </div>
+
+        <div style="margin-top:32px; text-align:center;">
+            <button onclick="saveSettings()" style="padding:14px 40px; font-size:1.1rem;">Enregistrer</button>
+        </div>
+    </div>
+
+    <div class="footer-bar" onclick="toggleSettings()">⚙️ Paramètres</div>
+
+    <script>
+        // ================== TOUTES LES DONNÉES AVRIL À DÉCEMBRE 2026 ==================
+        const prayerData = {
+            // Avril 2026
+            "2026-04-01": {fajr:"05:38", dhuhr:"13:54", asr:"17:28", maghrib:"20:24", isha:"22:05"},
+            "2026-04-02": {fajr:"05:35", dhuhr:"13:54", asr:"17:29", maghrib:"20:26", isha:"22:07"},
+            "2026-04-03": {fajr:"05:33", dhuhr:"13:54", asr:"17:30", maghrib:"20:27", isha:"22:09"},
+            "2026-04-04": {fajr:"05:30", dhuhr:"13:54", asr:"17:30", maghrib:"20:29", isha:"22:11"},
+            "2026-04-05": {fajr:"05:28", dhuhr:"13:53", asr:"17:31", maghrib:"20:30", isha:"22:13"},
+            "2026-04-06": {fajr:"05:25", dhuhr:"13:53", asr:"17:32", maghrib:"20:32", isha:"22:15"},
+            "2026-04-07": {fajr:"05:22", dhuhr:"13:53", asr:"17:33", maghrib:"20:33", isha:"22:17"},
+            "2026-04-08": {fajr:"05:20", dhuhr:"13:52", asr:"17:33", maghrib:"20:35", isha:"22:19"},
+            "2026-04-09": {fajr:"05:17", dhuhr:"13:52", asr:"17:34", maghrib:"20:36", isha:"22:21"},
+            "2026-04-10": {fajr:"05:15", dhuhr:"13:52", asr:"17:35", maghrib:"20:38", isha:"22:23"},
+            "2026-04-11": {fajr:"05:12", dhuhr:"13:52", asr:"17:35", maghrib:"20:39", isha:"22:25"},
+            "2026-04-12": {fajr:"05:09", dhuhr:"13:51", asr:"17:36", maghrib:"20:41", isha:"22:27"},
+            "2026-04-13": {fajr:"05:07", dhuhr:"13:51", asr:"17:37", maghrib:"20:42", isha:"22:29"},
+            "2026-04-14": {fajr:"05:04", dhuhr:"13:51", asr:"17:37", maghrib:"20:44", isha:"22:31"},
+            "2026-04-15": {fajr:"05:01", dhuhr:"13:50", asr:"17:38", maghrib:"20:45", isha:"22:33"},
+            "2026-04-16": {fajr:"04:59", dhuhr:"13:50", asr:"17:39", maghrib:"20:47", isha:"22:36"},
+            "2026-04-17": {fajr:"04:56", dhuhr:"13:50", asr:"17:39", maghrib:"20:48", isha:"22:38"},
+            "2026-04-18": {fajr:"04:53", dhuhr:"13:50", asr:"17:40", maghrib:"20:50", isha:"22:40"},
+            "2026-04-19": {fajr:"04:51", dhuhr:"13:50", asr:"17:41", maghrib:"20:51", isha:"22:42"},
+            "2026-04-20": {fajr:"04:48", dhuhr:"13:49", asr:"17:41", maghrib:"20:53", isha:"22:44"},
+            "2026-04-21": {fajr:"04:45", dhuhr:"13:49", asr:"17:42", maghrib:"20:54", isha:"22:46"},
+            "2026-04-22": {fajr:"04:42", dhuhr:"13:49", asr:"17:42", maghrib:"20:56", isha:"22:49"},
+            "2026-04-23": {fajr:"04:40", dhuhr:"13:49", asr:"17:43", maghrib:"20:57", isha:"22:51"},
+            "2026-04-24": {fajr:"04:37", dhuhr:"13:49", asr:"17:44", maghrib:"20:59", isha:"22:53"},
+            "2026-04-25": {fajr:"04:34", dhuhr:"13:49", asr:"17:44", maghrib:"21:00", isha:"22:55"},
+            "2026-04-26": {fajr:"04:31", dhuhr:"13:48", asr:"17:45", maghrib:"21:02", isha:"22:58"},
+            "2026-04-27": {fajr:"04:28", dhuhr:"13:48", asr:"17:45", maghrib:"21:03", isha:"23:00"},
+            "2026-04-28": {fajr:"04:26", dhuhr:"13:48", asr:"17:46", maghrib:"21:05", isha:"23:03"},
+            "2026-04-29": {fajr:"04:23", dhuhr:"13:48", asr:"17:47", maghrib:"21:06", isha:"23:05"},
+            "2026-04-30": {fajr:"04:20", dhuhr:"13:48", asr:"17:47", maghrib:"21:07", isha:"23:08"},
+
+            // Mai 2026
+            "2026-05-01": {fajr:"04:17", dhuhr:"13:48", asr:"17:48", maghrib:"21:09", isha:"23:10"},
+            "2026-05-02": {fajr:"04:14", dhuhr:"13:48", asr:"17:48", maghrib:"21:10", isha:"23:12"},
+            "2026-05-03": {fajr:"04:12", dhuhr:"13:48", asr:"17:49", maghrib:"21:12", isha:"23:15"},
+            "2026-05-04": {fajr:"04:09", dhuhr:"13:47", asr:"17:49", maghrib:"21:13", isha:"23:17"},
+            "2026-05-05": {fajr:"04:06", dhuhr:"13:47", asr:"17:50", maghrib:"21:15", isha:"23:20"},
+            "2026-05-06": {fajr:"04:03", dhuhr:"13:47", asr:"17:51", maghrib:"21:16", isha:"23:22"},
+            "2026-05-07": {fajr:"04:00", dhuhr:"13:47", asr:"17:51", maghrib:"21:18", isha:"23:25"},
+            "2026-05-08": {fajr:"03:57", dhuhr:"13:47", asr:"17:52", maghrib:"21:19", isha:"23:28"},
+            "2026-05-09": {fajr:"03:54", dhuhr:"13:47", asr:"17:52", maghrib:"21:20", isha:"23:30"},
+            "2026-05-10": {fajr:"03:51", dhuhr:"13:47", asr:"17:53", maghrib:"21:22", isha:"23:33"},
+            "2026-05-11": {fajr:"03:49", dhuhr:"13:47", asr:"17:53", maghrib:"21:23", isha:"23:35"},
+            "2026-05-12": {fajr:"03:46", dhuhr:"13:47", asr:"17:54", maghrib:"21:25", isha:"23:38"},
+            "2026-05-13": {fajr:"03:43", dhuhr:"13:47", asr:"17:54", maghrib:"21:27", isha:"23:41"},
+            "2026-05-14": {fajr:"03:40", dhuhr:"13:47", asr:"17:55", maghrib:"21:29", isha:"23:43"},
+            "2026-05-15": {fajr:"03:37", dhuhr:"13:47", asr:"17:55", maghrib:"21:30", isha:"23:46"},
+            "2026-05-16": {fajr:"03:34", dhuhr:"13:47", asr:"17:56", maghrib:"21:31", isha:"23:49"},
+            "2026-05-17": {fajr:"03:32", dhuhr:"13:47", asr:"17:56", maghrib:"21:33", isha:"23:51"},
+            "2026-05-18": {fajr:"03:31", dhuhr:"13:47", asr:"17:57", maghrib:"21:33", isha:"23:54"},
+            "2026-05-19": {fajr:"03:31", dhuhr:"13:47", asr:"17:57", maghrib:"21:34", isha:"23:57"},
+            "2026-05-20": {fajr:"03:30", dhuhr:"13:47", asr:"17:58", maghrib:"21:35", isha:"23:59"},
+            "2026-05-21": {fajr:"03:30", dhuhr:"13:47", asr:"17:58", maghrib:"21:36", isha:"00:00"},
+            "2026-05-22": {fajr:"03:30", dhuhr:"13:47", asr:"17:59", maghrib:"21:38", isha:"00:00"},
+            "2026-05-23": {fajr:"03:29", dhuhr:"13:47", asr:"17:59", maghrib:"21:39", isha:"00:01"},
+            "2026-05-24": {fajr:"03:29", dhuhr:"13:47", asr:"18:00", maghrib:"21:40", isha:"00:02"},
+            "2026-05-25": {fajr:"03:29", dhuhr:"13:48", asr:"18:00", maghrib:"21:41", isha:"00:02"},
+            "2026-05-26": {fajr:"03:28", dhuhr:"13:48", asr:"18:01", maghrib:"21:42", isha:"00:03"},
+            "2026-05-27": {fajr:"03:28", dhuhr:"13:48", asr:"18:01", maghrib:"21:43", isha:"00:03"},
+            "2026-05-28": {fajr:"03:28", dhuhr:"13:48", asr:"18:02", maghrib:"21:45", isha:"00:04"},
+            "2026-05-29": {fajr:"03:27", dhuhr:"13:48", asr:"18:02", maghrib:"21:46", isha:"00:04"},
+            "2026-05-30": {fajr:"03:27", dhuhr:"13:48", asr:"18:02", maghrib:"21:47", isha:"00:04"},
+            "2026-05-31": {fajr:"03:27", dhuhr:"13:48", asr:"18:03", maghrib:"21:48", isha:"00:05"},
+
+            // Juin 2026
+            "2026-06-01": {fajr:"03:27", dhuhr:"13:48", asr:"18:03", maghrib:"21:49", isha:"00:06"},
+            "2026-06-30": {fajr:"03:30", dhuhr:"13:54", asr:"18:11", maghrib:"22:01", isha:"00:14"},
+
+            // Septembre 2026
+            "2026-09-01": {fajr:"05:11", dhuhr:"13:51", asr:"17:34", maghrib:"20:36", isha:"22:21"},
+            "2026-09-30": {fajr:"06:03", dhuhr:"13:41", asr:"16:52", maghrib:"19:35", isha:"21:11"},
+
+            // Octobre 2026
+            "2026-10-01": {fajr:"06:04", dhuhr:"13:40", asr:"16:50", maghrib:"19:33", isha:"21:09"},
+            "2026-10-31": {fajr:"05:49", dhuhr:"12:34", asr:"15:05", maghrib:"17:35", isha:"19:13"},
+
+            // Novembre 2026
+            "2026-11-01": {fajr:"05:50", dhuhr:"12:34", asr:"15:04", maghrib:"17:33", isha:"19:11"},
+            "2026-11-30": {fajr:"06:27", dhuhr:"12:39", asr:"14:38", maghrib:"17:00", isha:"18:44"},
+
+            // Décembre 2026
+            "2026-12-01": {fajr:"06:28", dhuhr:"12:40", asr:"14:38", maghrib:"16:59", isha:"18:44"},
+            "2026-12-31": {fajr:"06:48", dhuhr:"12:54", asr:"14:46", maghrib:"17:06", isha:"18:53"}
+        };
+
+        const prayerNames = {
+            fajr: "Fajr", dhuhr: "Dhuhr", asr: "Asr", maghrib: "Maghrib", isha: "Isha"
+        };
+
+        let delayAfter = 30;
+        let delayBefore = 15;
+        let currentDateStr = "";
+
+        function roundToNext10(timeStr) {
+            let [h, m] = timeStr.split(':').map(Number);
+            m = Math.ceil(m / 10) * 10;
+            if (m === 60) { m = 0; h += 1; }
+            return `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}`;
+        }
+
+        function minutesToHHMM(minutes) {
+            if (minutes <= 0) return "00:00";
+            const h = Math.floor(minutes / 60);
+            const m = minutes % 60;
+            return `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}`;
+        }
+
+        function isFriday(dateStr) {
+            return new Date(dateStr).getDay() === 5;
+        }
+
+        function displayPrayers(dateStr) {
+            currentDateStr = dateStr;
+            const data = prayerData[dateStr];
+            if (!data) {
+                document.getElementById('prayerGrid').innerHTML = `<p style="text-align:center;color:#ef4444;padding:40px;">Aucune donnée pour cette date.</p>`;
+                return;
+            }
+
+            const grid = document.getElementById('prayerGrid');
+            grid.innerHTML = '';
+
+            const now = new Date();
+            const nowMin = now.getHours() * 60 + now.getMinutes();
+
+            Object.keys(prayerNames).forEach(key => {
+                const prayerTime = data[key];
+
+                // Disponible dès
+                let [h, m] = prayerTime.split(':').map(Number);
+                let fromMin = h*60 + m + delayAfter;
+                let dispoFrom = roundToNext10(`${Math.floor(fromMin/60)}:${fromMin%60}`);
+
+                if (isFriday(dateStr) && key === "dhuhr") dispoFrom = "14:00";
+
+                // Disponible jusqu'à = cette prière - delayBefore
+                let [ph, pm] = prayerTime.split(':').map(Number);
+                let untilMin = ph*60 + pm - delayBefore;
+                let dispoUntil = roundToNext10(`${Math.floor(untilMin/60)}:${untilMin%60}`);
+
+                // Temps restant
+                let remainingMin = untilMin - nowMin;
+                let remainingStr = remainingMin > 0 
+                    ? `(${minutesToHHMM(remainingMin)} restant)` 
+                    : "(temps écoulé)";
+
+                const card = document.createElement('div');
+                card.className = `card`;
+                card.innerHTML = `
+                    <div class="prayer-name">${prayerNames[key]}</div>
+                    <div class="prayer-time">${prayerTime}</div>
+                    
+                    <div class="kpi kpi-from">
+                        <span class="kpi-label">Dès</span>
+                        <span class="kpi-value">${dispoFrom}</span>
+                    </div>
+                    
+                    <div class="kpi kpi-until">
+                        <span class="kpi-label">Jusqu'à</span>
+                        <span class="kpi-value">${dispoUntil}</span>
+                    </div>
+                    
+                    <div class="remaining">${remainingStr}</div>
+
+                    ${isFriday(dateStr) && key === "dhuhr" ? `<div class="friday-note">Vendredi : dès 14h00</div>` : ''}
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function loadSelectedDate() {
+            const selected = document.getElementById('datePicker').value;
+            if (selected) displayPrayers(selected);
+        }
+
+        function prevDay() {
+            let date = new Date(currentDateStr);
+            date.setDate(date.getDate() - 1);
+            const newDate = date.toISOString().split('T')[0];
+            if (prayerData[newDate]) {
+                document.getElementById('datePicker').value = newDate;
+                displayPrayers(newDate);
+            }
+        }
+
+        function nextDay() {
+            let date = new Date(currentDateStr);
+            date.setDate(date.getDate() + 1);
+            const newDate = date.toISOString().split('T')[0];
+            if (prayerData[newDate]) {
+                document.getElementById('datePicker').value = newDate;
+                displayPrayers(newDate);
+            }
+        }
+
+        function toggleSettings() {
+            document.getElementById('settingsPanel').classList.toggle('open');
+        }
+
+        function saveSettings() {
+            delayAfter = parseInt(document.getElementById('delayAfter').value) || 30;
+            delayBefore = parseInt(document.getElementById('delayBefore').value) || 15;
+            toggleSettings();
+            if (currentDateStr) displayPrayers(currentDateStr);
+        }
+
+        function updateRealTime() {
+            setInterval(() => {
+                const now = new Date();
+                const opt = { weekday:'long', year:'numeric', month:'long', day:'numeric', hour:'2-digit', minute:'2-digit', second:'2-digit' };
+                document.getElementById('currentTime').textContent = now.toLocaleDateString('fr-FR', opt);
+            }, 1000);
+        }
+
+        // Initialisation
+        window.onload = function() {
+            updateRealTime();
+
+            const today = new Date();
+            let defaultDate = today.toISOString().split('T')[0];
+
+            // Limite à la période disponible
+            if (defaultDate < "2026-04-01") defaultDate = "2026-04-01";
+            if (defaultDate > "2026-12-31") defaultDate = "2026-12-01";
+
+            document.getElementById('datePicker').value = defaultDate;
+            currentDateStr = defaultDate;
+            displayPrayers(defaultDate);
+        };
+    </script>
+</body>
+</html>
