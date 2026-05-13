@@ -1,0 +1,1184 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Library Tree</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Roboto', system-ui, sans-serif; }
+        .file { transition: all 0.2s; }
+        .file:hover { background-color: #1f2937 !important; }
+        .file:nth-child(odd)  { background-color: #0f172a; }
+        .file:nth-child(even) { background-color: #1e2937; }
+        .file + .file { border-top: 1px solid #334155; }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-200">
+
+    <!-- Thin Header -->
+    <header class="bg-slate-900 border-b border-slate-700 py-3 text-center text-sm font-medium text-slate-400">
+        Video Library Tree â€¢ D:\H455N\_PMP_\
+    </header>
+
+    <div class="max-w-5xl mx-auto p-6">
+        
+        <!-- Stats -->
+        <div class="bg-slate-900 rounded-3xl shadow-2xl border border-slate-700 p-6 mb-10 flex items-center justify-between">
+            <div>
+                <p class="text-slate-400 text-sm mb-1">Total Videos</p>
+                <p class="text-5xl font-semibold text-emerald-400">42</p>
+            </div>
+            <div class="text-right">
+                <p class="text-slate-500 text-xs">Root Folder</p>
+                <p class="font-mono text-sm text-slate-400">D:\H455N\_PMP_\</p>
+            </div>
+        </div>
+
+        <div class="tree space-y-4 bg-slate-900 rounded-3xl shadow-2xl border border-slate-700 p-6">        <details class="group">
+            <summary class="bg-slate-800 border-slate-700 px-6 py-4 rounded-3xl border cursor-pointer hover:border-slate-500 flex items-center justify-between mb-2">
+                <span class="font-semibold text-lg">PMIQ</span>
+                <span class='inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-red-500/20 text-red-400 border border-red-500/30'>42</span>
+            </summary>
+            <div class="pl-9 pt-2 pb-5 space-y-3 border-l border-slate-700 ml-6">        <details class="group">
+            <summary class="bg-slate-800 border-slate-700 px-6 py-4 rounded-3xl border cursor-pointer hover:border-slate-500 flex items-center justify-between mb-2">
+                <span class="font-semibold text-lg">PMIQ_Part_1</span>
+                <span class='inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-red-500/20 text-red-400 border border-red-500/30'>9</span>
+            </summary>
+            <div class="pl-9 pt-2 pb-5 space-y-3 border-l border-slate-700 ml-6">        <details class="group">
+            <summary class="bg-slate-800 border-slate-700 px-6 py-4 rounded-3xl border cursor-pointer hover:border-slate-500 flex items-center justify-between mb-2">
+                <span class="font-semibold text-lg">Approach</span>
+                <span class='inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-red-500/20 text-red-400 border border-red-500/30'>9</span>
+            </summary>
+            <div class="pl-9 pt-2 pb-5 space-y-3 border-l border-slate-700 ml-6">        <details class="group">
+            <summary class="bg-slate-800 border-slate-700 px-6 py-4 rounded-3xl border cursor-pointer hover:border-slate-500 flex items-center justify-between mb-2">
+                <span class="font-semibold text-lg">Predictive</span>
+                <span class='inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-red-500/20 text-red-400 border border-red-500/30'>9</span>
+            </summary>
+            <div class="pl-9 pt-2 pb-5 space-y-3 border-l border-slate-700 ml-6">            <div class="file flex items-center gap-4 px-6 py-4 rounded-2xl mx-1">
+                <!-- Action Buttons -->
+                <div class="flex gap-2 w-52 flex-shrink-0">
+                    <button onclick="copyName('Answers_Approach_Predictive_01.mp4')" 
+                            class="px-4 py-2 text-xs font-medium bg-slate-700 hover:bg-slate-600 rounded-2xl transition-colors flex-1">
+                        Name
+                    </button>
+                    <button onclick="copyPath('D:\H455N\_PMP_\PMIQ\PMIQ_Part_1\Approach\Predictive\Answers_Approach_Predictive_01.mp4')" 
+                            class="px-4 py-2 text-xs font-medium bg-slate-700 hover:bg-slate-600 rounded-2xl transition-colors flex-1">
+                        Path
+                    </button>
+                    <button onclick="openFolder('D:\H455N\_PMP_\PMIQ\PMIQ_Part_1\Approach\Predictive')" 
+                            title="Open containing folder"
+                            class="px-4 py-2 text-xs font-medium bg-blue-600 hover:bg-blue-500 rounded-2xl transition-colors flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2 2 2 0 01-2 2 2 2 0 01-2-2 2 2 0 012-2 2 2 0 01-2-2 2 2 0 012-2zm0 0V9a2 2 0 012-2 2 2 0 01-2-2 2 2 0 01-2-2 2 2 0 012-2z" />
+                        </svg>
+                    </button>
+                </div>
+                
+                <!-- File Info -->
+                <div class="flex-1 min-w-0">
+                    <div class="font-medium text-slate-100">Answers_Approach_Predictive_01.mp4</div>
+                    <div class="text-xs text-slate-400 mt-1 font-mono truncate">D:\H455N\_PMP_\PMIQ\PMIQ_Part_1\Approach\Predictive\Answers_Approach_Predictive_01.mp4</div>
+                </div>
+            </div>            <div class="file flex items-center gap-4 px-6 py-4 rounded-2xl mx-1">
+                <!-- Action Buttons -->
+                <div class="flex gap-2 w-52 flex-shrink-0">
+                    <button onclick="copyName('Approach_Predictive_04_091836.mp4')" 
+                            class="px-4 py-2 text-xs font-medium bg-slate-700 hover:bg-slate-600 rounded-2xl transition-colors flex-1">
+                        Name
+                    </button>
+                    <button onclick="copyPath('D:\H455N\_PMP_\PMIQ\PMIQ_Part_1\Approach\Predictive\Approach_Predictive_04_091836.mp4')" 
+                            class="px-4 py-2 text-xs font-medium bg-slate-700 hover:bg-slate-600 rounded-2xl transition-colors flex-1">
+                        Path
+                    </button>
+                    <button onclick="openFolder('D:\H455N\_PMP_\PMIQ\PMIQ_Part_1\Approach\Predictive')" 
+                            title="Open containing folder"
+                            class="px-4 py-2 text-xs font-medium bg-blue-600 hover:bg-blue-500 rounded-2xl transition-colors flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2 2 2 0 01-2 2 2 2 0 01-2-2 2 2 0 012-2 2 2 0 01-2-2 2 2 0 012-2zm0 0V9a2 2 0 012-2 2 2 0 01-2-2 2 2 0 01-2-2 2 2 0 012-2z" />
+                        </svg>
+                    </button>
+                </div>
+                
+                <!-- File Info -->
+                <div class="flex-1 min-w-0">
+                    <div class="font-medium text-slate-100">Approach_Predictive_04_091836.mp4</div>
+                    <div class="text-xs text-slate-400 mt-1 font-mono truncate">D:\H455N\_PMP_\PMIQ\PMIQ_Part_1\Approach\Predictive\Approach_Predictive_04_091836.mp4</div>
+                </div>
+            </div>            <div class="file flex items-center gap-4 px-6 py-4 rounded-2xl mx-1">
+                <!-- Action Buttons -->
+                <div class="flex gap-2 w-52 flex-shrink-0">
+                    <button onclick="copyName('Approach_Predictive_10_144429.mp4')" 
+                            class="px-4 py-2 text-xs font-medium bg-slate-700 hover:bg-slate-600 rounded-2xl transition-colors flex-1">
+                        Name
+                    </button>
+                    <button onclick="copyPath('D:\H455N\_PMP_\PMIQ\PMIQ_Part_1\Approach\Predictive\Approach_Predictive_10_144429.mp4')" 
+                            class="px-4 py-2 text-xs font-medium bg-slate-700 hover:bg-slate-600 rounded-2xl transition-colors flex-1">
+                        Path
+                    </button>
+                    <button onclick="openFolder('D:\H455N\_PMP_\PMIQ\PMIQ_Part_1\Approach\Predictive')" 
+                            title="Open containing folder"
+                            class="px-4 py-2 text-xs font-medium bg-blue-600 hover:bg-blue-500 rounded-2xl transition-colors flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2 2 2 0 01-2 2 2 2 0 01-2-2 2 2 0 012-2 2 2 0 01-2-2 2 2 0 012-2zm0 0V9a2 2 0 012-2 2 2 0 01-2-2 2 2 0 01-2-2 2 2 0 012-2z" />
+                        </svg>
+                    </button>
+                </div>
+                
+                <!-- File Info -->
+                <div class="flex-1 min-w-0">
+                    <div class="font-medium text-slate-100">Approach_Predictive_10_144429.mp4</div>
+                    <div class="text-xs text-slate-400 mt-1 font-mono truncate">D:\H455N\_PMP_\PMIQ\PMIQ_Part_1\Approach\Predictive\Approach_Predictive_10_144429.mp4</div>
+                </div>
+            </div>            <div class="file flex items-center gap-4 px-6 py-4 rounded-2xl mx-1">
+                <!-- Action Buttons -->
+                <div class="flex gap-2 w-52 flex-shrink-0">
+                    <button onclick="copyName('Approach_Predictive_27_114759.mp4')" 
+                            class="px-4 py-2 text-xs font-medium bg-slate-700 hover:bg-slate-600 rounded-2xl transition-colors flex-1">
+                        Name
+                    </button>
+                    <button onclick="copyPath('D:\H455N\_PMP_\PMIQ\PMIQ_Part_1\Approach\Predictive\Approach_Predictive_27_114759.mp4')" 
+                            class="px-4 py-2 text-xs font-medium bg-slate-700 hover:bg-slate-600 rounded-2xl transition-colors flex-1">
+                        Path
+                    </button>
+                    <button onclick="openFolder('D:\H455N\_PMP_\PMIQ\PMIQ_Part_1\Approach\Predictive')" 
+                            title="Open containing folder"
+                            class="px-4 py-2 text-xs font-medium bg-blue-600 hover:bg-blue-500 rounded-2xl transition-colors flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2 2 2 0 01-2 2 2 2 0 01-2-2 2 2 0 012-2 2 2 0 01-2-2 2 2 0 012-2zm0 0V9a2 2 0 012-2 2 2 0 01-2-2 2 2 0 01-2-2 2 2 0 012-2z" />
+                        </svg>
+                    </button>
+                </div>
+                
+                <!-- File Info -->
+                <div class="flex-1 min-w-0">
+                    <div class="font-medium text-slate-100">Approach_Predictive_27_114759.mp4</div>
+                    <div class="text-xs text-slate-400 mt-1 font-mono truncate">D:\H455N\_PMP_\PMIQ\PMIQ_Part_1\Approach\Predictive\Approach_Predictive_27_114759.mp4</div>
+                </div>
+            </div>            <div class="file flex items-center gap-4 px-6 py-4 rounded-2xl mx-1">
+                <!-- Action Buttons -->
+                <div class="flex gap-2 w-52 flex-shrink-0">
+                    <button onclick="copyName('Approach_Predictive_27_115115.mp4')" 
+                            class="px-4 py-2 text-xs font-medium bg-slate-700 hover:bg-slate-600 rounded-2xl transition-colors flex-1">
+                        Name
+                    </button>
+                    <button onclick="copyPath('D:\H455N\_PMP_\PMIQ\PMIQ_Part_1\Approach\Predictive\Approach_Predictive_27_115115.mp4')" 
+                            class="px-4 py-2 text-xs font-medium bg-slate-700 hover:bg-slate-600 rounded-2xl transition-colors flex-1">
+                        Path
+                    </button>
+                    <button onclick="openFolder('D:\H455N\_PMP_\PMIQ\PMIQ_Part_1\Approach\Predictive')" 
+                            title="Open containing folder"
+                            class="px-4 py-2 text-xs font-medium bg-blue-600 hover:bg-blue-500 rounded-2xl transition-colors flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2 2 2 0 01-2 2 2 2 0 01-2-2 2 2 0 012-2 2 2 0 01-2-2 2 2 0 012-2zm0 0V9a2 2 0 012-2 2 2 0 01-2-2 2 2 0 01-2-2 2 2 0 012-2z" />
+                        </svg>
+                    </button>
+                </div>
+                
+                <!-- File Info -->
+                <div class="flex-1 min-w-0">
+                    <div class="font-medium text-slate-100">Approach_Predictive_27_115115.mp4</div>
+                    <div class="text-xs text-slate-400 mt-1 font-mono truncate">D:\H455N\_PMP_\PMIQ\PMIQ_Part_1\Approach\Predictive\Approach_Predictive_27_115115.mp4</div>
+                </div>
+            </div>            <div class="file flex items-center gap-4 px-6 py-4 rounded-2xl mx-1">
+                <!-- Action Buttons -->
+                <div class="flex gap-2 w-52 flex-shrink-0">
+                    <button onclick="copyName('Approach_Predictive_27_115410.mp4')" 
+                            class="px-4 py-2 text-xs font-medium bg-slate-700 hover:bg-slate-600 rounded-2xl transition-colors flex-1">
+                        Name
+                    </button>
+                    <button onclick="copyPath('D:\H455N\_PMP_\PMIQ\PMIQ_Part_1\Approach\Predictive\Approach_Predictive_27_115410.mp4')" 
+                            class="px-4 py-2 text-xs font-medium bg-slate-700 hover:bg-slate-600 rounded-2xl transition-colors flex-1">
+                        Path
+                    </button>
+                    <button onclick="openFolder('D:\H455N\_PMP_\PMIQ\PMIQ_Part_1\Approach\Predictive')" 
+                            title="Open containing folder"
+                            class="px-4 py-2 text-xs font-medium bg-blue-600 hover:bg-blue-500 rounded-2xl transition-colors flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2 2 2 0 01-2 2 2 2 0 01-2-2 2 2 0 012-2 2 2 0 01-2-2 2 2 0 012-2zm0 0V9a2 2 0 012-2 2 2 0 01-2-2 2 2 0 01-2-2 2 2 0 012-2z" />
+                        </svg>
+                    </button>
+                </div>
+                
+                <!-- File Info -->
+                <div class="flex-1 min-w-0">
+                    <div class="font-medium text-slate-100">Approach_Predictive_27_115410.mp4</div>
+                    <div class="text-xs text-slate-400 mt-1 font-mono truncate">D:\H455N\_PMP_\PMIQ\PMIQ_Part_1\Approach\Predictive\Approach_Predictive_27_115410.mp4</div>
+                </div>
+            </div>            <div class="file flex items-center gap-4 px-6 py-4 rounded-2xl mx-1">
+                <!-- Action Buttons -->
+                <div class="flex gap-2 w-52 flex-shrink-0">
+                    <button onclick="copyName('Approach_Predictive_27_115410_Edited.mp4')" 
+                            class="px-4 py-2 text-xs font-medium bg-slate-700 hover:bg-slate-600 rounded-2xl transition-colors flex-1">
+                        Name
+                    </button>
+                    <button onclick="copyPath('D:\H455N\_PMP_\PMIQ\PMIQ_Part_1\Approach\Predictive\Approach_Predictive_27_115410_Edited.mp4')" 
+                            class="px-4 py-2 text-xs font-medium bg-slate-700 hover:bg-slate-600 rounded-2xl transition-colors flex-1">
+                        Path
+                    </button>
+                    <button onclick="openFolder('D:\H455N\_PMP_\PMIQ\PMIQ_Part_1\Approach\Predictive')" 
+                            title="Open containing folder"
+                            class="px-4 py-2 text-xs font-medium bg-blue-600 hover:bg-blue-500 rounded-2xl transition-colors flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2 2 2 0 01-2 2 2 2 0 01-2-2 2 2 0 012-2 2 2 0 01-2-2 2 2 0 012-2zm0 0V9a2 2 0 012-2 2 2 0 01-2-2 2 2 0 01-2-2 2 2 0 012-2z" />
+                        </svg>
+                    </button>
+                </div>
+                
+                <!-- File Info -->
+                <div class="flex-1 min-w-0">
+                    <div class="font-medium text-slate-100">Approach_Predictive_27_115410_Edited.mp4</div>
+                    <div class="text-xs text-slate-400 mt-1 font-mono truncate">D:\H455N\_PMP_\PMIQ\PMIQ_Part_1\Approach\Predictive\Approach_Predictive_27_115410_Edited.mp4</div>
+                </div>
+            </div>            <div class="file flex items-center gap-4 px-6 py-4 rounded-2xl mx-1">
+                <!-- Action Buttons -->
+                <div class="flex gap-2 w-52 flex-shrink-0">
+                    <button onclick="copyName('Approach_Predictive_27_120255.mp4')" 
+                            class="px-4 py-2 text-xs font-medium bg-slate-700 hover:bg-slate-600 rounded-2xl transition-colors flex-1">
+                        Name
+                    </button>
+                    <button onclick="copyPath('D:\H455N\_PMP_\PMIQ\PMIQ_Part_1\Approach\Predictive\Approach_Predictive_27_120255.mp4')" 
+                            class="px-4 py-2 text-xs font-medium bg-slate-700 hover:bg-slate-600 rounded-2xl transition-colors flex-1">
+                        Path
+                    </button>
+                    <button onclick="openFolder('D:\H455N\_PMP_\PMIQ\PMIQ_Part_1\Approach\Predictive')" 
+                            title="Open containing folder"
+                            class="px-4 py-2 text-xs font-medium bg-blue-600 hover:bg-blue-500 rounded-2xl transition-colors flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2 2 2 0 01-2 2 2 2 0 01-2-2 2 2 0 012-2 2 2 0 01-2-2 2 2 0 012-2zm0 0V9a2 2 0 012-2 2 2 0 01-2-2 2 2 0 01-2-2 2 2 0 012-2z" />
+                        </svg>
+                    </button>
+                </div>
+                
+                <!-- File Info -->
+                <div class="flex-1 min-w-0">
+                    <div class="font-medium text-slate-100">Approach_Predictive_27_120255.mp4</div>
+                    <div class="text-xs text-slate-400 mt-1 font-mono truncate">D:\H455N\_PMP_\PMIQ\PMIQ_Part_1\Approach\Predictive\Approach_Predictive_27_120255.mp4</div>
+                </div>
+            </div>            <div class="file flex items-center gap-4 px-6 py-4 rounded-2xl mx-1">
+                <!-- Action Buttons -->
+                <div class="flex gap-2 w-52 flex-shrink-0">
+                    <button onclick="copyName('Approach_Predictive_28_105741.mp4')" 
+                            class="px-4 py-2 text-xs font-medium bg-slate-700 hover:bg-slate-600 rounded-2xl transition-colors flex-1">
+                        Name
+                    </button>
+                    <button onclick="copyPath('D:\H455N\_PMP_\PMIQ\PMIQ_Part_1\Approach\Predictive\Approach_Predictive_28_105741.mp4')" 
+                            class="px-4 py-2 text-xs font-medium bg-slate-700 hover:bg-slate-600 rounded-2xl transition-colors flex-1">
+                        Path
+                    </button>
+                    <button onclick="openFolder('D:\H455N\_PMP_\PMIQ\PMIQ_Part_1\Approach\Predictive')" 
+                            title="Open containing folder"
+                            class="px-4 py-2 text-xs font-medium bg-blue-600 hover:bg-blue-500 rounded-2xl transition-colors flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2 2 2 0 01-2 2 2 2 0 01-2-2 2 2 0 012-2 2 2 0 01-2-2 2 2 0 012-2zm0 0V9a2 2 0 012-2 2 2 0 01-2-2 2 2 0 01-2-2 2 2 0 012-2z" />
+                        </svg>
+                    </button>
+                </div>
+                
+                <!-- File Info -->
+                <div class="flex-1 min-w-0">
+                    <div class="font-medium text-slate-100">Approach_Predictive_28_105741.mp4</div>
+                    <div class="text-xs text-slate-400 mt-1 font-mono truncate">D:\H455N\_PMP_\PMIQ\PMIQ_Part_1\Approach\Predictive\Approach_Predictive_28_105741.mp4</div>
+                </div>
+            </div></div></details></div></details></div></details>        <details class="group">
+            <summary class="bg-slate-800 border-slate-700 px-6 py-4 rounded-3xl border cursor-pointer hover:border-slate-500 flex items-center justify-between mb-2">
+                <span class="font-semibold text-lg">PMIQ_Part_2</span>
+                <span class='inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-red-500/20 text-red-400 border border-red-500/30'>9</span>
+            </summary>
+            <div class="pl-9 pt-2 pb-5 space-y-3 border-l border-slate-700 ml-6">        <details class="group">
+            <summary class="bg-slate-800 border-slate-700 px-6 py-4 rounded-3xl border cursor-pointer hover:border-slate-500 flex items-center justify-between mb-2">
+                <span class="font-semibold text-lg">KA</span>
+                <span class='inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-red-500/20 text-red-400 border border-red-500/30'>9</span>
+            </summary>
+            <div class="pl-9 pt-2 pb-5 space-y-3 border-l border-slate-700 ml-6">            <div class="file flex items-center gap-4 px-6 py-4 rounded-2xl mx-1">
+                <!-- Action Buttons -->
+                <div class="flex gap-2 w-52 flex-shrink-0">
+                    <button onclick="copyName('KA_Cost_15_102719.mp4')" 
+                            class="px-4 py-2 text-xs font-medium bg-slate-700 hover:bg-slate-600 rounded-2xl transition-colors flex-1">
+                        Name
+                    </button>
+                    <button onclick="copyPath('D:\H455N\_PMP_\PMIQ\PMIQ_Part_2\KA\KA_Cost_15_102719.mp4')" 
+                            class="px-4 py-2 text-xs font-medium bg-slate-700 hover:bg-slate-600 rounded-2xl transition-colors flex-1">
+                        Path
+                    </button>
+                    <button onclick="openFolder('D:\H455N\_PMP_\PMIQ\PMIQ_Part_2\KA')" 
+                            title="Open containing folder"
+                            class="px-4 py-2 text-xs font-medium bg-blue-600 hover:bg-blue-500 rounded-2xl transition-colors flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2 2 2 0 01-2 2 2 2 0 01-2-2 2 2 0 012-2 2 2 0 01-2-2 2 2 0 012-2zm0 0V9a2 2 0 012-2 2 2 0 01-2-2 2 2 0 01-2-2 2 2 0 012-2z" />
+                        </svg>
+                    </button>
+                </div>
+                
+                <!-- File Info -->
+                <div class="flex-1 min-w-0">
+                    <div class="font-medium text-slate-100">KA_Cost_15_102719.mp4</div>
+                    <div class="text-xs text-slate-400 mt-1 font-mono truncate">D:\H455N\_PMP_\PMIQ\PMIQ_Part_2\KA\KA_Cost_15_102719.mp4</div>
+                </div>
+            </div>            <div class="file flex items-center gap-4 px-6 py-4 rounded-2xl mx-1">
+                <!-- Action Buttons -->
+                <div class="flex gap-2 w-52 flex-shrink-0">
+                    <button onclick="copyName('KA_Integration_15_110833.mp4')" 
+                            class="px-4 py-2 text-xs font-medium bg-slate-700 hover:bg-slate-600 rounded-2xl transition-colors flex-1">
+                        Name
+                    </button>
+                    <button onclick="copyPath('D:\H455N\_PMP_\PMIQ\PMIQ_Part_2\KA\KA_Integration_15_110833.mp4')" 
+                            class="px-4 py-2 text-xs font-medium bg-slate-700 hover:bg-slate-600 rounded-2xl transition-colors flex-1">
+                        Path
+                    </button>
+                    <button onclick="openFolder('D:\H455N\_PMP_\PMIQ\PMIQ_Part_2\KA')" 
+                            title="Open containing folder"
+                            class="px-4 py-2 text-xs font-medium bg-blue-600 hover:bg-blue-500 rounded-2xl transition-colors flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2 2 2 0 01-2 2 2 2 0 01-2-2 2 2 0 012-2 2 2 0 01-2-2 2 2 0 012-2zm0 0V9a2 2 0 012-2 2 2 0 01-2-2 2 2 0 01-2-2 2 2 0 012-2z" />
+                        </svg>
+                    </button>
+                </div>
+                
+                <!-- File Info -->
+                <div class="flex-1 min-w-0">
+                    <div class="font-medium text-slate-100">KA_Integration_15_110833.mp4</div>
+                    <div class="text-xs text-slate-400 mt-1 font-mono truncate">D:\H455N\_PMP_\PMIQ\PMIQ_Part_2\KA\KA_Integration_15_110833.mp4</div>
+                </div>
+            </div>            <div class="file flex items-center gap-4 px-6 py-4 rounded-2xl mx-1">
+                <!-- Action Buttons -->
+                <div class="flex gap-2 w-52 flex-shrink-0">
+                    <button onclick="copyName('KA_Procurement_15_162919.mp4')" 
+                            class="px-4 py-2 text-xs font-medium bg-slate-700 hover:bg-slate-600 rounded-2xl transition-colors flex-1">
+                        Name
+                    </button>
+                    <button onclick="copyPath('D:\H455N\_PMP_\PMIQ\PMIQ_Part_2\KA\KA_Procurement_15_162919.mp4')" 
+                            class="px-4 py-2 text-xs font-medium bg-slate-700 hover:bg-slate-600 rounded-2xl transition-colors flex-1">
+                        Path
+                    </button>
+                    <button onclick="openFolder('D:\H455N\_PMP_\PMIQ\PMIQ_Part_2\KA')" 
+                            title="Open containing folder"
+                            class="px-4 py-2 text-xs font-medium bg-blue-600 hover:bg-blue-500 rounded-2xl transition-colors flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2 2 2 0 01-2 2 2 2 0 01-2-2 2 2 0 012-2 2 2 0 01-2-2 2 2 0 012-2zm0 0V9a2 2 0 012-2 2 2 0 01-2-2 2 2 0 01-2-2 2 2 0 012-2z" />
+                        </svg>
+                    </button>
+                </div>
+                
+                <!-- File Info -->
+                <div class="flex-1 min-w-0">
+                    <div class="font-medium text-slate-100">KA_Procurement_15_162919.mp4</div>
+                    <div class="text-xs text-slate-400 mt-1 font-mono truncate">D:\H455N\_PMP_\PMIQ\PMIQ_Part_2\KA\KA_Procurement_15_162919.mp4</div>
+                </div>
+            </div>            <div class="file flex items-center gap-4 px-6 py-4 rounded-2xl mx-1">
+                <!-- Action Buttons -->
+                <div class="flex gap-2 w-52 flex-shrink-0">
+                    <button onclick="copyName('KA_Quality_15_164357.mp4')" 
+                            class="px-4 py-2 text-xs font-medium bg-slate-700 hover:bg-slate-600 rounded-2xl transition-colors flex-1">
+                        Name
+                    </button>
+                    <button onclick="copyPath('D:\H455N\_PMP_\PMIQ\PMIQ_Part_2\KA\KA_Quality_15_164357.mp4')" 
+                            class="px-4 py-2 text-xs font-medium bg-slate-700 hover:bg-slate-600 rounded-2xl transition-colors flex-1">
+                        Path
+                    </button>
+                    <button onclick="openFolder('D:\H455N\_PMP_\PMIQ\PMIQ_Part_2\KA')" 
+                            title="Open containing folder"
+                            class="px-4 py-2 text-xs font-medium bg-blue-600 hover:bg-blue-500 rounded-2xl transition-colors flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2 2 2 0 01-2 2 2 2 0 01-2-2 2 2 0 012-2 2 2 0 01-2-2 2 2 0 012-2zm0 0V9a2 2 0 012-2 2 2 0 01-2-2 2 2 0 01-2-2 2 2 0 012-2z" />
+                        </svg>
+                    </button>
+                </div>
+                
+                <!-- File Info -->
+                <div class="flex-1 min-w-0">
+                    <div class="font-medium text-slate-100">KA_Quality_15_164357.mp4</div>
+                    <div class="text-xs text-slate-400 mt-1 font-mono truncate">D:\H455N\_PMP_\PMIQ\PMIQ_Part_2\KA\KA_Quality_15_164357.mp4</div>
+                </div>
+            </div>            <div class="file flex items-center gap-4 px-6 py-4 rounded-2xl mx-1">
+                <!-- Action Buttons -->
+                <div class="flex gap-2 w-52 flex-shrink-0">
+                    <button onclick="copyName('KA_ResourceManagement_15_164708.mp4')" 
+                            class="px-4 py-2 text-xs font-medium bg-slate-700 hover:bg-slate-600 rounded-2xl transition-colors flex-1">
+                        Name
+                    </button>
+                    <button onclick="copyPath('D:\H455N\_PMP_\PMIQ\PMIQ_Part_2\KA\KA_ResourceManagement_15_164708.mp4')" 
+                            class="px-4 py-2 text-xs font-medium bg-slate-700 hover:bg-slate-600 rounded-2xl transition-colors flex-1">
+                        Path
+                    </button>
+                    <button onclick="openFolder('D:\H455N\_PMP_\PMIQ\PMIQ_Part_2\KA')" 
+                            title="Open containing folder"
+                            class="px-4 py-2 text-xs font-medium bg-blue-600 hover:bg-blue-500 rounded-2xl transition-colors flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2 2 2 0 01-2 2 2 2 0 01-2-2 2 2 0 012-2 2 2 0 01-2-2 2 2 0 012-2zm0 0V9a2 2 0 012-2 2 2 0 01-2-2 2 2 0 01-2-2 2 2 0 012-2z" />
+                        </svg>
+                    </button>
+                </div>
+                
+                <!-- File Info -->
+                <div class="flex-1 min-w-0">
+                    <div class="font-medium text-slate-100">KA_ResourceManagement_15_164708.mp4</div>
+                    <div class="text-xs text-slate-400 mt-1 font-mono truncate">D:\H455N\_PMP_\PMIQ\PMIQ_Part_2\KA\KA_ResourceManagement_15_164708.mp4</div>
+                </div>
+            </div>            <div class="file flex items-center gap-4 px-6 py-4 rounded-2xl mx-1">
+                <!-- Action Buttons -->
+                <div class="flex gap-2 w-52 flex-shrink-0">
+                    <button onclick="copyName('KA_Risk_15_164956.mp4')" 
+                            class="px-4 py-2 text-xs font-medium bg-slate-700 hover:bg-slate-600 rounded-2xl transition-colors flex-1">
+                        Name
+                    </button>
+                    <button onclick="copyPath('D:\H455N\_PMP_\PMIQ\PMIQ_Part_2\KA\KA_Risk_15_164956.mp4')" 
+                            class="px-4 py-2 text-xs font-medium bg-slate-700 hover:bg-slate-600 rounded-2xl transition-colors flex-1">
+                        Path
+                    </button>
+                    <button onclick="openFolder('D:\H455N\_PMP_\PMIQ\PMIQ_Part_2\KA')" 
+                            title="Open containing folder"
+                            class="px-4 py-2 text-xs font-medium bg-blue-600 hover:bg-blue-500 rounded-2xl transition-colors flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2 2 2 0 01-2 2 2 2 0 01-2-2 2 2 0 012-2 2 2 0 01-2-2 2 2 0 012-2zm0 0V9a2 2 0 012-2 2 2 0 01-2-2 2 2 0 01-2-2 2 2 0 012-2z" />
+                        </svg>
+                    </button>
+                </div>
+                
+                <!-- File Info -->
+                <div class="flex-1 min-w-0">
+                    <div class="font-medium text-slate-100">KA_Risk_15_164956.mp4</div>
+                    <div class="text-xs text-slate-400 mt-1 font-mono truncate">D:\H455N\_PMP_\PMIQ\PMIQ_Part_2\KA\KA_Risk_15_164956.mp4</div>
+                </div>
+            </div>            <div class="file flex items-center gap-4 px-6 py-4 rounded-2xl mx-1">
+                <!-- Action Buttons -->
+                <div class="flex gap-2 w-52 flex-shrink-0">
+                    <button onclick="copyName('KA_Schedule_16_100656.mp4')" 
+                            class="px-4 py-2 text-xs font-medium bg-slate-700 hover:bg-slate-600 rounded-2xl transition-colors flex-1">
+                        Name
+                    </button>
+                    <button onclick="copyPath('D:\H455N\_PMP_\PMIQ\PMIQ_Part_2\KA\KA_Schedule_16_100656.mp4')" 
+                            class="px-4 py-2 text-xs font-medium bg-slate-700 hover:bg-slate-600 rounded-2xl transition-colors flex-1">
+                        Path
+                    </button>
+                    <button onclick="openFolder('D:\H455N\_PMP_\PMIQ\PMIQ_Part_2\KA')" 
+                            title="Open containing folder"
+                            class="px-4 py-2 text-xs font-medium bg-blue-600 hover:bg-blue-500 rounded-2xl transition-colors flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2 2 2 0 01-2 2 2 2 0 01-2-2 2 2 0 012-2 2 2 0 01-2-2 2 2 0 012-2zm0 0V9a2 2 0 012-2 2 2 0 01-2-2 2 2 0 01-2-2 2 2 0 012-2z" />
+                        </svg>
+                    </button>
+                </div>
+                
+                <!-- File Info -->
+                <div class="flex-1 min-w-0">
+                    <div class="font-medium text-slate-100">KA_Schedule_16_100656.mp4</div>
+                    <div class="text-xs text-slate-400 mt-1 font-mono truncate">D:\H455N\_PMP_\PMIQ\PMIQ_Part_2\KA\KA_Schedule_16_100656.mp4</div>
+                </div>
+            </div>            <div class="file flex items-center gap-4 px-6 py-4 rounded-2xl mx-1">
+                <!-- Action Buttons -->
+                <div class="flex gap-2 w-52 flex-shrink-0">
+                    <button onclick="copyName('KA_Scope_16_111923.mp4')" 
+                            class="px-4 py-2 text-xs font-medium bg-slate-700 hover:bg-slate-600 rounded-2xl transition-colors flex-1">
+                        Name
+                    </button>
+                    <button onclick="copyPath('D:\H455N\_PMP_\PMIQ\PMIQ_Part_2\KA\KA_Scope_16_111923.mp4')" 
+                            class="px-4 py-2 text-xs font-medium bg-slate-700 hover:bg-slate-600 rounded-2xl transition-colors flex-1">
+                        Path
+                    </button>
+                    <button onclick="openFolder('D:\H455N\_PMP_\PMIQ\PMIQ_Part_2\KA')" 
+                            title="Open containing folder"
+                            class="px-4 py-2 text-xs font-medium bg-blue-600 hover:bg-blue-500 rounded-2xl transition-colors flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2 2 2 0 01-2 2 2 2 0 01-2-2 2 2 0 012-2 2 2 0 01-2-2 2 2 0 012-2zm0 0V9a2 2 0 012-2 2 2 0 01-2-2 2 2 0 01-2-2 2 2 0 012-2z" />
+                        </svg>
+                    </button>
+                </div>
+                
+                <!-- File Info -->
+                <div class="flex-1 min-w-0">
+                    <div class="font-medium text-slate-100">KA_Scope_16_111923.mp4</div>
+                    <div class="text-xs text-slate-400 mt-1 font-mono truncate">D:\H455N\_PMP_\PMIQ\PMIQ_Part_2\KA\KA_Scope_16_111923.mp4</div>
+                </div>
+            </div>            <div class="file flex items-center gap-4 px-6 py-4 rounded-2xl mx-1">
+                <!-- Action Buttons -->
+                <div class="flex gap-2 w-52 flex-shrink-0">
+                    <button onclick="copyName('KA_StakeholderManagement_16_112335.mp4')" 
+                            class="px-4 py-2 text-xs font-medium bg-slate-700 hover:bg-slate-600 rounded-2xl transition-colors flex-1">
+                        Name
+                    </button>
+                    <button onclick="copyPath('D:\H455N\_PMP_\PMIQ\PMIQ_Part_2\KA\KA_StakeholderManagement_16_112335.mp4')" 
+                            class="px-4 py-2 text-xs font-medium bg-slate-700 hover:bg-slate-600 rounded-2xl transition-colors flex-1">
+                        Path
+                    </button>
+                    <button onclick="openFolder('D:\H455N\_PMP_\PMIQ\PMIQ_Part_2\KA')" 
+                            title="Open containing folder"
+                            class="px-4 py-2 text-xs font-medium bg-blue-600 hover:bg-blue-500 rounded-2xl transition-colors flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2 2 2 0 01-2 2 2 2 0 01-2-2 2 2 0 012-2 2 2 0 01-2-2 2 2 0 012-2zm0 0V9a2 2 0 012-2 2 2 0 01-2-2 2 2 0 01-2-2 2 2 0 012-2z" />
+                        </svg>
+                    </button>
+                </div>
+                
+                <!-- File Info -->
+                <div class="flex-1 min-w-0">
+                    <div class="font-medium text-slate-100">KA_StakeholderManagement_16_112335.mp4</div>
+                    <div class="text-xs text-slate-400 mt-1 font-mono truncate">D:\H455N\_PMP_\PMIQ\PMIQ_Part_2\KA\KA_StakeholderManagement_16_112335.mp4</div>
+                </div>
+            </div></div></details></div></details>        <details class="group">
+            <summary class="bg-slate-800 border-slate-700 px-6 py-4 rounded-3xl border cursor-pointer hover:border-slate-500 flex items-center justify-between mb-2">
+                <span class="font-semibold text-lg">PMIQ_Part_4</span>
+                <span class='inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-red-500/20 text-red-400 border border-red-500/30'>10</span>
+            </summary>
+            <div class="pl-9 pt-2 pb-5 space-y-3 border-l border-slate-700 ml-6">        <details class="group">
+            <summary class="bg-slate-800 border-slate-700 px-6 py-4 rounded-3xl border cursor-pointer hover:border-slate-500 flex items-center justify-between mb-2">
+                <span class="font-semibold text-lg">KA</span>
+                <span class='inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-red-500/20 text-red-400 border border-red-500/30'>10</span>
+            </summary>
+            <div class="pl-9 pt-2 pb-5 space-y-3 border-l border-slate-700 ml-6">            <div class="file flex items-center gap-4 px-6 py-4 rounded-2xl mx-1">
+                <!-- Action Buttons -->
+                <div class="flex gap-2 w-52 flex-shrink-0">
+                    <button onclick="copyName('KA_Communication_19_113918.mp4')" 
+                            class="px-4 py-2 text-xs font-medium bg-slate-700 hover:bg-slate-600 rounded-2xl transition-colors flex-1">
+                        Name
+                    </button>
+                    <button onclick="copyPath('D:\H455N\_PMP_\PMIQ\PMIQ_Part_4\KA\KA_Communication_19_113918.mp4')" 
+                            class="px-4 py-2 text-xs font-medium bg-slate-700 hover:bg-slate-600 rounded-2xl transition-colors flex-1">
+                        Path
+                    </button>
+                    <button onclick="openFolder('D:\H455N\_PMP_\PMIQ\PMIQ_Part_4\KA')" 
+                            title="Open containing folder"
+                            class="px-4 py-2 text-xs font-medium bg-blue-600 hover:bg-blue-500 rounded-2xl transition-colors flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2 2 2 0 01-2 2 2 2 0 01-2-2 2 2 0 012-2 2 2 0 01-2-2 2 2 0 012-2zm0 0V9a2 2 0 012-2 2 2 0 01-2-2 2 2 0 01-2-2 2 2 0 012-2z" />
+                        </svg>
+                    </button>
+                </div>
+                
+                <!-- File Info -->
+                <div class="flex-1 min-w-0">
+                    <div class="font-medium text-slate-100">KA_Communication_19_113918.mp4</div>
+                    <div class="text-xs text-slate-400 mt-1 font-mono truncate">D:\H455N\_PMP_\PMIQ\PMIQ_Part_4\KA\KA_Communication_19_113918.mp4</div>
+                </div>
+            </div>            <div class="file flex items-center gap-4 px-6 py-4 rounded-2xl mx-1">
+                <!-- Action Buttons -->
+                <div class="flex gap-2 w-52 flex-shrink-0">
+                    <button onclick="copyName('KA_Cost_19_114214.mp4')" 
+                            class="px-4 py-2 text-xs font-medium bg-slate-700 hover:bg-slate-600 rounded-2xl transition-colors flex-1">
+                        Name
+                    </button>
+                    <button onclick="copyPath('D:\H455N\_PMP_\PMIQ\PMIQ_Part_4\KA\KA_Cost_19_114214.mp4')" 
+                            class="px-4 py-2 text-xs font-medium bg-slate-700 hover:bg-slate-600 rounded-2xl transition-colors flex-1">
+                        Path
+                    </button>
+                    <button onclick="openFolder('D:\H455N\_PMP_\PMIQ\PMIQ_Part_4\KA')" 
+                            title="Open containing folder"
+                            class="px-4 py-2 text-xs font-medium bg-blue-600 hover:bg-blue-500 rounded-2xl transition-colors flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2 2 2 0 01-2 2 2 2 0 01-2-2 2 2 0 012-2 2 2 0 01-2-2 2 2 0 012-2zm0 0V9a2 2 0 012-2 2 2 0 01-2-2 2 2 0 01-2-2 2 2 0 012-2z" />
+                        </svg>
+                    </button>
+                </div>
+                
+                <!-- File Info -->
+                <div class="flex-1 min-w-0">
+                    <div class="font-medium text-slate-100">KA_Cost_19_114214.mp4</div>
+                    <div class="text-xs text-slate-400 mt-1 font-mono truncate">D:\H455N\_PMP_\PMIQ\PMIQ_Part_4\KA\KA_Cost_19_114214.mp4</div>
+                </div>
+            </div>            <div class="file flex items-center gap-4 px-6 py-4 rounded-2xl mx-1">
+                <!-- Action Buttons -->
+                <div class="flex gap-2 w-52 flex-shrink-0">
+                    <button onclick="copyName('KA_Integration_19_114620.mp4')" 
+                            class="px-4 py-2 text-xs font-medium bg-slate-700 hover:bg-slate-600 rounded-2xl transition-colors flex-1">
+                        Name
+                    </button>
+                    <button onclick="copyPath('D:\H455N\_PMP_\PMIQ\PMIQ_Part_4\KA\KA_Integration_19_114620.mp4')" 
+                            class="px-4 py-2 text-xs font-medium bg-slate-700 hover:bg-slate-600 rounded-2xl transition-colors flex-1">
+                        Path
+                    </button>
+                    <button onclick="openFolder('D:\H455N\_PMP_\PMIQ\PMIQ_Part_4\KA')" 
+                            title="Open containing folder"
+                            class="px-4 py-2 text-xs font-medium bg-blue-600 hover:bg-blue-500 rounded-2xl transition-colors flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2 2 2 0 01-2 2 2 2 0 01-2-2 2 2 0 012-2 2 2 0 01-2-2 2 2 0 012-2zm0 0V9a2 2 0 012-2 2 2 0 01-2-2 2 2 0 01-2-2 2 2 0 012-2z" />
+                        </svg>
+                    </button>
+                </div>
+                
+                <!-- File Info -->
+                <div class="flex-1 min-w-0">
+                    <div class="font-medium text-slate-100">KA_Integration_19_114620.mp4</div>
+                    <div class="text-xs text-slate-400 mt-1 font-mono truncate">D:\H455N\_PMP_\PMIQ\PMIQ_Part_4\KA\KA_Integration_19_114620.mp4</div>
+                </div>
+            </div>            <div class="file flex items-center gap-4 px-6 py-4 rounded-2xl mx-1">
+                <!-- Action Buttons -->
+                <div class="flex gap-2 w-52 flex-shrink-0">
+                    <button onclick="copyName('KA_Procurement_19_163702.mp4')" 
+                            class="px-4 py-2 text-xs font-medium bg-slate-700 hover:bg-slate-600 rounded-2xl transition-colors flex-1">
+                        Name
+                    </button>
+                    <button onclick="copyPath('D:\H455N\_PMP_\PMIQ\PMIQ_Part_4\KA\KA_Procurement_19_163702.mp4')" 
+                            class="px-4 py-2 text-xs font-medium bg-slate-700 hover:bg-slate-600 rounded-2xl transition-colors flex-1">
+                        Path
+                    </button>
+                    <button onclick="openFolder('D:\H455N\_PMP_\PMIQ\PMIQ_Part_4\KA')" 
+                            title="Open containing folder"
+                            class="px-4 py-2 text-xs font-medium bg-blue-600 hover:bg-blue-500 rounded-2xl transition-colors flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2 2 2 0 01-2 2 2 2 0 01-2-2 2 2 0 012-2 2 2 0 01-2-2 2 2 0 012-2zm0 0V9a2 2 0 012-2 2 2 0 01-2-2 2 2 0 01-2-2 2 2 0 012-2z" />
+                        </svg>
+                    </button>
+                </div>
+                
+                <!-- File Info -->
+                <div class="flex-1 min-w-0">
+                    <div class="font-medium text-slate-100">KA_Procurement_19_163702.mp4</div>
+                    <div class="text-xs text-slate-400 mt-1 font-mono truncate">D:\H455N\_PMP_\PMIQ\PMIQ_Part_4\KA\KA_Procurement_19_163702.mp4</div>
+                </div>
+            </div>            <div class="file flex items-center gap-4 px-6 py-4 rounded-2xl mx-1">
+                <!-- Action Buttons -->
+                <div class="flex gap-2 w-52 flex-shrink-0">
+                    <button onclick="copyName('KA_Quality_19_164041.mp4')" 
+                            class="px-4 py-2 text-xs font-medium bg-slate-700 hover:bg-slate-600 rounded-2xl transition-colors flex-1">
+                        Name
+                    </button>
+                    <button onclick="copyPath('D:\H455N\_PMP_\PMIQ\PMIQ_Part_4\KA\KA_Quality_19_164041.mp4')" 
+                            class="px-4 py-2 text-xs font-medium bg-slate-700 hover:bg-slate-600 rounded-2xl transition-colors flex-1">
+                        Path
+                    </button>
+                    <button onclick="openFolder('D:\H455N\_PMP_\PMIQ\PMIQ_Part_4\KA')" 
+                            title="Open containing folder"
+                            class="px-4 py-2 text-xs font-medium bg-blue-600 hover:bg-blue-500 rounded-2xl transition-colors flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2 2 2 0 01-2 2 2 2 0 01-2-2 2 2 0 012-2 2 2 0 01-2-2 2 2 0 012-2zm0 0V9a2 2 0 012-2 2 2 0 01-2-2 2 2 0 01-2-2 2 2 0 012-2z" />
+                        </svg>
+                    </button>
+                </div>
+                
+                <!-- File Info -->
+                <div class="flex-1 min-w-0">
+                    <div class="font-medium text-slate-100">KA_Quality_19_164041.mp4</div>
+                    <div class="text-xs text-slate-400 mt-1 font-mono truncate">D:\H455N\_PMP_\PMIQ\PMIQ_Part_4\KA\KA_Quality_19_164041.mp4</div>
+                </div>
+            </div>            <div class="file flex items-center gap-4 px-6 py-4 rounded-2xl mx-1">
+                <!-- Action Buttons -->
+                <div class="flex gap-2 w-52 flex-shrink-0">
+                    <button onclick="copyName('KA_ResourceManagement_19_164312.mp4')" 
+                            class="px-4 py-2 text-xs font-medium bg-slate-700 hover:bg-slate-600 rounded-2xl transition-colors flex-1">
+                        Name
+                    </button>
+                    <button onclick="copyPath('D:\H455N\_PMP_\PMIQ\PMIQ_Part_4\KA\KA_ResourceManagement_19_164312.mp4')" 
+                            class="px-4 py-2 text-xs font-medium bg-slate-700 hover:bg-slate-600 rounded-2xl transition-colors flex-1">
+                        Path
+                    </button>
+                    <button onclick="openFolder('D:\H455N\_PMP_\PMIQ\PMIQ_Part_4\KA')" 
+                            title="Open containing folder"
+                            class="px-4 py-2 text-xs font-medium bg-blue-600 hover:bg-blue-500 rounded-2xl transition-colors flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2 2 2 0 01-2 2 2 2 0 01-2-2 2 2 0 012-2 2 2 0 01-2-2 2 2 0 012-2zm0 0V9a2 2 0 012-2 2 2 0 01-2-2 2 2 0 01-2-2 2 2 0 012-2z" />
+                        </svg>
+                    </button>
+                </div>
+                
+                <!-- File Info -->
+                <div class="flex-1 min-w-0">
+                    <div class="font-medium text-slate-100">KA_ResourceManagement_19_164312.mp4</div>
+                    <div class="text-xs text-slate-400 mt-1 font-mono truncate">D:\H455N\_PMP_\PMIQ\PMIQ_Part_4\KA\KA_ResourceManagement_19_164312.mp4</div>
+                </div>
+            </div>            <div class="file flex items-center gap-4 px-6 py-4 rounded-2xl mx-1">
+                <!-- Action Buttons -->
+                <div class="flex gap-2 w-52 flex-shrink-0">
+                    <button onclick="copyName('KA_Risk_19_164640.mp4')" 
+                            class="px-4 py-2 text-xs font-medium bg-slate-700 hover:bg-slate-600 rounded-2xl transition-colors flex-1">
+                        Name
+                    </button>
+                    <button onclick="copyPath('D:\H455N\_PMP_\PMIQ\PMIQ_Part_4\KA\KA_Risk_19_164640.mp4')" 
+                            class="px-4 py-2 text-xs font-medium bg-slate-700 hover:bg-slate-600 rounded-2xl transition-colors flex-1">
+                        Path
+                    </button>
+                    <button onclick="openFolder('D:\H455N\_PMP_\PMIQ\PMIQ_Part_4\KA')" 
+                            title="Open containing folder"
+                            class="px-4 py-2 text-xs font-medium bg-blue-600 hover:bg-blue-500 rounded-2xl transition-colors flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2 2 2 0 01-2 2 2 2 0 01-2-2 2 2 0 012-2 2 2 0 01-2-2 2 2 0 012-2zm0 0V9a2 2 0 012-2 2 2 0 01-2-2 2 2 0 01-2-2 2 2 0 012-2z" />
+                        </svg>
+                    </button>
+                </div>
+                
+                <!-- File Info -->
+                <div class="flex-1 min-w-0">
+                    <div class="font-medium text-slate-100">KA_Risk_19_164640.mp4</div>
+                    <div class="text-xs text-slate-400 mt-1 font-mono truncate">D:\H455N\_PMP_\PMIQ\PMIQ_Part_4\KA\KA_Risk_19_164640.mp4</div>
+                </div>
+            </div>            <div class="file flex items-center gap-4 px-6 py-4 rounded-2xl mx-1">
+                <!-- Action Buttons -->
+                <div class="flex gap-2 w-52 flex-shrink-0">
+                    <button onclick="copyName('KA_Schedule_19_164907.mp4')" 
+                            class="px-4 py-2 text-xs font-medium bg-slate-700 hover:bg-slate-600 rounded-2xl transition-colors flex-1">
+                        Name
+                    </button>
+                    <button onclick="copyPath('D:\H455N\_PMP_\PMIQ\PMIQ_Part_4\KA\KA_Schedule_19_164907.mp4')" 
+                            class="px-4 py-2 text-xs font-medium bg-slate-700 hover:bg-slate-600 rounded-2xl transition-colors flex-1">
+                        Path
+                    </button>
+                    <button onclick="openFolder('D:\H455N\_PMP_\PMIQ\PMIQ_Part_4\KA')" 
+                            title="Open containing folder"
+                            class="px-4 py-2 text-xs font-medium bg-blue-600 hover:bg-blue-500 rounded-2xl transition-colors flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2 2 2 0 01-2 2 2 2 0 01-2-2 2 2 0 012-2 2 2 0 01-2-2 2 2 0 012-2zm0 0V9a2 2 0 012-2 2 2 0 01-2-2 2 2 0 01-2-2 2 2 0 012-2z" />
+                        </svg>
+                    </button>
+                </div>
+                
+                <!-- File Info -->
+                <div class="flex-1 min-w-0">
+                    <div class="font-medium text-slate-100">KA_Schedule_19_164907.mp4</div>
+                    <div class="text-xs text-slate-400 mt-1 font-mono truncate">D:\H455N\_PMP_\PMIQ\PMIQ_Part_4\KA\KA_Schedule_19_164907.mp4</div>
+                </div>
+            </div>            <div class="file flex items-center gap-4 px-6 py-4 rounded-2xl mx-1">
+                <!-- Action Buttons -->
+                <div class="flex gap-2 w-52 flex-shrink-0">
+                    <button onclick="copyName('KA_Scope_19_165721.mp4')" 
+                            class="px-4 py-2 text-xs font-medium bg-slate-700 hover:bg-slate-600 rounded-2xl transition-colors flex-1">
+                        Name
+                    </button>
+                    <button onclick="copyPath('D:\H455N\_PMP_\PMIQ\PMIQ_Part_4\KA\KA_Scope_19_165721.mp4')" 
+                            class="px-4 py-2 text-xs font-medium bg-slate-700 hover:bg-slate-600 rounded-2xl transition-colors flex-1">
+                        Path
+                    </button>
+                    <button onclick="openFolder('D:\H455N\_PMP_\PMIQ\PMIQ_Part_4\KA')" 
+                            title="Open containing folder"
+                            class="px-4 py-2 text-xs font-medium bg-blue-600 hover:bg-blue-500 rounded-2xl transition-colors flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2 2 2 0 01-2 2 2 2 0 01-2-2 2 2 0 012-2 2 2 0 01-2-2 2 2 0 012-2zm0 0V9a2 2 0 012-2 2 2 0 01-2-2 2 2 0 01-2-2 2 2 0 012-2z" />
+                        </svg>
+                    </button>
+                </div>
+                
+                <!-- File Info -->
+                <div class="flex-1 min-w-0">
+                    <div class="font-medium text-slate-100">KA_Scope_19_165721.mp4</div>
+                    <div class="text-xs text-slate-400 mt-1 font-mono truncate">D:\H455N\_PMP_\PMIQ\PMIQ_Part_4\KA\KA_Scope_19_165721.mp4</div>
+                </div>
+            </div>            <div class="file flex items-center gap-4 px-6 py-4 rounded-2xl mx-1">
+                <!-- Action Buttons -->
+                <div class="flex gap-2 w-52 flex-shrink-0">
+                    <button onclick="copyName('KA_Stakeholder_19_165932.mp4')" 
+                            class="px-4 py-2 text-xs font-medium bg-slate-700 hover:bg-slate-600 rounded-2xl transition-colors flex-1">
+                        Name
+                    </button>
+                    <button onclick="copyPath('D:\H455N\_PMP_\PMIQ\PMIQ_Part_4\KA\KA_Stakeholder_19_165932.mp4')" 
+                            class="px-4 py-2 text-xs font-medium bg-slate-700 hover:bg-slate-600 rounded-2xl transition-colors flex-1">
+                        Path
+                    </button>
+                    <button onclick="openFolder('D:\H455N\_PMP_\PMIQ\PMIQ_Part_4\KA')" 
+                            title="Open containing folder"
+                            class="px-4 py-2 text-xs font-medium bg-blue-600 hover:bg-blue-500 rounded-2xl transition-colors flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2 2 2 0 01-2 2 2 2 0 01-2-2 2 2 0 012-2 2 2 0 01-2-2 2 2 0 012-2zm0 0V9a2 2 0 012-2 2 2 0 01-2-2 2 2 0 01-2-2 2 2 0 012-2z" />
+                        </svg>
+                    </button>
+                </div>
+                
+                <!-- File Info -->
+                <div class="flex-1 min-w-0">
+                    <div class="font-medium text-slate-100">KA_Stakeholder_19_165932.mp4</div>
+                    <div class="text-xs text-slate-400 mt-1 font-mono truncate">D:\H455N\_PMP_\PMIQ\PMIQ_Part_4\KA\KA_Stakeholder_19_165932.mp4</div>
+                </div>
+            </div></div></details></div></details>        <details class="group">
+            <summary class="bg-slate-800 border-slate-700 px-6 py-4 rounded-3xl border cursor-pointer hover:border-slate-500 flex items-center justify-between mb-2">
+                <span class="font-semibold text-lg">PMIQ_Part_6</span>
+                <span class='inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-red-500/20 text-red-400 border border-red-500/30'>14</span>
+            </summary>
+            <div class="pl-9 pt-2 pb-5 space-y-3 border-l border-slate-700 ml-6">        <details class="group">
+            <summary class="bg-slate-800 border-slate-700 px-6 py-4 rounded-3xl border cursor-pointer hover:border-slate-500 flex items-center justify-between mb-2">
+                <span class="font-semibold text-lg">PG</span>
+                <span class='inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-red-500/20 text-red-400 border border-red-500/30'>14</span>
+            </summary>
+            <div class="pl-9 pt-2 pb-5 space-y-3 border-l border-slate-700 ml-6">            <div class="file flex items-center gap-4 px-6 py-4 rounded-2xl mx-1">
+                <!-- Action Buttons -->
+                <div class="flex gap-2 w-52 flex-shrink-0">
+                    <button onclick="copyName('KA_Closing_27_112952.mp4')" 
+                            class="px-4 py-2 text-xs font-medium bg-slate-700 hover:bg-slate-600 rounded-2xl transition-colors flex-1">
+                        Name
+                    </button>
+                    <button onclick="copyPath('D:\H455N\_PMP_\PMIQ\PMIQ_Part_6\PG\KA_Closing_27_112952.mp4')" 
+                            class="px-4 py-2 text-xs font-medium bg-slate-700 hover:bg-slate-600 rounded-2xl transition-colors flex-1">
+                        Path
+                    </button>
+                    <button onclick="openFolder('D:\H455N\_PMP_\PMIQ\PMIQ_Part_6\PG')" 
+                            title="Open containing folder"
+                            class="px-4 py-2 text-xs font-medium bg-blue-600 hover:bg-blue-500 rounded-2xl transition-colors flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2 2 2 0 01-2 2 2 2 0 01-2-2 2 2 0 012-2 2 2 0 01-2-2 2 2 0 012-2zm0 0V9a2 2 0 012-2 2 2 0 01-2-2 2 2 0 01-2-2 2 2 0 012-2z" />
+                        </svg>
+                    </button>
+                </div>
+                
+                <!-- File Info -->
+                <div class="flex-1 min-w-0">
+                    <div class="font-medium text-slate-100">KA_Closing_27_112952.mp4</div>
+                    <div class="text-xs text-slate-400 mt-1 font-mono truncate">D:\H455N\_PMP_\PMIQ\PMIQ_Part_6\PG\KA_Closing_27_112952.mp4</div>
+                </div>
+            </div>            <div class="file flex items-center gap-4 px-6 py-4 rounded-2xl mx-1">
+                <!-- Action Buttons -->
+                <div class="flex gap-2 w-52 flex-shrink-0">
+                    <button onclick="copyName('PG_Closing_10_162948.mp4')" 
+                            class="px-4 py-2 text-xs font-medium bg-slate-700 hover:bg-slate-600 rounded-2xl transition-colors flex-1">
+                        Name
+                    </button>
+                    <button onclick="copyPath('D:\H455N\_PMP_\PMIQ\PMIQ_Part_6\PG\PG_Closing_10_162948.mp4')" 
+                            class="px-4 py-2 text-xs font-medium bg-slate-700 hover:bg-slate-600 rounded-2xl transition-colors flex-1">
+                        Path
+                    </button>
+                    <button onclick="openFolder('D:\H455N\_PMP_\PMIQ\PMIQ_Part_6\PG')" 
+                            title="Open containing folder"
+                            class="px-4 py-2 text-xs font-medium bg-blue-600 hover:bg-blue-500 rounded-2xl transition-colors flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2 2 2 0 01-2 2 2 2 0 01-2-2 2 2 0 012-2 2 2 0 01-2-2 2 2 0 012-2zm0 0V9a2 2 0 012-2 2 2 0 01-2-2 2 2 0 01-2-2 2 2 0 012-2z" />
+                        </svg>
+                    </button>
+                </div>
+                
+                <!-- File Info -->
+                <div class="flex-1 min-w-0">
+                    <div class="font-medium text-slate-100">PG_Closing_10_162948.mp4</div>
+                    <div class="text-xs text-slate-400 mt-1 font-mono truncate">D:\H455N\_PMP_\PMIQ\PMIQ_Part_6\PG\PG_Closing_10_162948.mp4</div>
+                </div>
+            </div>            <div class="file flex items-center gap-4 px-6 py-4 rounded-2xl mx-1">
+                <!-- Action Buttons -->
+                <div class="flex gap-2 w-52 flex-shrink-0">
+                    <button onclick="copyName('PG_Executing_10_163339.mp4')" 
+                            class="px-4 py-2 text-xs font-medium bg-slate-700 hover:bg-slate-600 rounded-2xl transition-colors flex-1">
+                        Name
+                    </button>
+                    <button onclick="copyPath('D:\H455N\_PMP_\PMIQ\PMIQ_Part_6\PG\PG_Executing_10_163339.mp4')" 
+                            class="px-4 py-2 text-xs font-medium bg-slate-700 hover:bg-slate-600 rounded-2xl transition-colors flex-1">
+                        Path
+                    </button>
+                    <button onclick="openFolder('D:\H455N\_PMP_\PMIQ\PMIQ_Part_6\PG')" 
+                            title="Open containing folder"
+                            class="px-4 py-2 text-xs font-medium bg-blue-600 hover:bg-blue-500 rounded-2xl transition-colors flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2 2 2 0 01-2 2 2 2 0 01-2-2 2 2 0 012-2 2 2 0 01-2-2 2 2 0 012-2zm0 0V9a2 2 0 012-2 2 2 0 01-2-2 2 2 0 01-2-2 2 2 0 012-2z" />
+                        </svg>
+                    </button>
+                </div>
+                
+                <!-- File Info -->
+                <div class="flex-1 min-w-0">
+                    <div class="font-medium text-slate-100">PG_Executing_10_163339.mp4</div>
+                    <div class="text-xs text-slate-400 mt-1 font-mono truncate">D:\H455N\_PMP_\PMIQ\PMIQ_Part_6\PG\PG_Executing_10_163339.mp4</div>
+                </div>
+            </div>            <div class="file flex items-center gap-4 px-6 py-4 rounded-2xl mx-1">
+                <!-- Action Buttons -->
+                <div class="flex gap-2 w-52 flex-shrink-0">
+                    <button onclick="copyName('PG_Initiating_10_163554.mp4')" 
+                            class="px-4 py-2 text-xs font-medium bg-slate-700 hover:bg-slate-600 rounded-2xl transition-colors flex-1">
+                        Name
+                    </button>
+                    <button onclick="copyPath('D:\H455N\_PMP_\PMIQ\PMIQ_Part_6\PG\PG_Initiating_10_163554.mp4')" 
+                            class="px-4 py-2 text-xs font-medium bg-slate-700 hover:bg-slate-600 rounded-2xl transition-colors flex-1">
+                        Path
+                    </button>
+                    <button onclick="openFolder('D:\H455N\_PMP_\PMIQ\PMIQ_Part_6\PG')" 
+                            title="Open containing folder"
+                            class="px-4 py-2 text-xs font-medium bg-blue-600 hover:bg-blue-500 rounded-2xl transition-colors flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2 2 2 0 01-2 2 2 2 0 01-2-2 2 2 0 012-2 2 2 0 01-2-2 2 2 0 012-2zm0 0V9a2 2 0 012-2 2 2 0 01-2-2 2 2 0 01-2-2 2 2 0 012-2z" />
+                        </svg>
+                    </button>
+                </div>
+                
+                <!-- File Info -->
+                <div class="flex-1 min-w-0">
+                    <div class="font-medium text-slate-100">PG_Initiating_10_163554.mp4</div>
+                    <div class="text-xs text-slate-400 mt-1 font-mono truncate">D:\H455N\_PMP_\PMIQ\PMIQ_Part_6\PG\PG_Initiating_10_163554.mp4</div>
+                </div>
+            </div>            <div class="file flex items-center gap-4 px-6 py-4 rounded-2xl mx-1">
+                <!-- Action Buttons -->
+                <div class="flex gap-2 w-52 flex-shrink-0">
+                    <button onclick="copyName('PG_MC_10_100110.mp4')" 
+                            class="px-4 py-2 text-xs font-medium bg-slate-700 hover:bg-slate-600 rounded-2xl transition-colors flex-1">
+                        Name
+                    </button>
+                    <button onclick="copyPath('D:\H455N\_PMP_\PMIQ\PMIQ_Part_6\PG\PG_MC_10_100110.mp4')" 
+                            class="px-4 py-2 text-xs font-medium bg-slate-700 hover:bg-slate-600 rounded-2xl transition-colors flex-1">
+                        Path
+                    </button>
+                    <button onclick="openFolder('D:\H455N\_PMP_\PMIQ\PMIQ_Part_6\PG')" 
+                            title="Open containing folder"
+                            class="px-4 py-2 text-xs font-medium bg-blue-600 hover:bg-blue-500 rounded-2xl transition-colors flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2 2 2 0 01-2 2 2 2 0 01-2-2 2 2 0 012-2 2 2 0 01-2-2 2 2 0 012-2zm0 0V9a2 2 0 012-2 2 2 0 01-2-2 2 2 0 01-2-2 2 2 0 012-2z" />
+                        </svg>
+                    </button>
+                </div>
+                
+                <!-- File Info -->
+                <div class="flex-1 min-w-0">
+                    <div class="font-medium text-slate-100">PG_MC_10_100110.mp4</div>
+                    <div class="text-xs text-slate-400 mt-1 font-mono truncate">D:\H455N\_PMP_\PMIQ\PMIQ_Part_6\PG\PG_MC_10_100110.mp4</div>
+                </div>
+            </div>            <div class="file flex items-center gap-4 px-6 py-4 rounded-2xl mx-1">
+                <!-- Action Buttons -->
+                <div class="flex gap-2 w-52 flex-shrink-0">
+                    <button onclick="copyName('PG_MC_10_163823.mp4')" 
+                            class="px-4 py-2 text-xs font-medium bg-slate-700 hover:bg-slate-600 rounded-2xl transition-colors flex-1">
+                        Name
+                    </button>
+                    <button onclick="copyPath('D:\H455N\_PMP_\PMIQ\PMIQ_Part_6\PG\PG_MC_10_163823.mp4')" 
+                            class="px-4 py-2 text-xs font-medium bg-slate-700 hover:bg-slate-600 rounded-2xl transition-colors flex-1">
+                        Path
+                    </button>
+                    <button onclick="openFolder('D:\H455N\_PMP_\PMIQ\PMIQ_Part_6\PG')" 
+                            title="Open containing folder"
+                            class="px-4 py-2 text-xs font-medium bg-blue-600 hover:bg-blue-500 rounded-2xl transition-colors flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2 2 2 0 01-2 2 2 2 0 01-2-2 2 2 0 012-2 2 2 0 01-2-2 2 2 0 012-2zm0 0V9a2 2 0 012-2 2 2 0 01-2-2 2 2 0 01-2-2 2 2 0 012-2z" />
+                        </svg>
+                    </button>
+                </div>
+                
+                <!-- File Info -->
+                <div class="flex-1 min-w-0">
+                    <div class="font-medium text-slate-100">PG_MC_10_163823.mp4</div>
+                    <div class="text-xs text-slate-400 mt-1 font-mono truncate">D:\H455N\_PMP_\PMIQ\PMIQ_Part_6\PG\PG_MC_10_163823.mp4</div>
+                </div>
+            </div>            <div class="file flex items-center gap-4 px-6 py-4 rounded-2xl mx-1">
+                <!-- Action Buttons -->
+                <div class="flex gap-2 w-52 flex-shrink-0">
+                    <button onclick="copyName('PG_Planning_10_164141.mp4')" 
+                            class="px-4 py-2 text-xs font-medium bg-slate-700 hover:bg-slate-600 rounded-2xl transition-colors flex-1">
+                        Name
+                    </button>
+                    <button onclick="copyPath('D:\H455N\_PMP_\PMIQ\PMIQ_Part_6\PG\PG_Planning_10_164141.mp4')" 
+                            class="px-4 py-2 text-xs font-medium bg-slate-700 hover:bg-slate-600 rounded-2xl transition-colors flex-1">
+                        Path
+                    </button>
+                    <button onclick="openFolder('D:\H455N\_PMP_\PMIQ\PMIQ_Part_6\PG')" 
+                            title="Open containing folder"
+                            class="px-4 py-2 text-xs font-medium bg-blue-600 hover:bg-blue-500 rounded-2xl transition-colors flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2 2 2 0 01-2 2 2 2 0 01-2-2 2 2 0 012-2 2 2 0 01-2-2 2 2 0 012-2zm0 0V9a2 2 0 012-2 2 2 0 01-2-2 2 2 0 01-2-2 2 2 0 012-2z" />
+                        </svg>
+                    </button>
+                </div>
+                
+                <!-- File Info -->
+                <div class="flex-1 min-w-0">
+                    <div class="font-medium text-slate-100">PG_Planning_10_164141.mp4</div>
+                    <div class="text-xs text-slate-400 mt-1 font-mono truncate">D:\H455N\_PMP_\PMIQ\PMIQ_Part_6\PG\PG_Planning_10_164141.mp4</div>
+                </div>
+            </div>        <details class="group">
+            <summary class="bg-slate-800 border-slate-700 px-6 py-4 rounded-3xl border cursor-pointer hover:border-slate-500 flex items-center justify-between mb-2">
+                <span class="font-semibold text-lg">Executing</span>
+                <span class='inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-red-500/20 text-red-400 border border-red-500/30'>7</span>
+            </summary>
+            <div class="pl-9 pt-2 pb-5 space-y-3 border-l border-slate-700 ml-6">            <div class="file flex items-center gap-4 px-6 py-4 rounded-2xl mx-1">
+                <!-- Action Buttons -->
+                <div class="flex gap-2 w-52 flex-shrink-0">
+                    <button onclick="copyName('Answers_Executing_1.mp4')" 
+                            class="px-4 py-2 text-xs font-medium bg-slate-700 hover:bg-slate-600 rounded-2xl transition-colors flex-1">
+                        Name
+                    </button>
+                    <button onclick="copyPath('D:\H455N\_PMP_\PMIQ\PMIQ_Part_6\PG\Executing\Answers_Executing_1.mp4')" 
+                            class="px-4 py-2 text-xs font-medium bg-slate-700 hover:bg-slate-600 rounded-2xl transition-colors flex-1">
+                        Path
+                    </button>
+                    <button onclick="openFolder('D:\H455N\_PMP_\PMIQ\PMIQ_Part_6\PG\Executing')" 
+                            title="Open containing folder"
+                            class="px-4 py-2 text-xs font-medium bg-blue-600 hover:bg-blue-500 rounded-2xl transition-colors flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2 2 2 0 01-2 2 2 2 0 01-2-2 2 2 0 012-2 2 2 0 01-2-2 2 2 0 012-2zm0 0V9a2 2 0 012-2 2 2 0 01-2-2 2 2 0 01-2-2 2 2 0 012-2z" />
+                        </svg>
+                    </button>
+                </div>
+                
+                <!-- File Info -->
+                <div class="flex-1 min-w-0">
+                    <div class="font-medium text-slate-100">Answers_Executing_1.mp4</div>
+                    <div class="text-xs text-slate-400 mt-1 font-mono truncate">D:\H455N\_PMP_\PMIQ\PMIQ_Part_6\PG\Executing\Answers_Executing_1.mp4</div>
+                </div>
+            </div>            <div class="file flex items-center gap-4 px-6 py-4 rounded-2xl mx-1">
+                <!-- Action Buttons -->
+                <div class="flex gap-2 w-52 flex-shrink-0">
+                    <button onclick="copyName('Answers_Executing_1_Trim.mp4')" 
+                            class="px-4 py-2 text-xs font-medium bg-slate-700 hover:bg-slate-600 rounded-2xl transition-colors flex-1">
+                        Name
+                    </button>
+                    <button onclick="copyPath('D:\H455N\_PMP_\PMIQ\PMIQ_Part_6\PG\Executing\Answers_Executing_1_Trim.mp4')" 
+                            class="px-4 py-2 text-xs font-medium bg-slate-700 hover:bg-slate-600 rounded-2xl transition-colors flex-1">
+                        Path
+                    </button>
+                    <button onclick="openFolder('D:\H455N\_PMP_\PMIQ\PMIQ_Part_6\PG\Executing')" 
+                            title="Open containing folder"
+                            class="px-4 py-2 text-xs font-medium bg-blue-600 hover:bg-blue-500 rounded-2xl transition-colors flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2 2 2 0 01-2 2 2 2 0 01-2-2 2 2 0 012-2 2 2 0 01-2-2 2 2 0 012-2zm0 0V9a2 2 0 012-2 2 2 0 01-2-2 2 2 0 01-2-2 2 2 0 012-2z" />
+                        </svg>
+                    </button>
+                </div>
+                
+                <!-- File Info -->
+                <div class="flex-1 min-w-0">
+                    <div class="font-medium text-slate-100">Answers_Executing_1_Trim.mp4</div>
+                    <div class="text-xs text-slate-400 mt-1 font-mono truncate">D:\H455N\_PMP_\PMIQ\PMIQ_Part_6\PG\Executing\Answers_Executing_1_Trim.mp4</div>
+                </div>
+            </div>            <div class="file flex items-center gap-4 px-6 py-4 rounded-2xl mx-1">
+                <!-- Action Buttons -->
+                <div class="flex gap-2 w-52 flex-shrink-0">
+                    <button onclick="copyName('Answers_Executing_1_Trim_(2).mp4')" 
+                            class="px-4 py-2 text-xs font-medium bg-slate-700 hover:bg-slate-600 rounded-2xl transition-colors flex-1">
+                        Name
+                    </button>
+                    <button onclick="copyPath('D:\H455N\_PMP_\PMIQ\PMIQ_Part_6\PG\Executing\Answers_Executing_1_Trim_(2).mp4')" 
+                            class="px-4 py-2 text-xs font-medium bg-slate-700 hover:bg-slate-600 rounded-2xl transition-colors flex-1">
+                        Path
+                    </button>
+                    <button onclick="openFolder('D:\H455N\_PMP_\PMIQ\PMIQ_Part_6\PG\Executing')" 
+                            title="Open containing folder"
+                            class="px-4 py-2 text-xs font-medium bg-blue-600 hover:bg-blue-500 rounded-2xl transition-colors flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2 2 2 0 01-2 2 2 2 0 01-2-2 2 2 0 012-2 2 2 0 01-2-2 2 2 0 012-2zm0 0V9a2 2 0 012-2 2 2 0 01-2-2 2 2 0 01-2-2 2 2 0 012-2z" />
+                        </svg>
+                    </button>
+                </div>
+                
+                <!-- File Info -->
+                <div class="flex-1 min-w-0">
+                    <div class="font-medium text-slate-100">Answers_Executing_1_Trim_(2).mp4</div>
+                    <div class="text-xs text-slate-400 mt-1 font-mono truncate">D:\H455N\_PMP_\PMIQ\PMIQ_Part_6\PG\Executing\Answers_Executing_1_Trim_(2).mp4</div>
+                </div>
+            </div>            <div class="file flex items-center gap-4 px-6 py-4 rounded-2xl mx-1">
+                <!-- Action Buttons -->
+                <div class="flex gap-2 w-52 flex-shrink-0">
+                    <button onclick="copyName('KA_Executing_08_104038.mp4')" 
+                            class="px-4 py-2 text-xs font-medium bg-slate-700 hover:bg-slate-600 rounded-2xl transition-colors flex-1">
+                        Name
+                    </button>
+                    <button onclick="copyPath('D:\H455N\_PMP_\PMIQ\PMIQ_Part_6\PG\Executing\KA_Executing_08_104038.mp4')" 
+                            class="px-4 py-2 text-xs font-medium bg-slate-700 hover:bg-slate-600 rounded-2xl transition-colors flex-1">
+                        Path
+                    </button>
+                    <button onclick="openFolder('D:\H455N\_PMP_\PMIQ\PMIQ_Part_6\PG\Executing')" 
+                            title="Open containing folder"
+                            class="px-4 py-2 text-xs font-medium bg-blue-600 hover:bg-blue-500 rounded-2xl transition-colors flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2 2 2 0 01-2 2 2 2 0 01-2-2 2 2 0 012-2 2 2 0 01-2-2 2 2 0 012-2zm0 0V9a2 2 0 012-2 2 2 0 01-2-2 2 2 0 01-2-2 2 2 0 012-2z" />
+                        </svg>
+                    </button>
+                </div>
+                
+                <!-- File Info -->
+                <div class="flex-1 min-w-0">
+                    <div class="font-medium text-slate-100">KA_Executing_08_104038.mp4</div>
+                    <div class="text-xs text-slate-400 mt-1 font-mono truncate">D:\H455N\_PMP_\PMIQ\PMIQ_Part_6\PG\Executing\KA_Executing_08_104038.mp4</div>
+                </div>
+            </div>            <div class="file flex items-center gap-4 px-6 py-4 rounded-2xl mx-1">
+                <!-- Action Buttons -->
+                <div class="flex gap-2 w-52 flex-shrink-0">
+                    <button onclick="copyName('KA_Executing_09_162720.mp4')" 
+                            class="px-4 py-2 text-xs font-medium bg-slate-700 hover:bg-slate-600 rounded-2xl transition-colors flex-1">
+                        Name
+                    </button>
+                    <button onclick="copyPath('D:\H455N\_PMP_\PMIQ\PMIQ_Part_6\PG\Executing\KA_Executing_09_162720.mp4')" 
+                            class="px-4 py-2 text-xs font-medium bg-slate-700 hover:bg-slate-600 rounded-2xl transition-colors flex-1">
+                        Path
+                    </button>
+                    <button onclick="openFolder('D:\H455N\_PMP_\PMIQ\PMIQ_Part_6\PG\Executing')" 
+                            title="Open containing folder"
+                            class="px-4 py-2 text-xs font-medium bg-blue-600 hover:bg-blue-500 rounded-2xl transition-colors flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2 2 2 0 01-2 2 2 2 0 01-2-2 2 2 0 012-2 2 2 0 01-2-2 2 2 0 012-2zm0 0V9a2 2 0 012-2 2 2 0 01-2-2 2 2 0 01-2-2 2 2 0 012-2z" />
+                        </svg>
+                    </button>
+                </div>
+                
+                <!-- File Info -->
+                <div class="flex-1 min-w-0">
+                    <div class="font-medium text-slate-100">KA_Executing_09_162720.mp4</div>
+                    <div class="text-xs text-slate-400 mt-1 font-mono truncate">D:\H455N\_PMP_\PMIQ\PMIQ_Part_6\PG\Executing\KA_Executing_09_162720.mp4</div>
+                </div>
+            </div>            <div class="file flex items-center gap-4 px-6 py-4 rounded-2xl mx-1">
+                <!-- Action Buttons -->
+                <div class="flex gap-2 w-52 flex-shrink-0">
+                    <button onclick="copyName('PG_Executing_02.mp4')" 
+                            class="px-4 py-2 text-xs font-medium bg-slate-700 hover:bg-slate-600 rounded-2xl transition-colors flex-1">
+                        Name
+                    </button>
+                    <button onclick="copyPath('D:\H455N\_PMP_\PMIQ\PMIQ_Part_6\PG\Executing\PG_Executing_02.mp4')" 
+                            class="px-4 py-2 text-xs font-medium bg-slate-700 hover:bg-slate-600 rounded-2xl transition-colors flex-1">
+                        Path
+                    </button>
+                    <button onclick="openFolder('D:\H455N\_PMP_\PMIQ\PMIQ_Part_6\PG\Executing')" 
+                            title="Open containing folder"
+                            class="px-4 py-2 text-xs font-medium bg-blue-600 hover:bg-blue-500 rounded-2xl transition-colors flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2 2 2 0 01-2 2 2 2 0 01-2-2 2 2 0 012-2 2 2 0 01-2-2 2 2 0 012-2zm0 0V9a2 2 0 012-2 2 2 0 01-2-2 2 2 0 01-2-2 2 2 0 012-2z" />
+                        </svg>
+                    </button>
+                </div>
+                
+                <!-- File Info -->
+                <div class="flex-1 min-w-0">
+                    <div class="font-medium text-slate-100">PG_Executing_02.mp4</div>
+                    <div class="text-xs text-slate-400 mt-1 font-mono truncate">D:\H455N\_PMP_\PMIQ\PMIQ_Part_6\PG\Executing\PG_Executing_02.mp4</div>
+                </div>
+            </div>            <div class="file flex items-center gap-4 px-6 py-4 rounded-2xl mx-1">
+                <!-- Action Buttons -->
+                <div class="flex gap-2 w-52 flex-shrink-0">
+                    <button onclick="copyName('Questions_Executing_1.mp4')" 
+                            class="px-4 py-2 text-xs font-medium bg-slate-700 hover:bg-slate-600 rounded-2xl transition-colors flex-1">
+                        Name
+                    </button>
+                    <button onclick="copyPath('D:\H455N\_PMP_\PMIQ\PMIQ_Part_6\PG\Executing\Questions_Executing_1.mp4')" 
+                            class="px-4 py-2 text-xs font-medium bg-slate-700 hover:bg-slate-600 rounded-2xl transition-colors flex-1">
+                        Path
+                    </button>
+                    <button onclick="openFolder('D:\H455N\_PMP_\PMIQ\PMIQ_Part_6\PG\Executing')" 
+                            title="Open containing folder"
+                            class="px-4 py-2 text-xs font-medium bg-blue-600 hover:bg-blue-500 rounded-2xl transition-colors flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2 2 2 0 01-2 2 2 2 0 01-2-2 2 2 0 012-2 2 2 0 01-2-2 2 2 0 012-2zm0 0V9a2 2 0 012-2 2 2 0 01-2-2 2 2 0 01-2-2 2 2 0 012-2z" />
+                        </svg>
+                    </button>
+                </div>
+                
+                <!-- File Info -->
+                <div class="flex-1 min-w-0">
+                    <div class="font-medium text-slate-100">Questions_Executing_1.mp4</div>
+                    <div class="text-xs text-slate-400 mt-1 font-mono truncate">D:\H455N\_PMP_\PMIQ\PMIQ_Part_6\PG\Executing\Questions_Executing_1.mp4</div>
+                </div>
+            </div></div></details></div></details></div></details></div></details>        </div>
+    </div>
+
+    <footer class="bg-slate-900 border-t border-slate-700 py-5 text-center text-xs text-slate-500">
+        Generated on 2026-05-03 15:38 â€¢ PowerShell Video Scanner
+    </footer>
+
+    <script>
+        function copyName(name) {
+            navigator.clipboard.writeText(name).then(() => showToast("Name copied"));
+        }
+        function copyPath(path) {
+            navigator.clipboard.writeText(path).then(() => showToast("Path copied"));
+        }
+        function openFolder(folderPath) {
+            try {
+                // Best method for opening folder in Windows Explorer
+                const explorerCommand = 'explorer.exe "' + folderPath + '"';
+                window.location.href = 'data:application/x-msdownload,' + encodeURIComponent(explorerCommand);
+                
+                // Fallback using file protocol
+                setTimeout(() => {
+                    window.open('file:///' + folderPath.replace(/\\/g, '/'), '_blank');
+                }, 50);
+                
+                showToast("Opening folder in Explorer...");
+            } catch(e) {
+                alert("Could not open folder: " + folderPath);
+            }
+        }
+
+        function showToast(msg) {
+            const toast = document.createElement("div");
+            toast.textContent = msg;
+            toast.style.cssText = "position:fixed; bottom:30px; left:50%; transform:translateX(-50%); background:#1e2937; color:#bae6fd; padding:12px 26px; border-radius:9999px; z-index:1000; box-shadow:0 10px 15px -3px rgb(0 0 0 / 0.3);";
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 1600);
+        }
+    </script>
+</body>
+</html>
