@@ -1,3 +1,6 @@
+
+# python -m pip install 
+
 import os
 import time
 import subprocess
@@ -7,13 +10,13 @@ from PIL import Image
 
 
 # --- CONFIGURATION ---
-IN = r'C:\Users\h455n\Downloads\_DONE_\BB'
-OUT = r'C:\Users\h455n\Downloads\_DONE_\BB_RESIZED'
+IN = r'C:\Users\h455n\Downloads\_PIPELINE\IN\Phone'
+OUT = r'C:\Users\h455n\Downloads\_PIPELINE\IN\Phone_RESIZED'
 
 CONFIG = {
     "IN_DIR":IN,
     "OUT_DIR": OUT,
-    "QUALITY": 50, 
+    "QUALITY": 25, # No less than 20, 50 is good 
     "MAX_WIDTH": 1200, 
     "OPTIMIZE": True, 
     "EXTENSIONS": {'.jpg', '.jpeg', '.png'}

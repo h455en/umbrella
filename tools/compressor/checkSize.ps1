@@ -206,10 +206,9 @@ function Get-SizeBadge {
 # ___________________Call______________________________
 $report = "C:\Users\h455n\Downloads\_PS\MyLargeFiles.html"
 
-
 $folder = "F:\_WAY"
 $folder = "F:\PROGRAM_FILES\tmp\zamp"
-$folder = "C:\Users\h455n\Downloads\_PIPELINE"
+$folder = "C:\Users\h455n\Downloads\_PIPELINE\IN\Phone"
 
 $size = 5
 
