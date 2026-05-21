@@ -14,15 +14,15 @@ from reportlab.lib.colors import HexColor
 
 # ========================== CONFIGURATION ==========================
 
-IN = r"C:\Users\h455n\Downloads\_PIPELINE\IN\BGE\BGE_Entreprendre"
-PDF_PATH = r"C:\Users\h455n\Downloads\_PIPELINE\IN\IMG\E_00.pdf"
+IN = r"C:\Users\h455n\Downloads\_PIPELINE\IN\Retraite_RESIZED"
+PDF_PATH = r"C:\Users\h455n\Downloads\_PIPELINE\IN\carsat_webinaire.pdf"
 
 CONFIG = {
     "input_folder": IN,                    # ← Change this to your folder
     "output_pdf": PDF_PATH,
     "images_per_page": 4,
     "page_size": "A4",
-    "orientation": "portrait",              # "portrait" or "landscape"
+    "orientation": "landscape",              # "portrait" or "landscape"
     "margin_inches": 0.35,
 
     "grid": {
