@@ -10,7 +10,7 @@ from PIL import Image
 
 
 # --- CONFIGURATION ---
-IN = r'C:\Users\h455n\Downloads\_PIPELINE\IN\Phone'
+IN = r"C:\Users\h455n\Downloads\Rdv"
 OUT = IN + '_RESIZED'
 
 CONFIG = {
