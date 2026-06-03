@@ -27,28 +27,47 @@
             width: 100%;
             max-width: 430px;
         }
+        /* Range slider styling */
+        input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            background: #d1d1d6;
+            height: 4px;
+            border-radius: 2px;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #ffffff;
+            border: 0.5px solid rgba(0,0,0,0.15);
+            box-shadow: 0px 2px 4px rgba(0,0,0,0.2);
+            cursor: pointer;
+        }
     </style>
 </head>
 <body class="h-screen w-screen flex flex-col justify-between text-black selection:bg-blue-500 selection:text-white antialiased">
 
     <header class="bg-white/80 backdrop-blur-md border-b border-[#e5e5ea] py-2 px-4 text-[11px] font-medium tracking-tight text-gray-500 flex justify-between items-center z-50 sticky top-0">
-        <div>Crescent Engine v2.5</div>
+        <div>Crescent Engine v3.2</div>
         <div class="font-mono text-gray-400">Verifiable Astro Data</div>
     </header>
 
-    <main class="max-w-[430px] w-full mx-auto flex-grow flex flex-col justify-start p-3 overflow-hidden">
+    <main class="max-w-[430px] w-full mx-auto flex-grow flex flex-col justify-start p-3 overflow-hidden relative">
         
-        <div class="bg-[#e3e3e9] p-0.5 rounded-lg flex mb-4 text-xs font-medium z-10">
+        <div id="top-nav-bar" class="bg-[#e3e3e9] p-0.5 rounded-lg flex mb-3 text-xs font-medium z-10 transition-opacity duration-200">
             <button onclick="changeStation('bizerte')" id="btn-bizerte" class="flex-1 py-1 rounded-md bg-white shadow-sm font-semibold text-black transition-all">Bizerte (TN)</button>
             <button onclick="changeStation('paris')" id="btn-paris" class="flex-1 py-1 rounded-md text-gray-700 transition-all">Paris (FR)</button>
             <button onclick="changeStation('tips')" id="btn-tips" class="flex-1 py-1 rounded-md text-gray-700 transition-all">Prep &amp; Tips</button>
         </div>
 
-        <div class="flex-grow flex flex-col justify-between relative overflow-hidden">
+        <div id="station-wrapper" class="flex-grow flex flex-col justify-between relative overflow-hidden transition-opacity duration-200">
             
-            <div id="nav-header" class="flex justify-between items-center px-1 mb-2">
+            <div id="nav-header" class="flex justify-between items-center px-1 mb-1.5">
                 <div>
-                    <h2 id="station-title" class="text-[11px] uppercase tracking-wider text-gray-400 font-bold">Observation Station</h2>
+                    <h2 class="text-[11px] uppercase tracking-wider text-gray-400 font-bold">Observation Station</h2>
                     <h3 id="station-subtitle" class="text-base font-bold tracking-tight">Bizerte, Tunisia</h3>
                 </div>
                 <div id="slide-arrows" class="flex items-center gap-3">
@@ -69,28 +88,87 @@
 
         </div>
 
+        <div id="kpi-modal" class="absolute inset-x-3 top-3 bottom-3 bg-white rounded-xl border border-[#e5e5ea] shadow-xl z-50 transform translate-y-full opacity-0 pointer-events-none transition-all duration-300 ease-out flex flex-col justify-between p-5">
+            <div class="flex flex-col space-y-4">
+                <div class="flex items-center justify-between border-b border-gray-100 pb-3">
+                    <button onclick="closeModal()" class="flex items-center gap-1 text-blue-600 font-bold text-sm active:scale-95 transition-transform select-none">
+                        <span class="text-lg">&larr;</span> Back
+                    </button>
+                    <span id="modal-tag" class="text-[9px] uppercase font-mono font-bold tracking-wider px-2 py-0.5 rounded-full bg-gray-100 text-gray-500">KPI Detail</span>
+                </div>
+                <div>
+                    <h3 id="modal-title" class="text-xl font-black tracking-tight text-gray-900 mb-2">Metric Information</h3>
+                    <div id="modal-desc" class="text-xs text-gray-600 leading-relaxed space-y-2">
+                        </div>
+                </div>
+            </div>
+            <div id="modal-swipe-zone" class="w-full text-center py-4 border-t border-gray-100 text-[10px] text-gray-400 font-semibold tracking-tight uppercase cursor-pointer select-none">
+                ↑ Swipe up or click back to return
+            </div>
+        </div>
+
     </main>
 
     <div class="relative z-50 bg-white border-t border-[#e5e5ea]">
         
         <button onclick="toggleConfigDrawer()" class="w-full py-1.5 bg-gray-50 hover:bg-gray-100 border-b border-gray-200 text-[10px] font-bold uppercase tracking-wider text-gray-500 flex justify-center items-center gap-1 select-none">
-            <span id="drawer-arrow">▲</span> Data Engines &amp; Settings
+            <span id="drawer-arrow">▲</span> Threshold Engines &amp; Settings (Live Tuning)
         </button>
 
         <div id="config-drawer" class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out bg-gray-50">
-            <div class="p-3 space-y-3 border-b border-gray-200">
-                <div class="text-[11px] font-bold text-gray-700 tracking-tight">Backup &amp; Sync Matrix</div>
+            <div class="p-3 space-y-3 border-b border-gray-200 text-xs">
+                
+                <div>
+                    <div class="text-[11px] font-bold text-gray-700 tracking-tight mb-2 uppercase">Live Metric Threshold Tuning Sliders</div>
+                    <div class="space-y-2">
+                        <div>
+                            <div class="flex justify-between text-[10px] mb-0.5 text-gray-600">
+                                <span>Optimal Moon Age Range (Green)</span>
+                                <span class="font-mono font-bold text-gray-900"><span id="lbl-age-min">20</span>h - <span id="lbl-age-max">28</span>h</span>
+                            </div>
+                            <div class="flex gap-2 items-center">
+                                <input type="range" id="cfg-age-min" min="12" max="24" value="20" oninput="updateSliders()" class="w-full">
+                                <input type="range" id="cfg-age-max" min="25" max="42" value="28" oninput="updateSliders()" class="w-full">
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-[10px] mb-0.5 text-gray-600">
+                                <span>Optimal Elongation Range (Green)</span>
+                                <span class="font-mono font-bold text-gray-900"><span id="lbl-elong-min">11</span>° - <span id="lbl-elong-max">15</span>°</span>
+                            </div>
+                            <div class="flex gap-2 items-center">
+                                <input type="range" id="cfg-elong-min" min="8" max="12" value="11" oninput="updateSliders()" class="w-full">
+                                <input type="range" id="cfg-elong-max" min="13" max="22" value="15" oninput="updateSliders()" class="w-full">
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-[10px] mb-0.5 text-gray-600">
+                                <span>Min Altitude Floor (Green if above)</span>
+                                <span class="font-mono font-bold text-gray-900"><span id="lbl-alt-min">10</span>°</span>
+                            </div>
+                            <input type="range" id="cfg-alt-min" min="4" max="15" value="10" oninput="updateSliders()" class="w-full">
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-[10px] mb-0.5 text-gray-600">
+                                <span>Min Stay Visibility (Green if above)</span>
+                                <span class="font-mono font-bold text-gray-900"><span id="lbl-stay-min">50</span> min</span>
+                            </div>
+                            <input type="range" id="cfg-stay-min" min="20" max="75" value="50" oninput="updateSliders()" class="w-full">
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="border-gray-200">
+
+                <div class="text-[11px] font-bold text-gray-700 tracking-tight">Data Synchronizer Matrix</div>
                 <div class="flex gap-2">
-                    <button onclick="downloadJSON()" class="flex-1 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium text-xs shadow-sm transition-all text-center">
-                        Download Backup (.json)
+                    <button onclick="downloadJSON()" class="flex-1 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium text-xs shadow-sm transition-all text-center">
+                        Download Pure JSON
                     </button>
-                    <label class="flex-1 py-2 bg-white hover:bg-gray-100 text-gray-700 border border-[#e5e5ea] rounded-lg font-medium text-xs shadow-sm transition-all text-center cursor-pointer">
-                        Upload Sync (.json)
+                    <label class="flex-1 py-1.5 bg-white hover:bg-gray-100 text-gray-700 border border-[#e5e5ea] rounded-lg font-medium text-xs shadow-sm transition-all text-center cursor-pointer">
+                        Upload Pure JSON
                         <input type="file" id="upload-gate" accept=".json" onchange="uploadJSON(event)" class="hidden">
                     </label>
-                </div>
-                <div class="text-[9px] text-gray-400 leading-normal">
-                    Importing an alternate payload instantly overrides default spatial data parameters used for station computations.
                 </div>
             </div>
         </div>
@@ -107,34 +185,67 @@
     </div>
 
     <script>
+        // Global variables holding live computational configurations
+        let config = {
+            ageMin: 20, ageMax: 28,
+            elongMin: 11, elongMax: 15,
+            altMin: 10,
+            stayMin: 50
+        };
+
+        // Flat structural schema dictionary containing target points and precise observational azimuth values
         let datasets = {
             bizerte: {
                 title: "Bizerte, Tunisia",
                 meta: "UT+1 / CET Timeframe",
                 slides: [
-                    { date: "June 15, 2026", hijri: "29 Dhul-Hijjah 1447", diff: "Easy Sighting", diffClass: "bg-emerald-50 text-emerald-700 border-emerald-200", sight: "19:55 - 20:25", dir: "293°", dirPill: "W-NW Sky Arc", dirClass: "bg-blue-50 text-blue-700 border-blue-100", alt: "9.8°", altPill: "Favorable Elevation", altClass: "bg-emerald-50 text-emerald-700 border-emerald-100", orient: "Bottom-Right tilted (5 o'clock)", conj: "June 15 • 03:54", mrise: "04:48", srise: "05:01", sset: "19:35", mset: "20:38", isha: "21:15" },
-                    { date: "July 15, 2026", hijri: "29 Muharram 1448", diff: "Optimal Clear", diffClass: "bg-emerald-100 text-emerald-800 border-emerald-300", sight: "19:50 - 20:20", dir: "288°", dirPill: "W-NW Sky Arc", dirClass: "bg-blue-50 text-blue-700 border-blue-100", alt: "11.2°", altPill: "Excellent Separation", altClass: "bg-emerald-50 text-emerald-700 border-emerald-100", orient: "Bottom Base Center (6 o'clock)", conj: "July 14 • 10:43", mrise: "05:14", srise: "05:13", sset: "19:32", mset: "20:53", isha: "21:08" },
-                    { date: "August 13, 2026", hijri: "29 Safar 1448", diff: "Highly Visible", diffClass: "bg-emerald-100 text-emerald-800 border-emerald-300", sight: "19:25 - 19:55", dir: "274°", dirPill: "True West Horizon", dirClass: "bg-blue-50 text-blue-700 border-blue-100", alt: "12.5°", altPill: "Peak Horizon Altitude", altClass: "bg-emerald-50 text-emerald-700 border-emerald-100", orient: "Bottom-Left tilted (7 o'clock)", conj: "August 12 • 18:36", mrise: "06:01", srise: "05:37", sset: "19:07", mset: "20:31", isha: "20:30" },
-                    { date: "Sept 12, 2026", hijri: "29 Rabi' al-Awwal 1448", diff: "Critical Margins", diffClass: "bg-orange-50 text-orange-700 border-orange-200", sight: "18:42 - 19:05", dir: "260°", dirPill: "W-SW Sky Arc", dirClass: "bg-amber-50 text-amber-700 border-amber-100", alt: "5.1°", altPill: "Very Low Horizon Rim", altClass: "bg-red-50 text-red-700 border-red-100", orient: "Left Vertical (8 o'clock)", conj: "Sept 11 • 04:26", mrise: "06:29", srise: "06:01", sset: "18:24", mset: "19:18", isha: "19:42" }
+                    { date: "June 15, 2026", hijri: "29 Dhul-Hijjah 1447", visibility: "Easy", age: 16.0, elongation: 11.4, altitude: 9.8, stay: 63, orientation: "Bottom-Right tilted (5 o'clock)", angle: -30, azimuth: "298° WNW", conj: "03:54", mrise: "04:48", srise: "05:01", sset: "19:35", targetWin: "20:15", mset: "20:38", isha: "21:15" },
+                    { date: "July 15, 2026", hijri: "29 Muharram 1448", visibility: "Very Easy", age: 33.1, elongation: 16.8, altitude: 11.2, stay: 81, orientation: "Bottom Base Center (6 o'clock)", angle: 0, azimuth: "292° WNW", conj: "10:43 (July 14)", mrise: "05:14", srise: "05:13", sset: "19:32", targetWin: "20:12", mset: "20:53", isha: "21:08" },
+                    { date: "August 13, 2026", hijri: "29 Safar 1448", visibility: "Very Easy", age: 24.8, elongation: 13.2, altitude: 12.5, stay: 84, orientation: "Bottom-Left tilted (7 o'clock)", angle: 30, azimuth: "281° W", conj: "18:36 (August 12)", mrise: "06:01", srise: "05:37", sset: "19:07", targetWin: "19:47", mset: "20:31", isha: "20:30" },
+                    { date: "Sept 12, 2026", hijri: "29 Rabi' al-Awwal 1448", visibility: "Difficult", age: 37.9, elongation: 15.5, altitude: 5.1, stay: 54, orientation: "Left Vertical (8 o'clock)", angle: 60, azimuth: "267° W", conj: "04:26 (Sept 11)", mrise: "06:29", srise: "06:01", sset: "18:24", targetWin: "19:04", mset: "19:18", isha: "19:42" }
                 ]
             },
             paris: {
                 title: "Paris, France",
                 meta: "UT+2 / CEST Daylight Time",
                 slides: [
-                    { date: "June 15, 2026", hijri: "29 Dhul-Hijjah 1447", diff: "Severe Glare", diffClass: "bg-orange-100 text-orange-800 border-orange-300", sight: "22:15 - 22:45", dir: "304°", dirPill: "NW Horizon Edge", dirClass: "bg-blue-50 text-blue-700 border-blue-100", alt: "4.2°", altPill: "Very Low Horizon Rim", altClass: "bg-red-50 text-red-700 border-red-100", orient: "Bottom-Right tilted (4 o'clock)", conj: "June 15 • 04:54", mrise: "05:34", srise: "05:47", sset: "21:55", mset: "22:51", isha: "23:55" },
-                    { date: "July 15, 2026", hijri: "29 Muharram 1448", diff: "Favorable Window", diffClass: "bg-emerald-50 text-emerald-700 border-emerald-200", sight: "22:00 - 22:30", dir: "298°", dirPill: "W-NW Sky Arc", dirClass: "bg-blue-50 text-blue-700 border-blue-100", alt: "7.8°", altPill: "Low Altitude Position", altClass: "bg-amber-50 text-amber-700 border-amber-100", orient: "Bottom Base Center (5 o'clock)", conj: "July 14 • 11:43", mrise: "06:12", srise: "06:04", sset: "21:42", mset: "22:56", isha: "23:28" },
-                    { date: "August 13, 2026", hijri: "29 Safar 1448", diff: "Easy Clear", diffClass: "bg-emerald-100 text-emerald-800 border-emerald-300", sight: "21:20 - 21:50", dir: "283°", dirPill: "W-NW Sky Arc", dirClass: "bg-blue-50 text-blue-700 border-blue-100", alt: "9.5°", altPill: "Favorable Elevation", altClass: "bg-emerald-50 text-emerald-700 border-emerald-100", orient: "Bottom-Left tilted (7 o'clock)", conj: "August 12 • 19:36", mrise: "07:03", srise: "06:42", sset: "21:02", mset: "22:11", isha: "22:31" },
-                    { date: "Sept 12, 2026", hijri: "29 Rabi' al-Awwal 1448", diff: "Nearly Invisible", diffClass: "bg-gray-900 text-white border-black", sight: "20:02 - 20:18", dir: "265°", dirPill: "W-SW Sky Arc", dirClass: "bg-amber-50 text-amber-700 border-amber-100", alt: "2.3°", altPill: "Critically Obscured", altClass: "bg-red-100 text-red-900 border-red-300", orient: "Left Vertical (8 o'clock)", conj: "Sept 11 • 05:26", mrise: "07:22", srise: "07:24", sset: "20:00", mset: "20:25", isha: "21:31" }
+                    { date: "June 15, 2026", hijri: "29 Dhul-Hijjah 1447", visibility: "Difficult", age: 17.0, elongation: 11.6, altitude: 4.2, stay: 56, orientation: "Bottom-Right tilted (4 o'clock)", angle: -60, azimuth: "308° NW", conj: "04:54", mrise: "05:34", srise: "05:47", sset: "21:55", targetWin: "22:35", mset: "22:51", isha: "23:55" },
+                    { date: "July 15, 2026", hijri: "29 Muharram 1448", visibility: "Good", age: 34.1, elongation: 17.1, altitude: 7.8, stay: 74, orientation: "Bottom Base Center (5 o'clock)", angle: -30, azimuth: "301° WNW", conj: "11:43 (July 14)", mrise: "06:12", srise: "06:04", sset: "21:42", targetWin: "22:22", mset: "22:56", isha: "23:28" },
+                    { date: "August 13, 2026", hijri: "29 Safar 1448", visibility: "Easy", age: 25.8, elongation: 13.4, altitude: 9.5, stay: 69, orientation: "Bottom-Left tilted (7 o'clock)", angle: 30, azimuth: "288° WNW", conj: "19:36 (August 12)", mrise: "07:03", srise: "06:42", sset: "21:02", targetWin: "21:42", mset: "22:11", isha: "22:31" },
+                    { date: "Sept 12, 2026", hijri: "29 Rabi' al-Awwal 1448", visibility: "Impossible", age: 38.6, elongation: 15.7, altitude: 2.3, stay: 25, orientation: "Left Vertical (8 o'clock)", angle: 60, azimuth: "272° W", conj: "05:26 (Sept 11)", mrise: "07:22", srise: "07:24", sset: "20:00", targetWin: "20:40", mset: "20:25", isha: "21:31" }
                 ]
             },
             tips: {
                 title: "Field Reference",
                 meta: "Execution Guidelines",
                 slides: [
-                    { type: "tip", tag: "Timing Window", title: "The Dusk Separation", desc: "Maghrib prayer marks structural sunset. Visual tracking parameters for thin crescent alignments open 20 minutes post-sunset when solar glare depth levels reduce." },
-                    { type: "tip", tag: "Field Geometry", title: "Hand Horizon Spans", desc: "Aligning your baseline hand position tightly against the clear horizon gives you an analog instrument. A closed fist at arm length spans roughly 10 degrees." }
+                    { type: "tip_conditions" },
+                    { type: "tip", tag: "Timing Window", title: "The Dusk Separation", desc: "Maghrib prayer marks structural sunset. Visual tracking parameters for thin crescent alignments open 20 minutes post-sunset when solar glare depth levels reduce." }
                 ]
+            }
+        };
+
+        // Static Definition Matrix for KPI Deep Dives
+        const kpiIntel = {
+            orientation: {
+                title: "Crescent Orientation & Axis",
+                desc: "<p><b>What it means:</b> The slant of the crescent moon relative to your local horizon vector line.</p><p><b>Optimal State:</b> Tilted upward horns ('smiley face' shape) maximize glare contrast against dusk background light. Vertically stacked limbs or completely flipped terminators are harder to spot by the human eye at sunset.</p>"
+            },
+            stay: {
+                title: "Stay Time (Time Lag)",
+                desc: "<p><b>What it means:</b> The exact window between standard sun descent and moonset.</p><p><b>Optimal State:</b> 50+ minutes is highly recommended. Anything under 35 minutes means the crescent follows the sun down into thick twilight haze before the sky is dark enough to reveal it.</p>"
+            },
+            altitude: {
+                title: "Altitude (Horizon Height)",
+                desc: "<p><b>What it means:</b> The elevation angle of the center of the moon disk above the true flat line of the horizon at exact sunset.</p><p><b>Optimal State:</b> 10°+ provides clear clearance from low cloud layers and dust pollution. Every 10° equals roughly one closed fist stacked vertically at arm's length.</p>"
+            },
+            age: {
+                title: "Moon Age (Post-Conjunction)",
+                desc: "<p><b>What it means:</b> The time elapsed since the exact astronomical New Moon instance.</p><p><b>Optimal State:</b> 20–28 hours. Under 20 hours, the crescent is incredibly thin and requires exceptional sight or optics. Under 12 hours, it is physically impossible to view with civilian instruments.</p>"
+            },
+            elongation: {
+                title: "Elongation (Sun-Moon Angle)",
+                desc: "<p><b>What it means:</b> The angular separation between the center of the Sun and Moon as seen from Earth.</p><p><b>Optimal State:</b> 11°–15° is ideal. This directly determines the thickness of the visible lunar sliver. Smaller angles yield an impossibly thin ribbon of reflected light.</p>"
             }
         };
 
@@ -142,6 +253,67 @@
         let currentSlideIndex = 0;
         let isDrawerOpen = false;
         const container = document.getElementById('slide-master');
+
+        function getValueColor(val, optimalMin, optimalMax, extremeLow, extremeHigh) {
+            if (val >= optimalMin && val <= optimalMax) return "text-emerald-500 font-bold";
+            if (val <= extremeLow || val >= extremeHigh) return "text-rose-600 font-bold";
+            return "text-amber-500 font-semibold";
+        }
+
+        function getDifficultyColor(visibility) {
+            switch (visibility) {
+                case "Very Easy": return "bg-emerald-600 text-white border-emerald-700 shadow-sm";
+                case "Easy":
+                case "Good": return "bg-emerald-500 text-white border-emerald-600 shadow-sm";
+                case "Difficult":
+                case "Very Difficult": return "bg-amber-500 text-black border-amber-600 shadow-sm";
+                case "Impossible": return "bg-rose-600 text-white border-rose-700 shadow-sm";
+                default: return "bg-gray-100 text-gray-800 border-gray-200";
+            }
+        }
+
+        function updateSliders() {
+            config.ageMin = parseFloat(document.getElementById('cfg-age-min').value);
+            config.ageMax = parseFloat(document.getElementById('cfg-age-max').value);
+            config.elongMin = parseFloat(document.getElementById('cfg-elong-min').value);
+            config.elongMax = parseFloat(document.getElementById('cfg-elong-max').value);
+            config.altMin = parseFloat(document.getElementById('cfg-alt-min').value);
+            config.stayMin = parseFloat(document.getElementById('cfg-stay-min').value);
+
+            document.getElementById('lbl-age-min').innerText = config.ageMin;
+            document.getElementById('lbl-age-max').innerText = config.ageMax;
+            document.getElementById('lbl-elong-min').innerText = config.elongMin;
+            document.getElementById('lbl-elong-max').innerText = config.elongMax;
+            document.getElementById('lbl-alt-min').innerText = config.altMin;
+            document.getElementById('lbl-stay-min').innerText = config.stayMin;
+
+            renderSlides();
+        }
+
+        // Modal Action Interfaces
+        function openModal(key) {
+            const data = kpiIntel[key];
+            if (!data) return;
+
+            document.getElementById('modal-title').innerText = data.title;
+            document.getElementById('modal-desc').innerHTML = data.desc;
+            document.getElementById('modal-tag').innerText = `${key} rule`;
+
+            const modal = document.getElementById('kpi-modal');
+            modal.classList.remove('translate-y-full', 'opacity-0', 'pointer-events-none');
+            
+            // Subtly blur background elements for layout focus
+            document.getElementById('top-nav-bar').classList.add('opacity-10', 'pointer-events-none');
+            document.getElementById('station-wrapper').classList.add('opacity-10', 'pointer-events-none');
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('kpi-modal');
+            modal.classList.add('translate-y-full', 'opacity-0', 'pointer-events-none');
+            
+            document.getElementById('top-nav-bar').classList.remove('opacity-10', 'pointer-events-none');
+            document.getElementById('station-wrapper').classList.remove('opacity-10', 'pointer-events-none');
+        }
 
         function renderSlides() {
             container.innerHTML = '';
@@ -151,82 +323,117 @@
                 const div = document.createElement('div');
                 div.className = 'slide p-4 h-full flex flex-col justify-between bg-white overflow-y-auto';
                 
-                if (slide.type === 'tip') {
+                if (slide.type === 'tip_conditions') {
                     div.innerHTML = `
-                        <div class="space-y-4 my-auto">
-                            <div>
-                                <span class="px-2 py-0.5 rounded-full bg-blue-50 text-blue-600 font-bold text-[9px] tracking-wide border border-blue-200">${slide.tag}</span>
-                                <h4 class="font-bold text-lg text-gray-900 mt-2 mb-1 tracking-tight">${slide.title}</h4>
-                                <p class="text-xs text-gray-500 leading-relaxed">${slide.desc}</p>
+                        <div class="space-y-3.5 my-auto text-xs text-gray-700">
+                            <div class="bg-blue-50/70 border border-blue-100 p-3.5 rounded-xl">
+                                <h4 class="font-bold text-sm text-blue-900 mb-1.5 flex items-center gap-1">🌤️ Observing Conditions</h4>
+                                <ul class="list-disc pl-4 space-y-1 text-gray-600 font-medium">
+                                    <li>Clear skies with low dust (common in Tunisia after rain)</li>
+                                    <li>Low light pollution — best from coastal or elevated spots near Bizerte</li>
+                                    <li>Unobstructed western horizon</li>
+                                    <li>Binoculars recommended for ages under 20 hours</li>
+                                </ul>
+                            </div>
+                            <div class="bg-emerald-50/70 border border-emerald-100 p-3.5 rounded-xl">
+                                <h4 class="font-bold text-sm text-emerald-900 mb-1.5 flex items-center gap-1">⭐ Optimal Scenario Summary</h4>
+                                <ul class="space-y-1 font-mono text-[11px] text-gray-700">
+                                    <li class="flex justify-between"><span>• Moon Age:</span> <span class="font-bold text-emerald-700">20–28 hours</span></li>
+                                    <li class="flex justify-between"><span>• Elongation:</span> <span class="font-bold text-emerald-700">11–15°</span></li>
+                                    <li class="flex justify-between"><span>• Altitude:</span> <span class="font-bold text-emerald-700">10°+</span></li>
+                                    <li class="flex justify-between"><span>• Time Lag:</span> <span class="font-bold text-emerald-700">50+ minutes</span></li>
+                                    <li class="flex justify-between"><span>• Trajectory:</span> <span class="font-bold text-emerald-700">Clear sky + upward horns</span></li>
+                                </ul>
                             </div>
                         </div>
                     `;
-                } else {
+                } else if (slide.type === 'tip') {
                     div.innerHTML = `
-                        <div class="flex flex-col h-full justify-between space-y-3">
+                        <div class="space-y-2 my-auto">
+                            <span class="px-2 py-0.5 rounded-full bg-blue-50 text-blue-600 font-bold text-[9px] tracking-wide border border-blue-200">${slide.tag}</span>
+                            <h4 class="font-bold text-base text-gray-900 mt-1 mb-1 tracking-tight">${slide.title}</h4>
+                            <p class="text-xs text-gray-500 leading-relaxed">${slide.desc}</p>
+                        </div>
+                    `;
+                } else {
+                    const ageColor = getValueColor(slide.age, config.ageMin, config.ageMax, 13.0, 40.0);
+                    const elongColor = getValueColor(slide.elongation, config.elongMin, config.elongMax, 9.0, 20.0);
+                    const altColor = getValueColor(slide.altitude, config.altMin, 90.0, 4.5, 90.0);
+                    const stayColor = getValueColor(slide.stay, config.stayMin, 200.0, 35.0, 200.0);
+                    const difficultyBadgeClass = getDifficultyColor(slide.visibility);
+
+                    div.innerHTML = `
+                        <div class="flex flex-col h-full justify-between space-y-3.5">
                             
-                            <div class="bg-gray-900 text-white p-3.5 rounded-xl shadow-sm space-y-3">
-                                <div class="flex justify-between items-center border-b border-white/10 pb-2">
-                                    <div>
-                                        <span class="text-[9px] tracking-wider uppercase opacity-60 font-bold block">Best Target Window</span>
-                                        <div class="text-xl font-bold font-mono text-blue-400 tracking-tight">${slide.sight}</div>
-                                    </div>
-                                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-tight border ${slide.diffClass}">${slide.diff}</span>
-                                </div>
-
-                                <div class="grid grid-cols-2 gap-2 text-xs pt-0.5">
-                                    <div class="flex flex-col justify-between p-2 bg-white/5 rounded-lg border border-white/5">
-                                        <span class="text-gray-400 text-[10px] font-medium">Altitude Elevation</span>
-                                        <div class="text-base font-black font-mono my-0.5">${slide.alt}</div>
-                                        <span class="px-1 py-0.5 rounded text-[9px] font-bold tracking-tight inline-block text-center mt-1 border ${slide.altClass}">${slide.altPill}</span>
-                                    </div>
-                                    <div class="flex flex-col justify-between p-2 bg-white/5 rounded-lg border border-white/5">
-                                        <span class="text-gray-400 text-[10px] font-medium">Direction Azimuth</span>
-                                        <div class="text-base font-black font-mono my-0.5">${slide.dir}</div>
-                                        <span class="px-1 py-0.5 rounded text-[9px] font-bold tracking-tight inline-block text-center mt-1 border ${slide.dirClass}">${slide.dirPill}</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="flex justify-between items-center bg-gray-50 p-2.5 rounded-lg border border-gray-100">
+                            <div class="${difficultyBadgeClass} p-3 rounded-xl border flex justify-between items-center transition-all">
                                 <div>
-                                    <h4 class="text-xs font-bold text-gray-900 tracking-tight">${slide.date}</h4>
-                                    <p class="text-[10px] text-gray-400 font-mono">${slide.hijri}</p>
+                                    <h4 class="text-xs font-bold tracking-tight opacity-90">${slide.date}</h4>
+                                    <p class="text-[10px] font-mono opacity-75">${slide.hijri}</p>
                                 </div>
-                                <div class="text-right">
-                                    <span class="text-[9px] block text-gray-400 font-bold uppercase tracking-wider">Crescent Orientation</span>
-                                    <span class="text-[11px] font-medium text-purple-700 font-mono">${slide.orient}</span>
+                                <span class="px-3 py-1 bg-white/20 text-white rounded-md text-xs font-black tracking-tight uppercase">${slide.visibility}</span>
+                            </div>
+
+                            <div onclick="openModal('orientation')" class="bg-purple-50/60 p-3 rounded-xl border border-purple-100 flex-grow flex flex-col justify-center cursor-pointer active:bg-purple-100/70 transition-colors">
+                                <div class="flex justify-between items-center mb-1">
+                                    <span class="text-[8px] text-purple-700 font-bold uppercase tracking-wider">Priority 1: Axis, Tilt &amp; Direction</span>
+                                    <span class="text-[9px] font-bold text-purple-500 font-sans">Info ➔</span>
+                                </div>
+                                <div class="flex items-center gap-4">
+                                    <div class="relative w-14 h-14 rounded-full bg-gray-950 flex items-center justify-center flex-shrink-0 border border-purple-200 overflow-hidden shadow-md">
+                                        <div class="absolute w-full h-[0.5px] bg-gray-800 top-1/2 left-0"></div>
+                                        <div class="absolute inset-0 flex items-center justify-center transition-transform duration-300" style="transform: rotate(${slide.angle}deg);">
+                                            <div class="absolute w-12 h-[0.75px] bg-rose-400 shadow-sm z-10"></div>
+                                            <div class="w-7 h-7 rounded-full bg-transparent border-r-[3.5px] border-b-[3.5px] border-amber-300 transform rotate-45"></div>
+                                        </div>
+                                    </div>
+                                    <div class="leading-tight">
+                                        <div class="text-sm font-black text-gray-900 tracking-tight">${slide.orientation}</div>
+                                        <div class="text-xs font-extrabold text-indigo-700 mt-0.5 flex items-center gap-1">
+                                            🧭 Look: <span class="bg-indigo-100 px-1.5 py-0.5 rounded text-[11px] font-mono">${slide.azimuth}</span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
-                            <div class="space-y-1">
-                                <span class="text-[9px] font-bold text-gray-400 uppercase tracking-wider block px-1">Linear Day Timeline</span>
-                                <div class="border border-gray-100 rounded-xl overflow-hidden text-xs">
-                                    <div class="flex justify-between items-center py-1.5 px-3 bg-gray-50/50 border-b border-gray-100 font-mono">
-                                        <span class="text-gray-400 font-sans text-[11px]">🌑 Astro Conjunction</span>
-                                        <span class="text-gray-500 font-medium">${slide.conj}</span>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div onclick="openModal('stay')" class="bg-gray-50 border border-gray-200 p-4 rounded-xl flex flex-col justify-between items-center shadow-sm cursor-pointer active:bg-gray-100 transition-colors">
+                                    <div class="w-full flex justify-between text-[9px] font-bold text-gray-500 tracking-wider">
+                                        <span>P2: STAY TIME</span>
+                                        <span class="text-gray-400">➔</span>
                                     </div>
-                                    <div class="flex justify-between items-center py-1.5 px-3 border-b border-gray-100 font-mono">
-                                        <span class="text-gray-400 font-sans text-[11px]">🌅 Sunrise</span>
-                                        <span class="text-gray-600">${slide.srise}</span>
-                                    </div>
-                                    <div class="flex justify-between items-center py-1.5 px-3 border-b border-gray-100 font-mono">
-                                        <span class="text-gray-400 font-sans text-[11px]">🚀 Moonrise</span>
-                                        <span class="text-gray-600">${slide.mrise}</span>
-                                    </div>
-                                    <div class="flex justify-between items-center py-1.5 px-3 bg-amber-50/40 border-b border-gray-100 font-mono font-semibold">
-                                        <span class="text-amber-800 font-sans text-[11px]">🌇 Sunset (Maghrib)</span>
-                                        <span class="text-black">${slide.sset}</span>
-                                    </div>
-                                    <div class="flex justify-between items-center py-1.5 px-3 border-b border-gray-100 font-mono">
-                                        <span class="text-gray-400 font-sans text-[11px]">🍂 Moonset</span>
-                                        <span class="text-red-600 font-medium">${slide.mset}</span>
-                                    </div>
-                                    <div class="flex justify-between items-center py-1.5 px-3 font-mono">
-                                        <span class="text-gray-400 font-sans text-[11px]">🌌 Isha Prayer</span>
-                                        <span class="text-gray-800">${slide.isha}</span>
-                                    </div>
+                                    <div class="text-3xl font-black font-mono tracking-tighter my-1.5 ${stayColor}">${slide.stay}<span class="text-xs font-sans font-bold ml-0.5">min</span></div>
+                                    <div class="w-2 h-2 rounded-full ${stayColor.includes('emerald') ? 'bg-emerald-500' : stayColor.includes('rose') ? 'bg-rose-500' : 'bg-amber-400'}"></div>
                                 </div>
+                                <div onclick="openModal('altitude')" class="bg-gray-50 border border-gray-200 p-4 rounded-xl flex flex-col justify-between items-center shadow-sm cursor-pointer active:bg-gray-100 transition-colors">
+                                    <div class="w-full flex justify-between text-[9px] font-bold text-gray-500 tracking-wider">
+                                        <span>P3: ALTITUDE</span>
+                                        <span class="text-gray-400">➔</span>
+                                    </div>
+                                    <div class="text-3xl font-black font-mono tracking-tighter my-1.5 ${altColor}">${slide.altitude}<span class="text-xs font-sans font-bold ml-0.5">°</span></div>
+                                    <div class="w-2 h-2 rounded-full ${altColor.includes('emerald') ? 'bg-emerald-500' : altColor.includes('rose') ? 'bg-rose-500' : 'bg-amber-400'}"></div>
+                                </div>
+                            </div>
+
+                            <div class="bg-gray-50 p-3 rounded-xl border border-gray-200 grid grid-cols-3 gap-1 text-center font-mono text-xs">
+                                <div onclick="openModal('age')" class="cursor-pointer active:bg-gray-100 p-1 rounded transition-colors">
+                                    <span class="text-gray-400 text-[8px] uppercase font-sans font-bold block tracking-tight">Moon Age</span>
+                                    <span class="block mt-1 font-black text-sm tracking-tight ${ageColor}">${slide.age}h</span>
+                                </div>
+                                <div onclick="openModal('elongation')" class="cursor-pointer active:bg-gray-100 p-1 rounded transition-colors">
+                                    <span class="text-gray-400 text-[8px] uppercase font-sans font-bold block tracking-tight">Elongation</span>
+                                    <span class="block mt-1 font-black text-sm tracking-tight ${elongColor}">${slide.elongation}°</span>
+                                </div>
+                                <div class="p-1">
+                                    <span class="text-gray-400 text-[8px] uppercase font-sans font-bold block tracking-tight">Best Window</span>
+                                    <span class="block mt-1 font-black text-sm text-blue-600 tracking-tight">${slide.targetWin}</span>
+                                    <span class="text-[7px] text-gray-400 font-sans block tracking-tighter">(Sunset+40m)</span>
+                                </div>
+                            </div>
+
+                            <div class="flex justify-between items-center text-[10px] border-t border-gray-100 pt-2 font-mono text-gray-400 px-1">
+                                <div>Conjunction: <span class="text-gray-600 font-bold">${slide.conj}</span></div>
+                                <div>Sunset: <span class="text-orange-500 font-bold">${slide.sset}</span></div>
+                                <div>Moonset: <span class="text-red-500 font-bold">${slide.mset}</span></div>
                             </div>
 
                         </div>
@@ -251,12 +458,11 @@
         function changeStation(station) {
             currentStation = station;
             currentSlideIndex = 0;
+            closeModal();
             
-            document.querySelectorAll('main button').forEach(btn => {
-                if(btn.id.startsWith('btn-')) {
-                    btn.classList.remove('bg-white', 'shadow-sm', 'font-semibold', 'text-black');
-                    btn.classList.add('text-gray-700');
-                }
+            document.querySelectorAll('#top-nav-bar button').forEach(btn => {
+                btn.classList.remove('bg-white', 'shadow-sm', 'font-semibold', 'text-black');
+                btn.classList.add('text-gray-700');
             });
             
             const activeBtn = document.getElementById(`btn-${station}`);
@@ -283,14 +489,13 @@
             }
         }
 
-        /* --- Config Bottom Drawer Mechanism --- */
         function toggleConfigDrawer() {
             const drawer = document.getElementById('config-drawer');
             const arrow = document.getElementById('drawer-arrow');
             isDrawerOpen = !isDrawerOpen;
             
             if (isDrawerOpen) {
-                drawer.style.maxHeight = "150px"; 
+                drawer.style.maxHeight = "380px"; 
                 arrow.innerText = "▼";
             } else {
                 drawer.style.maxHeight = "0px";
@@ -298,33 +503,29 @@
             }
         }
 
-        /* --- Backup Download (JSON Exporter) --- */
         function downloadJSON() {
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(datasets, null, 2));
             const dlAnchorElem = document.createElement('a');
             dlAnchorElem.setAttribute("href", dataStr);
-            dlAnchorElem.setAttribute("download", `crescent_engine_backup_${new Date().toISOString().slice(0,10)}.json`);
+            dlAnchorElem.setAttribute("download", `crescent_pure_matrix_${new Date().toISOString().slice(0,10)}.json`);
             dlAnchorElem.click();
         }
 
-        /* --- Sync Sync Matrix Upload (JSON Importer) --- */
         function uploadJSON(event) {
             const fileReader = new FileReader();
             fileReader.onload = function(e) {
                 try {
                     const uploadedData = JSON.parse(e.target.result);
-                    
-                    // Validate basic structural framework requirements
                     if (uploadedData.bizerte && uploadedData.paris && uploadedData.tips) {
                         datasets = uploadedData;
                         changeStation(currentStation);
                         alert("Data matrix synchronization complete.");
                         toggleConfigDrawer();
                     } else {
-                        alert("Error: Invalid matrix layout. Must match configuration scheme structure parameters.");
+                        alert("Error: Missing schema identifier layouts.");
                     }
                 } catch (err) {
-                    alert("Error processing raw file text formatting logic structure.");
+                    alert("Error processing file framework structure.");
                 }
             };
             fileReader.readAsText(event.target.files[0]);
@@ -333,23 +534,39 @@
         // Native Touch Gesture Handling
         let touchStartX = 0;
         let touchEndX = 0;
+        let modalTouchStartY = 0;
+        let modalTouchEndY = 0;
 
+        // Slide viewport listener for changing months
         document.getElementById('slide-master').addEventListener('touchstart', e => {
             touchStartX = e.changedTouches[0].screenX;
         }, {passive: true});
 
         document.getElementById('slide-master').addEventListener('touchend', e => {
             touchEndX = e.changedTouches[0].screenX;
-            handleSwipe();
-        }, {passive: true});
-
-        function handleSwipe() {
             const threshold = 40; 
             if (touchStartX - touchEndX > threshold) nextSlide();
             if (touchEndX - touchStartX > threshold) prevSlide();
-        }
+        }, {passive: true});
 
-        // Init App Run
+        // Sub-page modal gestures (Swipe up/down to dismiss natively)
+        const modalContainer = document.getElementById('kpi-modal');
+        modalContainer.addEventListener('touchstart', e => {
+            modalTouchStartY = e.changedTouches[0].screenY;
+        }, {passive: true});
+
+        modalContainer.addEventListener('touchend', e => {
+            modalTouchEndY = e.changedTouches[0].screenY;
+            // Swipe down or explicit quick swipe up to return safely to baseline dashboard
+            if (Math.abs(modalTouchStartY - modalTouchEndY) > 50) {
+                closeModal();
+            }
+        }, {passive: true});
+
+        // Connect footer fallback tap interface
+        document.getElementById('modal-swipe-zone').addEventListener('click', closeModal);
+
+        // Init Build Deployment
         renderSlides();
     </script>
 
