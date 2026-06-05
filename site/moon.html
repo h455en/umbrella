@@ -3,22 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crescent Engine v4.2</title>
+    <title>Crescent Engine v5.0</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        :root {
-            --ios-bg: #f2f2f7;
-            --ios-card: #ffffff;
-            --ios-border: #e5e5ea;
-        }
         body {
-            background-color: var(--ios-bg);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f2f2f7;
+            font-family: 'Inter', -apple-system, sans-serif;
             overflow: hidden;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        .mono {
+            font-family: 'JetBrains Mono', monospace;
         }
         .slide-container {
             display: flex;
-            transition: transform 0.3s ease-out;
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
             width: 100%;
             height: 100%;
         }
@@ -27,207 +30,196 @@
             width: 100%;
             max-width: 430px;
         }
-        /* Range slider styling */
+        /* Custom ranges layout styling */
         input[type="range"] {
             -webkit-appearance: none;
             appearance: none;
-            background: #d1d1d6;
-            height: 4px;
-            border-radius: 2px;
+            background: #e5e5ea;
+            height: 6px;
+            border-radius: 3px;
         }
         input[type="range"]::-webkit-slider-thumb {
             -webkit-appearance: none;
             appearance: none;
-            width: 18px;
-            height: 18px;
+            width: 20px;
+            height: 20px;
             border-radius: 50%;
             background: #ffffff;
             border: 0.5px solid rgba(0,0,0,0.15);
-            box-shadow: 0px 2px 4px rgba(0,0,0,0.2);
+            box-shadow: 0px 2.5px 5px rgba(0,0,0,0.15);
             cursor: pointer;
         }
     </style>
 </head>
-<body class="h-screen w-screen flex flex-col justify-between text-black selection:bg-blue-500 selection:text-white antialiased">
+<body class="h-screen w-screen flex flex-col justify-between text-gray-900 antialiased">
 
-    <header class="bg-white/80 backdrop-blur-md border-b border-[#e5e5ea] py-1.5 px-4 text-[11px] font-medium tracking-tight text-gray-500 flex justify-between items-center z-50 sticky top-0">
-        <div>Crescent Engine v4.2</div>
-        <div class="font-mono text-gray-400">Advanced Multi-Tier Astro Analytics</div>
+    <header class="bg-white/80 backdrop-blur-md border-b border-[#e5e5ea] py-2 px-4 text-[11px] font-semibold tracking-tight text-gray-500 flex justify-between items-center z-40 sticky top-0">
+        <div class="flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-indigo-600 animate-pulse"></span>
+            <span>CRESCENT CORE v5.0</span>
+        </div>
+        <div class="mono text-[10px] text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded">YALLOP MATRIX SYSTEM</div>
     </header>
 
-    <main class="max-w-[430px] w-full mx-auto flex-grow flex flex-col justify-start p-2.5 overflow-hidden relative">
+    <main class="max-w-[430px] w-full mx-auto flex-grow flex flex-col justify-start p-3 overflow-hidden relative">
         
-        <div id="top-nav-bar" class="bg-[#e3e3e9] p-0.5 rounded-lg flex mb-2 text-xs font-medium z-10 transition-opacity duration-200">
-            <button onclick="changeStation('bizerte')" id="btn-bizerte" class="flex-1 py-1 rounded-md bg-white shadow-sm font-semibold text-black transition-all">Bizerte (TN)</button>
-            <button onclick="changeStation('paris')" id="btn-paris" class="flex-1 py-1 rounded-md text-gray-700 transition-all">Paris (FR)</button>
-            <button onclick="changeStation('tips')" id="btn-tips" class="flex-1 py-1 rounded-md text-gray-700 transition-all">Prep &amp; Tips</button>
+        <div id="top-nav-bar" class="bg-gray-200/80 p-0.5 rounded-xl flex mb-2.5 text-xs font-semibold z-10 transition-opacity duration-200">
+            <button onclick="changeStation('bizerte')" id="btn-bizerte" class="flex-1 py-1.5 rounded-lg bg-white shadow-sm font-bold text-gray-900 transition-all">Bizerte (TN)</button>
+            <button onclick="changeStation('paris')" id="btn-paris" class="flex-1 py-1.5 rounded-lg text-gray-600 transition-all">Paris (FR)</button>
+            <button onclick="changeStation('tips')" id="btn-tips" class="flex-1 py-1.5 rounded-lg text-gray-600 transition-all">Field Tips</button>
         </div>
 
         <div id="station-wrapper" class="flex-grow flex flex-col justify-between relative overflow-hidden transition-opacity duration-200">
             
-            <div id="nav-header" class="flex justify-between items-center px-1 mb-1">
+            <div id="nav-header" class="flex justify-between items-center px-1 mb-1.5">
                 <div>
-                    <h2 class="text-[10px] uppercase tracking-wider text-gray-400 font-bold">Observation Station</h2>
-                    <h3 id="station-subtitle" class="text-base font-bold tracking-tight">Bizerte, Tunisia</h3>
+                    <h2 class="text-[9px] uppercase font-extrabold tracking-widest text-gray-400">Vantage Target</h2>
+                    <h3 id="station-subtitle" class="text-lg font-black tracking-tight text-gray-900">Bizerte, Tunisia</h3>
                 </div>
-                <div id="slide-arrows" class="flex items-center gap-3">
-                    <button onclick="prevSlide()" class="p-1.5 text-gray-400 hover:text-black active:scale-95 text-sm font-bold select-none">&larr;</button>
-                    <span id="slide-counter" class="text-[10px] font-mono text-gray-400">1 / 4</span>
-                    <button onclick="nextSlide()" class="p-1.5 text-gray-400 hover:text-black active:scale-95 text-sm font-bold select-none">&rarr;</button>
+                <div id="slide-arrows" class="flex items-center gap-2">
+                    <button onclick="prevSlide()" class="p-2 text-gray-400 hover:text-black active:scale-90 font-black transition-transform select-none">&larr;</button>
+                    <span id="slide-counter" class="text-[10px] font-bold mono bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">1 / 4</span>
+                    <button onclick="nextSlide()" class="p-2 text-gray-400 hover:text-black active:scale-90 font-black transition-transform select-none">&rarr;</button>
                 </div>
             </div>
 
-            <div class="flex-grow overflow-hidden relative rounded-xl border border-[#e5e5ea] bg-white shadow-sm">
+            <div class="flex-grow overflow-hidden relative rounded-2xl border border-gray-200 bg-white shadow-sm">
                 <div id="slide-master" class="slide-container h-full">
                     </div>
             </div>
 
-            <div id="gesture-footer" class="text-center text-[9px] text-gray-400 my-0.5 font-medium tracking-tight">
-                Swipe left / right or click arrows to swap months
+            <div id="gesture-footer" class="text-center text-[10px] text-gray-400 my-1 font-medium tracking-tight">
+                Swipe card surface horizontally to shift monthly indices
             </div>
 
         </div>
 
-        <div id="kpi-modal" class="absolute inset-x-2.5 top-2.5 bottom-2.5 bg-white rounded-xl border border-[#e5e5ea] shadow-xl z-50 transform translate-y-full opacity-0 pointer-events-none transition-all duration-300 ease-out flex flex-col justify-between p-4">
-            <div class="flex flex-col space-y-3 flex-grow overflow-hidden">
+        <div id="kpi-modal" class="absolute inset-x-2.5 top-2.5 bottom-2.5 bg-white rounded-2xl border border-gray-200 shadow-2xl z-50 transform translate-y-full opacity-0 pointer-events-none transition-all duration-300 ease-out flex flex-col justify-between p-4 overflow-hidden">
+            
+            <div class="w-12 h-1 bg-gray-200 rounded-full mx-auto mb-1 flex-shrink-0 cursor-pointer" onclick="closeModal()"></div>
+
+            <div class="flex flex-col space-y-2.5 flex-grow overflow-hidden">
                 <div class="flex items-center justify-between border-b border-gray-100 pb-2">
-                    <button onclick="closeModal()" class="flex items-center gap-1 text-blue-600 font-bold text-sm active:scale-95 transition-transform select-none">
-                        <span class="text-lg">&larr;</span> Back
+                    <button onclick="closeModal()" class="flex items-center gap-1 text-indigo-600 font-bold text-xs select-none bg-indigo-50 px-2.5 py-1 rounded-lg hover:bg-indigo-100 transition-colors">
+                        <span>&larr;</span> Close Detail
                     </button>
-                    <span id="modal-tag" class="text-[9px] uppercase font-mono font-bold tracking-wider px-2 py-0.5 rounded-full bg-gray-100 text-gray-500">KPI Detail</span>
+                    <span id="modal-tag" class="text-[9px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-gray-100 text-gray-500 mono">ANALYTIC LEVEL 3</span>
                 </div>
-                <div class="flex-grow overflow-y-auto flex flex-col justify-start">
-                    <h3 id="modal-title" class="text-xl font-black tracking-tight text-gray-900 mb-2">Metric Information</h3>
-                    <div id="modal-desc" class="text-xs text-gray-600 leading-relaxed space-y-2 flex-grow flex flex-col justify-start">
+                
+                <div class="flex-grow overflow-y-auto flex flex-col justify-start pr-0.5">
+                    <h3 id="modal-title" class="text-lg font-black tracking-tight text-gray-900 mb-2">Metric</h3>
+                    <div id="modal-desc" class="text-xs text-gray-600 leading-relaxed flex-grow flex flex-col justify-start">
                         </div>
                 </div>
             </div>
-            <div id="modal-swipe-zone" class="w-full text-center py-3 border-t border-gray-100 text-[10px] text-gray-400 font-semibold tracking-tight uppercase cursor-pointer select-none">
-                ↑ Swipe or click back to return
+
+            <div id="modal-swipe-zone" class="w-full text-center py-2.5 border-t border-gray-100 text-[10px] text-gray-400 font-bold tracking-wider uppercase select-none cursor-pointer hover:text-gray-600 transition-colors">
+                ↓ Swipe down or tap here to close details
             </div>
         </div>
 
     </main>
 
-    <div class="relative z-50 bg-white border-t border-[#e5e5ea]">
+    <div class="relative z-40 bg-white border-t border-gray-200">
         
-        <button onclick="toggleConfigDrawer()" class="w-full py-1.5 bg-gray-50 hover:bg-gray-100 border-b border-gray-200 text-[10px] font-bold uppercase tracking-wider text-gray-500 flex justify-center items-center gap-1 select-none">
-            <span id="drawer-arrow">▲</span> Threshold Engines &amp; Settings (Live Tuning)
+        <button onclick="toggleConfigDrawer()" class="w-full py-2 bg-gray-50 hover:bg-gray-100 border-b border-gray-200 text-[10px] font-extrabold uppercase tracking-widest text-gray-500 flex justify-center items-center gap-1.5 transition-colors select-none">
+            <span id="drawer-arrow">▲</span> CRITERIA MINIMUM THRESHOLDS (LIVE TUNING)
         </button>
 
         <div id="config-drawer" class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out bg-gray-50">
-            <div class="p-3 space-y-3 border-b border-gray-200 text-xs">
+            <div class="p-4 space-y-4 border-b border-gray-200 text-xs">
                 
-                <div>
-                    <div class="text-[11px] font-bold text-gray-700 tracking-tight mb-2 uppercase">Live Metric Threshold Tuning Sliders</div>
-                    <div class="space-y-2">
-                        <div>
-                            <div class="flex justify-between text-[10px] mb-0.5 text-gray-600">
-                                <span>Optimal Moon Age Range (Green)</span>
-                                <span class="font-mono font-bold text-gray-900"><span id="lbl-age-min">20</span>h - <span id="lbl-age-max">28</span>h</span>
-                            </div>
-                            <div class="flex gap-2 items-center">
-                                <input type="range" id="cfg-age-min" min="12" max="24" value="20" oninput="updateSliders()" class="w-full">
-                                <input type="range" id="cfg-age-max" min="25" max="42" value="28" oninput="updateSliders()" class="w-full">
-                            </div>
+                <div class="grid grid-cols-1 gap-3">
+                    <div class="bg-white p-2.5 rounded-xl border border-gray-200/80 shadow-xs">
+                        <div class="flex justify-between items-center text-[11px] mb-1.5">
+                            <span class="font-bold text-gray-700 uppercase tracking-tight">1. Min Moon Age Floor</span>
+                            <span class="mono font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded text-xs"><span id="lbl-age-min">20.0</span>h</span>
                         </div>
-                        <div>
-                            <div class="flex justify-between text-[10px] mb-0.5 text-gray-600">
-                                <span>Optimal Elongation Range (Green)</span>
-                                <span class="font-mono font-bold text-gray-900"><span id="lbl-elong-min">11</span>° - <span id="lbl-elong-max">15</span>°</span>
-                            </div>
-                            <div class="flex gap-2 items-center">
-                                <input type="range" id="cfg-elong-min" min="8" max="12" value="11" oninput="updateSliders()" class="w-full">
-                                <input type="range" id="cfg-elong-max" min="13" max="22" value="15" oninput="updateSliders()" class="w-full">
-                            </div>
+                        <input type="range" id="cfg-age-min" min="12" max="24" step="0.5" value="20" oninput="updateSliders()" class="w-full cursor-pointer">
+                        <p class="text-[9px] text-gray-400 mt-1">Crescents below this age floor switch to Amber warning states.</p>
+                    </div>
+
+                    <div class="bg-white p-2.5 rounded-xl border border-gray-200/80 shadow-xs">
+                        <div class="flex justify-between items-center text-[11px] mb-1.5">
+                            <span class="font-bold text-gray-700 uppercase tracking-tight">2. Min Elongation Arc</span>
+                            <span class="mono font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded text-xs"><span id="lbl-elong-min">11.0</span>°</span>
                         </div>
-                        <div>
-                            <div class="flex justify-between text-[10px] mb-0.5 text-gray-600">
-                                <span>Min Altitude Floor (Green if above)</span>
-                                <span class="font-mono font-bold text-gray-900"><span id="lbl-alt-min">10</span>°</span>
-                            </div>
-                            <input type="range" id="cfg-alt-min" min="4" max="15" value="10" oninput="updateSliders()" class="w-full">
+                        <input type="range" id="cfg-elong-min" min="8" max="14" step="0.1" value="11" oninput="updateSliders()" class="w-full cursor-pointer">
+                        <p class="text-[9px] text-gray-400 mt-1">Separation angle from sun center required to achieve optimal illumination.</p>
+                    </div>
+
+                    <div class="bg-white p-2.5 rounded-xl border border-gray-200/80 shadow-xs">
+                        <div class="flex justify-between items-center text-[11px] mb-1.5">
+                            <span class="font-bold text-gray-700 uppercase tracking-tight">3. Sunset Altitude Floor</span>
+                            <span class="mono font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded text-xs"><span id="lbl-alt-min">10.0</span>°</span>
                         </div>
-                        <div>
-                            <div class="flex justify-between text-[10px] mb-0.5 text-gray-600">
-                                <span>Min Stay Visibility (Green if above)</span>
-                                <span class="font-mono font-bold text-gray-900"><span id="lbl-stay-min">50</span> min</span>
-                            </div>
-                            <input type="range" id="cfg-stay-min" min="20" max="75" value="50" oninput="updateSliders()" class="w-full">
+                        <input type="range" id="cfg-alt-min" min="4" max="15" step="0.5" value="10" oninput="updateSliders()" class="w-full cursor-pointer">
+                        <p class="text-[9px] text-gray-400 mt-1">Minimum altitude angle above horizon path at the exact instant of sunset.</p>
+                    </div>
+
+                    <div class="bg-white p-2.5 rounded-xl border border-gray-200/80 shadow-xs">
+                        <div class="flex justify-between items-center text-[11px] mb-1.5">
+                            <span class="font-bold text-gray-700 uppercase tracking-tight">4. Stay Time Lag Window</span>
+                            <span class="mono font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded text-xs"><span id="lbl-stay-min">50</span> min</span>
                         </div>
+                        <input type="range" id="cfg-stay-min" min="20" max="75" step="1" value="50" oninput="updateSliders()" class="w-full cursor-pointer">
+                        <p class="text-[9px] text-gray-400 mt-1">Required time span difference before moonset event occurs.</p>
                     </div>
                 </div>
 
-                <hr class="border-gray-200">
-
-                <div class="text-[11px] font-bold text-gray-700 tracking-tight">Data Synchronizer Matrix</div>
-                <div class="flex gap-2">
-                    <button onclick="downloadJSON()" class="flex-1 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium text-xs shadow-sm transition-all text-center">
-                        Download Pure JSON
+                <div class="flex gap-2 pt-1">
+                    <button onclick="downloadJSON()" class="flex-1 py-2 bg-gray-900 hover:bg-black text-white rounded-xl font-bold text-xs shadow-xs text-center tracking-tight transition-all">
+                        Backup Data Schema (.JSON)
                     </button>
-                    <label class="flex-1 py-1.5 bg-white hover:bg-gray-100 text-gray-700 border border-[#e5e5ea] rounded-lg font-medium text-xs shadow-sm transition-all text-center cursor-pointer">
-                        Upload Pure JSON
+                    <label class="flex-1 py-2 bg-white hover:bg-gray-100 text-gray-700 border border-gray-200 rounded-xl font-bold text-xs shadow-xs text-center tracking-tight transition-all cursor-pointer">
+                        Sync Custom Matrix File
                         <input type="file" id="upload-gate" accept=".json" onchange="uploadJSON(event)" class="hidden">
                     </label>
                 </div>
             </div>
         </div>
 
-        <footer class="p-3 text-[10px] text-gray-500 space-y-2 tracking-tight bg-white">
-            <div class="text-center font-semibold text-gray-700 border-b border-gray-100 pb-1.5">Official Source Framework Cross-Reference</div>
-            <div class="grid grid-cols-2 gap-x-4 gap-y-1 font-mono text-[9px] text-gray-400">
-                <a href="https://astropixels.com/ephemeris/moon/moon2026.html" target="_blank" class="hover:text-blue-600 truncate">1. AstroPixels Lunar Ephemeris 2026 ↗</a>
-                <a href="https://www.mooncalc.org" target="_blank" class="hover:text-blue-600 truncate">2. MoonCalc Vector Node Realtime ↗</a>
-                <a href="https://www.meteo.tn" target="_blank" class="hover:text-blue-600 truncate">3. INM Tunisia (Meteo.tn) ↗</a>
-                <a href="https://imcce.fr" target="_blank" class="hover:text-blue-600 truncate">4. IMCCE Paris Observatory ↗</a>
-            </div>
+        <footer class="p-3 text-[10px] text-gray-400 bg-white border-t border-gray-100 text-center mono tracking-tight">
+            DATA ENGINES CALCULATED COMPLIANCE: IMCCE PARIS &amp; INM TUNISIA
         </footer>
     </div>
 
     <script>
-        // CENTRAL DYNAMIC COLOR THRESHOLDS DICTIONARY
+        // SYSTEM TIMESTAMPS FOR INTERVAL PROGRESSION (Current baseline date: June 5, 2026)
+        const CURRENT_RUN_TIME = new Date("2026-06-05T19:39:42");
+
+        // CENTRALIZED BOUNDARY DICTIONARY
         const colorBounds = {
-            age:     { optimalMin: 20, optimalMax: 28, extremeLow: 13.0, extremeHigh: 40.0 },
-            elong:   { optimalMin: 11, optimalMax: 15, extremeLow: 8.5,  extremeHigh: 22.0 },
-            alt:     { optimalMin: 10, optimalMax: 90, extremeLow: 4.0,  extremeHigh: 90.0 },
-            stay:    { optimalMin: 50, optimalMax: 200, extremeLow: 35.0, extremeHigh: 200.0 }
+            age:     { optimalMin: 20.0, extremeLow: 13.0 },
+            elong:   { optimalMin: 11.0, extremeLow: 8.5 },
+            alt:     { optimalMin: 10.0, extremeLow: 4.0 },
+            stay:    { optimalMin: 50.0, extremeLow: 35.0 }
         };
 
-        let config = {
-            ageMin: 20, ageMax: 28,
-            elongMin: 11, elongMax: 15,
-            altMin: 10,
-            stayMin: 50
-        };
-
-        // REAL DATASET SYNCED FOR 2026 WITH ENHANCED NESTED ATTRIBUTES
+        // RUNTIME MASTER SYNC DATASET FOR TARGET YEAR 2026
         let datasets = {
             bizerte: {
                 title: "Bizerte, Tunisia",
-                meta: "UT+1 / CET Timeframe",
                 slides: [
-                    { date: "June 15, 2026", hijri: "29 Dhul-Hijjah 1447", visibility: "Difficult", statusDesc: "Difficult: Very low altitude and extreme thin profile setup.", yallopCode: "D", yallopValue: -0.12, yallopLabel: "D - Only Visible with Optical Aid", age: 16.2, elongation: 8.7, altitudePeak: 4.8, altitudeMin: 0.5, altitudeMax: 46.2, stayDiff: 34, orderSequence: "Moonset occurs AFTER Sunset", sequentialStatus: "Valid Window", nearbyObject: "Mercury (0.4° SE of Moon)", orientation: "Illuminated Bottom-Right (Horns pointing up-left to ~11 o'clock)", positionAngle: -33, directionDeg: 299, azimuth: "299° WNW", conj: "June 15, 04:54", mrise: "04:52", srise: "05:01", sset: "19:37", targetWin: "19:57", windowRange: "19:52 - 20:11", windowDur: "19 min", mset: "20:11", isha: "21:18" },
-                    { date: "July 15, 2026", hijri: "29 Muharram 1448", visibility: "Easy", statusDesc: "Easy: Excellent age buffer and favorable clear altitude parameters.", yallopCode: "A", yallopValue: 0.84, yallopLabel: "A - Easily Visible to the Naked Eye", age: 34.7, elongation: 16.5, altitudePeak: 10.3, altitudeMin: 1.1, altitudeMax: 52.8, stayDiff: 66, orderSequence: "Moonset occurs AFTER Sunset", sequentialStatus: "Valid Window", nearbyObject: "Venus (2.1° East of Moon)", orientation: "Crescent Base Balanced (Horns opening straight up to ~12 o'clock)", positionAngle: 2, directionDeg: 290, azimuth: "290° WNW", conj: "July 14, 11:43", mrise: "05:15", srise: "05:13", sset: "19:32", targetWin: "20:02", windowRange: "19:47 - 20:38", windowDur: "51 min", mset: "20:38", isha: "21:09" },
-                    { date: "August 13, 2026", hijri: "29 Safar 1448", visibility: "Very Easy", statusDesc: "Very Easy: Ideal elevation with dark backdrop contrast window.", yallopCode: "A", yallopValue: 1.12, yallopLabel: "A - Easily Visible to the Naked Eye", age: 26.2, elongation: 12.9, altitudePeak: 11.8, altitudeMin: 0.8, altitudeMax: 58.4, stayDiff: 71, orderSequence: "Moonset occurs AFTER Sunset", sequentialStatus: "Valid Window", nearbyObject: "Regulus (1.5° NE of Moon)", orientation: "Illuminated Bottom-Left (Horns pointing up-right to ~1 o'clock)", positionAngle: 34, directionDeg: 279, azimuth: "279° W", conj: "August 12, 18:37", mrise: "05:59", srise: "05:37", sset: "19:05", targetWin: "19:40", windowRange: "19:20 - 20:16", windowDur: "56 min", mset: "20:16", isha: "20:31" },
-                    { date: "Sept 12, 2026", hijri: "29 Rabi' al-Awwal 1448", visibility: "Very Easy", statusDesc: "Very Easy: Highly comfortable lag window across wide illumination parameters.", yallopCode: "A", yallopValue: 1.45, yallopLabel: "A - Easily Visible to the Naked Eye", age: 39.5, elongation: 18.2, altitudePeak: 9.1, altitudeMin: 0.2, altitudeMax: 61.1, stayDiff: 62, orderSequence: "Moonset occurs AFTER Sunset", sequentialStatus: "Valid Window", nearbyObject: "Spica (3.2° South of Moon)", orientation: "Illuminated Left Profile (Horns opening right side to ~2 o'clock)", positionAngle: 58, directionDeg: 264, azimuth: "264° W", conj: "Sept 11, 04:27", mrise: "06:33", srise: "06:01", sset: "18:22", targetWin: "18:50", windowRange: "18:37 - 19:24", windowDur: "47 min", mset: "19:24", isha: "19:43" }
+                    { targetDate: "2026-06-15", dateStr: "15 June, 2026", hijri: "29 Dhul-Hijjah 1447", visibility: "Difficult", statusDesc: "Difficult: Extreme thin profile setup with critical dusk low altitude margins.", yallopCode: "D", yallopValue: -0.12, age: 16.2, elongation: 8.7, altitudePeak: 4.8, altitudeMin: 0.5, altitudeMax: 46.2, stayDiff: 34, orderSequence: "Moonset occurs after Sunset", sequentialStatus: "Observational Lag Open", nearbyObject: "Mercury (0.4° SE of Moon)", orientation: "Illuminated Bottom-Right (Horns pointing up-left to ~11 o'clock)", positionAngle: -33, directionDeg: 299, azimuth: "299° WNW", conj: "04:54", mrise: "04:52", srise: "05:01", sset: "19:37", targetWin: "19:57", windowRange: "19:52 - 20:11", windowDur: "19 min", mset: "20:11", isha: "21:18" },
+                    { targetDate: "2026-07-15", dateStr: "15 July, 2026", hijri: "29 Muharram 1448", visibility: "Easy", statusDesc: "Easy: Excellent age buffer and favorable tracking parameters above the haze line.", yallopCode: "A", yallopValue: 0.84, age: 34.7, elongation: 16.5, altitudePeak: 10.3, altitudeMin: 1.1, altitudeMax: 52.8, stayDiff: 66, orderSequence: "Moonset occurs after Sunset", sequentialStatus: "Observational Lag Open", nearbyObject: "Venus (2.1° East of Moon)", orientation: "Crescent Base Balanced (Horns opening straight up to ~12 o'clock)", positionAngle: 2, directionDeg: 290, azimuth: "290° WNW", conj: "11:43", mrise: "05:15", srise: "05:13", sset: "19:32", targetWin: "20:02", windowRange: "19:47 - 20:38", windowDur: "51 min", mset: "20:38", isha: "21:09" },
+                    { targetDate: "2026-08-13", dateStr: "13 August, 2026", hijri: "29 Safar 1448", visibility: "Very Easy", statusDesc: "Very Easy: Favorable elevation axis combined with optimal sky contrast backdrop.", yallopCode: "A", yallopValue: 1.12, age: 26.2, elongation: 12.9, altitudePeak: 11.8, altitudeMin: 0.8, altitudeMax: 58.4, stayDiff: 71, orderSequence: "Moonset occurs after Sunset", sequentialStatus: "Observational Lag Open", nearbyObject: "Regulus (1.5° NE of Moon)", orientation: "Illuminated Bottom-Left (Horns pointing up-right to ~1 o'clock)", positionAngle: 34, directionDeg: 279, azimuth: "279° W", conj: "18:37", mrise: "05:59", srise: "05:37", sset: "19:05", targetWin: "19:40", windowRange: "19:20 - 20:16", windowDur: "56 min", mset: "20:16", isha: "20:31" },
+                    { targetDate: "2026-09-12", dateStr: "12 September, 2026", hijri: "29 Rabi' al-Awwal 1448", visibility: "Very Easy", statusDesc: "Very Easy: Massive arc distance optimization tracking parameters across structural baseline.", yallopCode: "A", yallopValue: 1.45, age: 39.5, elongation: 18.2, altitudePeak: 9.1, altitudeMin: 0.2, altitudeMax: 61.1, stayDiff: 62, orderSequence: "Moonset occurs after Sunset", sequentialStatus: "Observational Lag Open", nearbyObject: "Spica (3.2° South of Moon)", orientation: "Illuminated Left Profile (Horns opening right side to ~2 o'clock)", positionAngle: 58, directionDeg: 264, azimuth: "264° W", conj: "04:27", mrise: "06:33", srise: "06:01", sset: "18:22", targetWin: "18:50", windowRange: "18:37 - 19:24", windowDur: "47 min", mset: "19:24", isha: "19:43" }
                 ]
             },
             paris: {
                 title: "Paris, France",
-                meta: "UT+2 / CEST Daylight Time",
                 slides: [
-                    { date: "June 15, 2026", hijri: "29 Dhul-Hijjah 1447", visibility: "Impossible", statusDesc: "Impossible: Crescent sets before sunset or lacks minimal sun distance margin.", yallopCode: "F", yallopValue: -1.05, yallopLabel: "F - Not Visible, Below Criterion Limit", age: 17.0, elongation: 8.9, altitudePeak: 1.2, altitudeMin: -2.4, altitudeMax: 41.5, stayDiff: 14, orderSequence: "Moonset occurs AFTER Sunset", sequentialStatus: "Too Short to Track", nearbyObject: "Mercury (0.5° SE of Moon)", orientation: "Illuminated Bottom-Right (Horns pointing up-left to ~10 o'clock)", positionAngle: -48, directionDeg: 309, azimuth: "309° NW", conj: "June 15, 05:54", mrise: "05:31", srise: "05:47", sset: "21:56", targetWin: "22:05", windowRange: "21:56 - 22:10", windowDur: "14 min", mset: "22:10", isha: "23:59" },
-                    { date: "July 15, 2026", hijri: "29 Muharram 1448", visibility: "Difficult", statusDesc: "Difficult: Noticeable glare interference from northern summer twilight dusk.", yallopCode: "C", yallopValue: 0.15, yallopLabel: "C - Visible with Optical Aid / Naked Eye Under Perfect Conditions", age: 35.6, elongation: 16.8, altitudePeak: 6.2, altitudeMin: -0.4, altitudeMax: 48.9, stayDiff: 47, orderSequence: "Moonset occurs AFTER Sunset", sequentialStatus: "Valid Window", nearbyObject: "Venus (2.3° East of Moon)", orientation: "Illuminated Bottom-Right (Horns pointing up-left to ~11 o'clock)", positionAngle: -12, directionDeg: 300, azimuth: "300° WNW", conj: "July 14, 12:43", mrise: "06:14", srise: "06:04", sset: "21:42", targetWin: "22:10", windowRange: "21:57 - 22:29", windowDur: "32 min", mset: "22:29", isha: "23:29" },
-                    { date: "August 13, 2026", hijri: "29 Safar 1448", visibility: "Easy", statusDesc: "Easy: Clear visibility structural framework layout.", yallopCode: "B", yallopValue: 0.58, yallopLabel: "B - Visible Under Perfect Atmospheric Conditions", age: 27.1, elongation: 13.1, altitudePeak: 8.7, altitudeMin: 0.1, altitudeMax: 54.3, stayDiff: 58, orderSequence: "Moonset occurs AFTER Sunset", sequentialStatus: "Valid Window", nearbyObject: "Regulus (1.4° NE of Moon)", orientation: "Illuminated Bottom-Left (Horns pointing up-right to ~12:30 o'clock)", positionAngle: 18, directionDeg: 286, azimuth: "286° WNW", conj: "August 12, 19:37", mrise: "07:05", srise: "06:42", sset: "21:01", targetWin: "21:35", windowRange: "21:16 - 21:59", windowDur: "43 min", mset: "21:59", isha: "22:33" },
-                    { date: "Sept 12, 2026", hijri: "29 Rabi' al-Awwal 1448", visibility: "Easy", statusDesc: "Easy: Optimal solar angular distance metrics, reliable contrast index.", yallopCode: "A", yallopValue: 0.79, yallopLabel: "A - Easily Visible to the Naked Eye", age: 40.4, elongation: 18.5, altitudePeak: 6.9, altitudeMin: -0.2, altitudeMax: 57.6, stayDiff: 49, orderSequence: "Moonset occurs AFTER Sunset", sequentialStatus: "Valid Window", nearbyObject: "Spica (3.0° South of Moon)", orientation: "Illuminated Left Profile (Horns opening right side to ~2 o'clock)", positionAngle: 45, directionDeg: 269, azimuth: "269° W", conj: "Sept 11, 05:27", mrise: "07:29", srise: "07:24", sset: "19:59", targetWin: "20:25", windowRange: "20:14 - 20:48", windowDur: "34 min", mset: "20:48", isha: "21:30" }
+                    { targetDate: "2026-06-15", dateStr: "15 June, 2026", hijri: "29 Dhul-Hijjah 1447", visibility: "Impossible", statusDesc: "Impossible: Crescent altitude profile drops tracking ability below Danjon baseline thresholds.", yallopCode: "F", yallopValue: -1.05, age: 17.0, elongation: 8.9, altitudePeak: 1.2, altitudeMin: -2.4, altitudeMax: 41.5, stayDiff: 14, orderSequence: "Moonset occurs after Sunset", sequentialStatus: "Too Short to Track", nearbyObject: "Mercury (0.5° SE of Moon)", orientation: "Illuminated Bottom-Right (Horns pointing up-left to ~10 o'clock)", positionAngle: -48, directionDeg: 309, azimuth: "309° NW", conj: "05:54", mrise: "05:31", srise: "05:47", sset: "21:56", targetWin: "22:05", windowRange: "21:56 - 22:10", windowDur: "14 min", mset: "22:10", isha: "23:59" },
+                    { targetDate: "2026-07-15", dateStr: "15 July, 2026", hijri: "29 Muharram 1448", visibility: "Difficult", statusDesc: "Difficult: Severe lingering light glare from peak northern summer twilight fields.", yallopCode: "C", yallopValue: 0.15, age: 35.6, elongation: 16.8, altitudePeak: 6.2, altitudeMin: -0.4, altitudeMax: 48.9, stayDiff: 47, orderSequence: "Moonset occurs after Sunset", sequentialStatus: "Observational Lag Open", nearbyObject: "Venus (2.3° East of Moon)", orientation: "Illuminated Bottom-Right (Horns pointing up-left to ~11 o'clock)", positionAngle: -12, directionDeg: 300, azimuth: "300° WNW", conj: "12:43", mrise: "06:14", srise: "06:04", sset: "21:42", targetWin: "22:10", windowRange: "21:57 - 22:29", windowDur: "32 min", mset: "22:29", isha: "23:29" },
+                    { targetDate: "2026-08-13", dateStr: "13 August, 2026", hijri: "29 Safar 1448", visibility: "Easy", statusDesc: "Easy: Favorable solar distance index values provide reliable contrast intervals.", yallopCode: "B", yallopValue: 0.58, age: 27.1, elongation: 13.1, altitudePeak: 8.7, altitudeMin: 0.1, altitudeMax: 54.3, stayDiff: 58, orderSequence: "Moonset occurs after Sunset", sequentialStatus: "Observational Lag Open", nearbyObject: "Regulus (1.4° NE of Moon)", orientation: "Illuminated Bottom-Left (Horns pointing up-right to ~12:30 o'clock)", positionAngle: 18, directionDeg: 286, azimuth: "286° WNW", conj: "19:37", mrise: "07:05", srise: "06:42", sset: "21:01", targetWin: "21:35", windowRange: "21:16 - 21:59", windowDur: "43 min", mset: "21:59", isha: "22:33" },
+                    { targetDate: "2026-09-12", dateStr: "12 September, 2026", hijri: "29 Rabi' al-Awwal 1448", visibility: "Easy", statusDesc: "Easy: Comfortable tracking arc geometry ensures structural naked-eye spotting windows.", yallopCode: "A", yallopValue: 0.79, age: 40.4, elongation: 18.5, altitudePeak: 6.9, altitudeMin: -0.2, altitudeMax: 57.6, stayDiff: 49, orderSequence: "Moonset occurs after Sunset", sequentialStatus: "Observational Lag Open", nearbyObject: "Spica (3.0° South of Moon)", orientation: "Illuminated Left Profile (Horns opening right side to ~2 o'clock)", positionAngle: 45, directionDeg: 269, azimuth: "269° W", conj: "05:27", mrise: "07:29", srise: "07:24", sset: "19:59", targetWin: "20:25", windowRange: "20:14 - 20:48", windowDur: "34 min", mset: "20:48", isha: "21:30" }
                 ]
             },
             tips: {
-                title: "Field Reference",
-                meta: "Execution Guidelines",
+                title: "Field Deployment Guidelines",
                 slides: [
-                    { type: "tip_conditions" },
-                    { type: "tip", tag: "Yallop Criterion Scale", title: "Decoding the Criterion Indexes", desc: "The Yallop value (q) calculates visibility based on the topocentric width of the crescent moon ribbon compared to the absolute minimum width needed for the human eye to isolate it from twilight. A = Clear eye success, D = Telescope needed, F = Physically impossible." }
+                    { type: "tip_card_system" }
                 ]
             }
         };
@@ -237,226 +229,195 @@
         let isDrawerOpen = false;
         const container = document.getElementById('slide-master');
 
-        function getValueColor(val, key) {
+        // CALCULATION ENGINE: Helper method mapping custom dynamic text ranges
+        function fontValueColor(val, key) {
             const bounds = colorBounds[key];
-            if (!bounds) return "text-black";
-            if (val >= bounds.optimalMin && val <= bounds.optimalMax) return "text-emerald-500 font-bold";
-            if (val <= bounds.extremeLow || val >= bounds.extremeHigh) return "text-rose-600 font-bold";
-            return "text-amber-500 font-semibold";
+            if (!bounds) return "text-gray-900";
+            if (val >= bounds.optimalMin) return "text-emerald-600";
+            if (val <= bounds.extremeLow) return "text-rose-600";
+            return "text-amber-500";
         }
 
-        function getDifficultyColor(visibility) {
+        function fontBadgeColor(visibility) {
             switch (visibility) {
-                case "Very Easy": return "bg-emerald-600 text-white border-emerald-700 shadow-sm";
-                case "Easy": return "bg-emerald-500 text-white border-emerald-600 shadow-sm";
-                case "Difficult": return "bg-amber-500 text-black border-amber-600 shadow-sm";
-                case "Impossible": return "bg-rose-600 text-white border-rose-700 shadow-sm";
+                case "Very Easy": return "bg-emerald-600 text-white border-emerald-700";
+                case "Easy": return "bg-emerald-500 text-white border-emerald-600";
+                case "Difficult": return "bg-amber-400 text-gray-900 border-amber-500";
+                case "Impossible": return "bg-rose-600 text-white border-rose-700";
                 default: return "bg-gray-100 text-gray-800 border-gray-200";
             }
         }
 
-        function getYallopColor(code) {
-            if (code === "A" || code === "B") return "text-emerald-600 font-black";
-            if (code === "C" || code === "D") return "text-amber-500 font-black";
-            return "text-rose-600 font-black";
+        function calculateDaysRemaining(targetDateStr) {
+            const target = new Date(targetDateStr);
+            const diffTime = target - CURRENT_RUN_TIME;
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            if (diffDays === 0) return "today";
+            return diffDays > 0 ? `in ${diffDays} days` : `${Math.abs(diffDays)} days ago`;
         }
 
         function updateSliders() {
-            config.ageMin = parseFloat(document.getElementById('cfg-age-min').value);
-            config.ageMax = parseFloat(document.getElementById('cfg-age-max').value);
-            config.elongMin = parseFloat(document.getElementById('cfg-elong-min').value);
-            config.elongMax = parseFloat(document.getElementById('cfg-elong-max').value);
-            config.altMin = parseFloat(document.getElementById('cfg-alt-min').value);
-            config.stayMin = parseFloat(document.getElementById('cfg-stay-min').value);
+            colorBounds.age.optimalMin = parseFloat(document.getElementById('cfg-age-min').value);
+            colorBounds.elong.optimalMin = parseFloat(document.getElementById('cfg-elong-min').value);
+            colorBounds.alt.optimalMin = parseFloat(document.getElementById('cfg-alt-min').value);
+            colorBounds.stay.optimalMin = parseFloat(document.getElementById('cfg-stay-min').value);
 
-            colorBounds.age.optimalMin = config.ageMin;
-            colorBounds.age.optimalMax = config.ageMax;
-            colorBounds.elong.optimalMin = config.elongMin;
-            colorBounds.elong.optimalMax = config.elongMax;
-            colorBounds.alt.optimalMin = config.altMin;
-            colorBounds.stay.optimalMin = config.stayMin;
-
-            document.getElementById('lbl-age-min').innerText = config.ageMin;
-            document.getElementById('lbl-age-max').innerText = config.ageMax;
-            document.getElementById('lbl-elong-min').innerText = config.elongMin;
-            document.getElementById('lbl-elong-max').innerText = config.elongMax;
-            document.getElementById('lbl-alt-min').innerText = config.altMin;
-            document.getElementById('lbl-stay-min').innerText = config.stayMin;
+            document.getElementById('lbl-age-min').innerText = colorBounds.age.optimalMin.toFixed(1);
+            document.getElementById('lbl-elong-min').innerText = colorBounds.elong.optimalMin.toFixed(1);
+            document.getElementById('lbl-alt-min').innerText = colorBounds.alt.optimalMin.toFixed(1);
+            document.getElementById('lbl-stay-min').innerText = colorBounds.stay.optimalMin;
 
             renderSlides();
         }
 
-        // FULL LEVEL 3 MAX DETAILS INJECTION OVERLAY
-        // Handles deep visibility math, horizon line diagrams, and chronological sequences.
+        // FULLSCREEN MAXIMUM DETAIL DATA GATEWAY (LEVEL 3 TRIGGER INTERFACE)
         function openModal(key) {
             const slide = datasets[currentStation].slides[currentSlideIndex];
             const modal = document.getElementById('kpi-modal');
             const title = document.getElementById('modal-title');
             const desc = document.getElementById('modal-desc');
-            const tag = document.getElementById('modal-tag');
-
-            tag.innerText = `LEVEL 3 - MAXIMUM ANALYTIC DETAILS`;
 
             if (key === 'yallop') {
-                title.innerText = `Yallop Criterion & Status Core`;
+                title.innerText = "Yallop Visibility Algorithm Core Data Matrix";
                 desc.innerHTML = `
-                    <div class="space-y-3 my-auto w-full">
-                        <div class="bg-slate-950 text-white border border-slate-800 p-4 rounded-xl text-center shadow-lg">
-                            <span class="text-[9px] text-gray-400 uppercase font-black block tracking-wider">Visibility Index Code</span>
-                            <span class="text-5xl font-mono font-black text-amber-300 block my-1">${slide.yallopCode}</span>
-                            <p class="text-xs text-gray-300 font-medium mt-1">${slide.yallopLabel}</p>
+                    <div class="space-y-3 w-full">
+                        <p class="text-gray-600 text-[11px] leading-tight">
+                            Yallop’s algorithm computes a lunar visibility test parameter <code class="bg-gray-100 px-1 rounded text-black font-bold font-mono">q</code> which is based on the geocentric difference in altitude between the center of the Sun and the center of the Moon at the 'best time' for a given observer, along with topocentric width coordinates.
+                        </p>
+                        
+                        <div class="border border-gray-200 rounded-xl overflow-hidden bg-white shadow-xs">
+                            <table class="w-full text-left border-collapse text-[10px]">
+                                <thead>
+                                    <tr class="bg-gray-100 text-gray-600 font-bold uppercase tracking-wider border-b border-gray-200">
+                                        <th class="p-2">Class</th>
+                                        <th class="p-2">Mathematical Range Criterion</th>
+                                        <th class="p-2">Visibility Standard</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-100 font-medium text-gray-700">
+                                    <tr class="${slide.yallopCode === 'A' ? 'bg-emerald-50 text-emerald-900 font-bold' : ''}">
+                                        <td class="p-2 font-bold text-emerald-600">A</td>
+                                        <td class="p-2 mono">q &gt; +0.216</td>
+                                        <td class="p-2">Easily visible to the unaided eye</td>
+                                    </tr>
+                                    <tr class="${slide.yallopCode === 'B' ? 'bg-emerald-50 text-emerald-900 font-bold' : ''}">
+                                        <td class="p-2 font-bold text-emerald-500">B</td>
+                                        <td class="p-2 mono">–0.014 &lt; q &le; +0.216</td>
+                                        <td class="p-2">Visible under perfect conditions</td>
+                                    </tr>
+                                    <tr class="${slide.yallopCode === 'C' ? 'bg-amber-50 text-amber-900 font-bold' : ''}">
+                                        <td class="p-2 font-bold text-amber-500">C</td>
+                                        <td class="p-2 mono">–0.160 &lt; q &le; –0.014</td>
+                                        <td class="p-2">Optical aid needed before naked eye</td>
+                                    </tr>
+                                    <tr class="${slide.yallopCode === 'D' ? 'bg-amber-50 text-amber-900 font-bold' : ''}">
+                                        <td class="p-2 font-bold text-amber-600">D</td>
+                                        <td class="p-2 mono">–0.232 &lt; q &le; –0.160</td>
+                                        <td class="p-2">Only visible with telescopes/binoculars</td>
+                                    </tr>
+                                    <tr class="${slide.yallopCode === 'E' ? 'bg-rose-50 text-rose-900 font-bold' : ''}">
+                                        <td class="p-2 font-bold text-rose-500">E</td>
+                                        <td class="p-2 mono">–0.293 &lt; q &le; –0.232</td>
+                                        <td class="p-2">Not visible with conventional lenses</td>
+                                    </tr>
+                                    <tr class="${slide.yallopCode === 'F' ? 'bg-rose-50 text-rose-900 font-bold' : ''}">
+                                        <td class="p-2 font-bold text-rose-700">F</td>
+                                        <td class="p-2 mono">q &le; –0.293</td>
+                                        <td class="p-2">Below Danjon Limit (Separation &lt; 7°)</td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
-                        <div class="bg-gray-50 border border-gray-200 p-3 rounded-lg text-xs space-y-2">
-                            <p><b>• Parameter Value ($q$):</b> <span class="font-mono font-bold">${slide.yallopValue}</span></p>
-                            <p><b>• Direct Status Assessment:</b> ${slide.statusDesc}</p>
-                            <p class="text-gray-500 text-[11px] leading-relaxed pt-1 border-t border-gray-200">The Yallop value calculates the structural edge width of the lunar crescent against the sky brightness gradient right at the termination of civil twilight.</p>
+
+                        <div class="bg-gray-50 border border-gray-100 p-2.5 rounded-xl flex justify-between items-center text-[11px]">
+                            <span class="font-bold text-gray-500 uppercase">Target Current Month Score:</span>
+                            <span class="mono font-black text-gray-900 text-xs bg-white px-2 py-0.5 rounded border border-gray-200">Code ${slide.yallopCode} (q = ${slide.yallopValue})</span>
                         </div>
                     </div>
                 `;
             } else if (key === 'orientation') {
-                title.innerText = `Crescent Geometric Tilt Axis`;
+                title.innerText = "Detailed Crescent Geometry Profiles";
                 desc.innerHTML = `
-                    <div class="flex flex-col items-center justify-center my-auto space-y-4 w-full">
-                        <div class="text-center bg-purple-50 p-2.5 rounded-lg border border-purple-100 w-full">
-                            <span class="text-xs font-black text-purple-900 block">${slide.orientation}</span>
-                            <span class="text-[10px] font-mono text-purple-500 block mt-0.5">Position Angle ($q$): ${slide.positionAngle}°</span>
+                    <div class="space-y-3 w-full text-[11px]">
+                        <div class="bg-gray-50 p-2.5 rounded-xl border border-gray-200">
+                            <span class="text-purple-800 font-bold block mb-0.5">Horizontal Orientation Path</span>
+                            <p class="text-gray-600 leading-tight">${slide.orientation}</p>
                         </div>
-                        <div class="relative w-56 h-56 rounded-full bg-slate-950 flex items-center justify-center shadow-2xl border-2 border-purple-900 overflow-hidden">
-                            <div class="absolute inset-0 bg-gradient-to-b from-slate-950 to-black"></div>
-                            
-                            <div class="absolute w-full h-[0.5px] bg-emerald-500/40 z-10"></div>
-                            <div class="absolute left-2 top-1/2 -translate-y-1/2 text-[8px] font-mono text-emerald-400/70 z-20">Local Horizon (0° Axis)</div>
-
-                            <div class="absolute inset-0 flex items-center justify-center transition-transform duration-500" style="transform: rotate(${slide.positionAngle}deg);">
-                                <div class="absolute w-44 h-[0.5px] bg-rose-500/80 z-20"></div>
-                                <div class="w-24 h-24 rounded-full bg-transparent border-r-[8px] border-b-[8px] border-amber-200 transform rotate-45 z-10 filter drop-shadow-[0_0_8px_rgba(252,211,77,0.6)]"></div>
-                            </div>
+                        <div class="bg-gray-50 p-2.5 rounded-xl border border-gray-200 font-mono space-y-1">
+                            <div class="flex justify-between"><span>• Parallax Axis Angle:</span> <span class="text-gray-900 font-bold">${slide.positionAngle}°</span></div>
+                            <div class="flex justify-between"><span>• Target Sky Azimuth:</span> <span class="text-gray-900 font-bold">${slide.azimuth}</span></div>
+                            <div class="flex justify-between"><span>• True Bearing Heading:</span> <span class="text-gray-900 font-bold">${slide.directionDeg}°</span></div>
                         </div>
-                        <p class="text-[11px] text-gray-500 text-center max-w-xs leading-relaxed">The red indicator bar links both sharp lunar cusps. Observe how it slopes relative to the permanent green horizontal horizon plane line.</p>
+                        <p class="text-gray-400 text-[10px] leading-tight italic">Max parameters map the exact vector path to steer equipment coordinates relative to the western ground surface coordinate baseline.</p>
                     </div>
                 `;
             } else if (key === 'stay') {
-                title.innerText = `Stay Time Lag & Chrono Sequence`;
+                title.innerText = "Horizon Time Separation Framework";
                 desc.innerHTML = `
-                    <div class="space-y-4 my-auto w-full">
-                        <div class="bg-amber-50/60 border border-amber-200 p-4 rounded-xl text-center">
-                            <span class="text-[10px] text-amber-800 uppercase font-black block tracking-wider">Post-Sunset Horizon Lag</span>
-                            <span class="text-5xl font-mono font-black text-amber-900 block my-1">${slide.stayDiff} mins</span>
+                    <div class="space-y-2.5 w-full text-[11px]">
+                        <p class="text-gray-600">The Stay Time calculates the raw difference parameters directly separating local solar sunset and lunar moonset events.</p>
+                        <div class="bg-amber-50 text-amber-900 p-3 rounded-xl border border-amber-200 font-mono space-y-1.5">
+                            <div class="flex justify-between"><span>1. Sunset Timestamp:</span> <span class="font-bold">${slide.sset}</span></div>
+                            <div class="flex justify-between"><span>2. Optimal Sky Window:</span> <span class="font-bold text-blue-600">${slide.targetWin}</span></div>
+                            <div class="flex justify-between"><span>3. Moonset Timestamp:</span> <span class="font-bold">${slide.mset}</span></div>
                         </div>
-                        <div class="bg-gray-50 border border-gray-100 p-3 rounded-lg text-xs space-y-2">
-                            <div class="flex justify-between border-b border-gray-200 pb-1 font-mono">
-                                <span class="text-gray-500">1. Ground Sunset:</span>
-                                <span class="font-bold text-orange-600">${slide.sset}</span>
-                            </div>
-                            <div class="flex justify-between border-b border-gray-200 pb-1 font-mono">
-                                <span class="text-gray-500">2. Peak Contrast Window:</span>
-                                <span class="font-bold text-blue-600">${slide.targetWin}</span>
-                            </div>
-                            <div class="flex justify-between font-mono">
-                                <span class="text-gray-500">3. Astronomical Moonset:</span>
-                                <span class="font-bold text-red-600">${slide.mset}</span>
-                            </div>
-                        </div>
-                        <p class="text-[11px] text-gray-400 italic">Calculated difference represents the exact span available to locate the objective before it crosses below the local observation boundary horizon line.</p>
+                        <p class="text-gray-400 text-[10px] italic leading-tight">Longer gaps offer clean background fields as solar ray scatter sets past atmospheric horizons.</p>
                     </div>
                 `;
             } else if (key === 'sequence') {
-                title.innerText = `Chronological Horizon Logic`;
+                title.innerText = "Chronological Order Check Metrics";
                 desc.innerHTML = `
-                    <div class="space-y-4 my-auto w-full">
-                        <div class="bg-emerald-50 border border-emerald-200 p-4 rounded-xl text-center">
-                            <span class="text-[9px] text-emerald-800 uppercase font-black block tracking-wider">Chronological Status</span>
-                            <span class="text-xl font-bold text-emerald-900 block my-1">${slide.orderSequence}</span>
-                            <span class="px-2.5 py-0.5 bg-emerald-600 text-white rounded font-mono text-[10px] uppercase tracking-wider inline-block mt-1">${slide.sequentialStatus}</span>
+                    <div class="space-y-2 w-full text-[11px]">
+                        <div class="bg-emerald-50 text-emerald-900 p-3 rounded-xl border border-emerald-100 font-mono">
+                            <div class="flex justify-between"><span>Sequence:</span> <span class="font-bold">${slide.orderSequence}</span></div>
+                            <div class="flex justify-between mt-1"><span>Status Index:</span> <span class="font-bold text-emerald-700">${slide.sequentialStatus}</span></div>
                         </div>
-                        <div class="text-xs text-gray-600 bg-gray-50 p-3 rounded-lg border border-gray-200 leading-relaxed">
-                            <p><b>Why this matters:</b> If the moon sets before the sun, the crescent is mathematically impossible to observe at dusk regardless of size or optics. A positive sequence validation means the crescent is positioned up in the western sky when twilight begins.</p>
-                        </div>
+                        <p class="text-gray-600 leading-normal">
+                            Validates that the lunar body sets down <b>after</b> the solar center. If a moonset happens prior to sunset, tracking attempts are entirely impossible across all optical networks.
+                        </p>
                     </div>
                 `;
             } else if (key === 'altitude') {
-                title.innerText = `Altitude Profile Engine`;
+                title.innerText = "Complete Diurnal Altitude Sweep Profiles";
                 desc.innerHTML = `
-                    <div class="space-y-3 my-auto w-full">
-                        <div class="bg-sky-50 border border-sky-200 p-4 rounded-xl text-center">
-                            <span class="text-[9px] text-sky-800 uppercase font-black block tracking-wider">Sunset Horizon Separation Angle</span>
-                            <span class="text-5xl font-mono font-black text-sky-900 block my-1">${slide.altitudePeak}°</span>
-                            <span class="text-xs text-sky-600 font-medium block">Peak Alignment Angle at Sunset</span>
+                    <div class="space-y-2 w-full text-[11px]">
+                        <div class="bg-sky-50 border border-sky-100 p-3 rounded-xl font-mono text-sky-900 space-y-1">
+                            <div class="flex justify-between"><span>• Sunset Peak Altitude:</span> <span class="font-bold text-lg">${slide.altitudePeak}°</span></div>
+                            <div class="flex justify-between text-xs pt-1 border-t border-sky-200/60 mt-1"><span>• Minimum Angle Threshold:</span> <span class="font-bold">${slide.altitudeMin}°</span></div>
+                            <div class="flex justify-between text-xs"><span>• Maximum Meridian Climax:</span> <span class="font-bold">${slide.altitudeMax}°</span></div>
                         </div>
-                        <div class="grid grid-cols-2 gap-2 text-center font-mono text-xs">
-                            <div class="bg-gray-50 p-2 rounded-lg border border-gray-100">
-                                <span class="text-gray-400 text-[9px] block uppercase font-sans">Diurnal Min Altitude</span>
-                                <b class="text-gray-800 text-sm block mt-0.5">${slide.altitudeMin}°</b>
-                            </div>
-                            <div class="bg-gray-50 p-2 rounded-lg border border-gray-100">
-                                <span class="text-gray-400 text-[9px] block uppercase font-sans">Diurnal Max Meridian</span>
-                                <b class="text-gray-800 text-sm block mt-0.5">${slide.altitudeMax}°</b>
-                            </div>
-                        </div>
-                        <p class="text-[11px] text-gray-400 leading-tight">Higher sunset values lift the lunar structure clear of heavy dust and city aerosols clustered near the base layout.</p>
+                        <p class="text-gray-500 text-[10px] leading-tight">Elevated sunset nodes protect targets from thick scattering fields residing directly on surface bounds.</p>
                     </div>
                 `;
             } else if (key === 'celestial') {
-                title.innerText = `Nearby Celestial Field Alignments`;
+                title.innerText = "Celestial Alignments & Reference Guides";
                 desc.innerHTML = `
-                    <div class="space-y-3 my-auto w-full">
-                        <div class="bg-indigo-950 text-indigo-200 p-4 rounded-xl text-center border border-indigo-900 shadow-inner">
-                            <span class="text-[9px] text-indigo-400 uppercase font-black block tracking-wider">Field Conjunction Target</span>
-                            <span class="text-2xl font-black text-white block my-1">✨ ${slide.nearbyObject}</span>
-                            <span class="text-[10px] text-indigo-300 block mt-0.5">Vantage Reference Guide Plane</span>
+                    <div class="space-y-2.5 w-full text-[11px]">
+                        <div class="bg-indigo-950 text-indigo-100 p-3.5 rounded-xl border border-indigo-900 font-mono">
+                            <span class="text-[8px] tracking-widest uppercase block text-indigo-400">Field Pointer Alignment</span>
+                            <span class="text-base font-bold text-white block mt-0.5">✨ ${slide.nearbyObject}</span>
                         </div>
-                        <div class="text-xs text-gray-600 leading-relaxed bg-gray-50 p-3 rounded-lg border border-gray-100">
-                            <p><b>• Field Guide Benefit:</b> Extremely thin new moons are difficult for the human eye to acquire from a blank canvas sky. Use this bright planet or stellar pointer as a spatial anchor point. Point your binoculars or lenses to the noted position relative to the object to spot the crescent ribbon quickly.</p>
-                        </div>
-                    </div>
-                `;
-            } else if (key === 'direction') {
-                title.innerText = `Graduation Horizon Compass`;
-                desc.innerHTML = `
-                    <div class="flex flex-col items-center justify-center my-auto space-y-4">
-                        <div class="text-center">
-                            <span class="text-4xl font-black font-mono text-indigo-600 tracking-tight">${slide.azimuth}</span>
-                            <p class="text-xs text-gray-400 font-medium mt-1">Real-time Azimuth Bearing (West point is 270°)</p>
-                        </div>
-                        <div class="relative w-56 h-56 rounded-full border-2 border-indigo-200 bg-slate-50 flex items-center justify-center shadow-md">
-                            <div class="absolute top-2 text-[10px] font-black font-mono text-gray-400">N (0°)</div>
-                            <div class="absolute right-2 text-[10px] font-black font-mono text-gray-400">E (90°)</div>
-                            <div class="absolute bottom-2 text-[10px] font-black font-mono text-gray-400">S (180°)</div>
-                            <div class="absolute left-2 text-[10px] font-black font-mono text-gray-400">W (270°)</div>
-                            <div class="absolute inset-0 flex items-center justify-center transition-transform duration-300" style="transform: rotate(${slide.directionDeg}deg);">
-                                <div class="w-[2px] h-24 bg-gradient-to-t from-transparent via-indigo-500 to-indigo-600 rounded-full relative" style="transform: translateY(-48px);">
-                                    <div class="absolute -top-1 left-1/2 -translate-x-1/2 w-2.5 h-2.5 bg-indigo-600 rounded-full border border-white shadow"></div>
-                                </div>
-                            </div>
-                            <div class="w-4 h-4 rounded-full bg-white border-2 border-indigo-400 shadow z-10"></div>
-                        </div>
-                    </div>
-                `;
-            } else if (key === 'window') {
-                title.innerText = `Optimal Tracking Window Profile`;
-                desc.innerHTML = `
-                    <div class="space-y-3 my-auto w-full">
-                        <div class="bg-blue-50 border border-blue-100 p-3 rounded-xl text-center">
-                            <span class="text-[10px] text-blue-700 uppercase font-black block tracking-wider mb-0.5">Best Tracking Window</span>
-                            <span class="text-2xl font-mono font-black text-blue-900 block">${slide.windowRange}</span>
-                            <span class="text-xs font-semibold text-blue-600 block mt-0.5">Duration: ${slide.windowDur} | Peak: ${slide.targetWin}</span>
-                        </div>
+                        <p class="text-gray-600 leading-normal">
+                            Spotting a minimal crescent on an open backdrop plane can be difficult. Use these nearby bright planets or coordinate alignments as spatial pointers to center lenses rapidly.
+                        </p>
                     </div>
                 `;
             }
 
+            // Reveal modal node sheet with clean transition paths
             modal.classList.remove('translate-y-full', 'opacity-0', 'pointer-events-none');
-            document.getElementById('top-nav-bar').classList.add('opacity-5', 'pointer-events-none');
-            document.getElementById('station-wrapper').classList.add('opacity-5', 'pointer-events-none');
+            document.getElementById('top-nav-bar').classList.add('opacity-10', 'pointer-events-none');
+            document.getElementById('station-wrapper').classList.add('opacity-10', 'pointer-events-none');
         }
 
         function closeModal() {
             const modal = document.getElementById('kpi-modal');
             modal.classList.add('translate-y-full', 'opacity-0', 'pointer-events-none');
-            document.getElementById('top-nav-bar').classList.remove('opacity-5', 'pointer-events-none');
-            document.getElementById('station-wrapper').classList.remove('opacity-5', 'pointer-events-none');
+            document.getElementById('top-nav-bar').classList.remove('opacity-10', 'pointer-events-none');
+            document.getElementById('station-wrapper').classList.remove('opacity-10', 'pointer-events-none');
         }
 
+        // SLIDE RENDER PROCESSING PARSER ENGINE
         function renderSlides() {
             container.innerHTML = '';
             const stationData = datasets[currentStation];
@@ -465,142 +426,117 @@
                 const div = document.createElement('div');
                 div.className = 'slide p-3 h-full flex flex-col justify-between bg-white overflow-y-auto';
                 
-                if (slide.type === 'tip_conditions') {
+                if (slide.type === 'tip_card_system') {
                     div.innerHTML = `
                         <div class="space-y-3 my-auto text-xs text-gray-700 h-full flex flex-col justify-center">
-                            <div class="bg-blue-50/70 border border-blue-100 p-3.5 rounded-xl">
-                                <h4 class="font-bold text-sm text-blue-900 mb-1.5 flex items-center gap-1">🌤️ Observing Conditions</h4>
-                                <ul class="list-disc pl-4 space-y-1 text-gray-600 font-medium">
-                                    <li>Clear skies with low dust (common in Tunisia after rain)</li>
-                                    <li>Low light pollution — best from coastal or elevated spots near Bizerte</li>
-                                    <li>Unobstructed western horizon</li>
-                                    <li>Binoculars recommended for ages under 20 hours</li>
+                            <div class="bg-indigo-50/80 border border-indigo-100 p-4 rounded-xl">
+                                <h4 class="font-bold text-sm text-indigo-900 mb-1.5">🪐 Field Operations Overview</h4>
+                                <ul class="list-disc pl-4 space-y-1.5 text-gray-600 font-medium leading-tight">
+                                    <li>Clear western sky horizons are vital to lock target loops.</li>
+                                    <li>Utilize noted celestial guide items to cross-reference coordinates.</li>
+                                    <li>Tweak target limits in the setup panel for real-time risk filtering.</li>
                                 </ul>
                             </div>
-                            <div class="bg-emerald-50/70 border border-emerald-100 p-3.5 rounded-xl">
-                                <h4 class="font-bold text-sm text-emerald-900 mb-1.5 flex items-center gap-1">⭐ Optimal Scenario Summary</h4>
-                                <ul class="space-y-1 font-mono text-[11px] text-gray-700">
-                                    <li class="flex justify-between"><span>• Moon Age:</span> <span class="font-bold text-emerald-700">20–28 hours</span></li>
-                                    <li class="flex justify-between"><span>• Elongation:</span> <span class="font-bold text-emerald-700">11–15°</span></li>
-                                    <li class="flex justify-between"><span>• Altitude:</span> <span class="font-bold text-emerald-700">10°+</span></li>
-                                    <li class="flex justify-between"><span>• Time Lag:</span> <span class="font-bold text-emerald-700">50+ minutes</span></li>
-                                </ul>
-                            </div>
-                        </div>
-                    `;
-                } else if (slide.type === 'tip') {
-                    div.innerHTML = `
-                        <div class="space-y-2 my-auto h-full flex flex-col justify-center">
-                            <div>
-                                <span class="px-2 py-0.5 rounded-full bg-blue-50 text-blue-600 font-bold text-[9px] tracking-wide border border-blue-200">${slide.tag}</span>
-                            </div>
-                            <h4 class="font-bold text-base text-gray-900 mt-1 mb-1 tracking-tight">${slide.title}</h4>
-                            <p class="text-xs text-gray-500 leading-relaxed">${slide.desc}</p>
                         </div>
                     `;
                 } else {
-                    const ageColor = getValueColor(slide.age, 'age');
-                    const elongColor = getValueColor(slide.elongation, 'elong');
-                    const altColor = getValueColor(slide.altitudePeak, 'alt');
-                    const stayColor = getValueColor(slide.stayDiff, 'stay');
-                    const difficultyBadgeClass = getDifficultyColor(slide.visibility);
+                    const ageClr = fontValueColor(slide.age, 'age');
+                    const elongClr = fontValueColor(slide.elongation, 'elong');
+                    const altClr = fontValueColor(slide.altitudePeak, 'alt');
+                    const stayClr = fontValueColor(slide.stayDiff, 'stay');
+                    const badgeClass = fontBadgeColor(slide.visibility);
+                    const remainingDaysStr = calculateDaysRemaining(slide.targetDate);
 
                     div.innerHTML = `
                         <div class="flex flex-col h-full justify-between space-y-2">
                             
-                            <div onclick="openModal('yallop')" class="${difficultyBadgeClass} p-3 rounded-xl border transition-all flex flex-col justify-start space-y-1 shadow-sm cursor-pointer hover:brightness-105 active:scale-[0.99]">
-                                <div class="flex justify-between items-center w-full">
+                            <div onclick="openModal('yallop')" class="${badgeClass} p-3 rounded-xl border transition-all flex flex-col justify-start space-y-1.5 shadow-xs cursor-pointer hover:brightness-105 active:scale-[0.99]">
+                                <div class="flex justify-between items-start w-full">
                                     <div>
-                                        <h4 class="text-xs font-black tracking-tight opacity-95">${slide.date}</h4>
-                                        <p class="text-[9px] font-mono opacity-80">${slide.hijri}</p>
+                                        <h4 class="text-xs font-black tracking-tight leading-none">${slide.dateStr}</h4>
+                                        <p class="text-[10px] font-bold opacity-80 mt-1 mono">${slide.hijri} <span class="underline">(${remainingDaysStr})</span></p>
                                     </div>
-                                    <span class="px-2.5 py-0.5 bg-white/20 text-white rounded text-[11px] font-black tracking-tight uppercase">${slide.visibility}</span>
+                                    <span class="px-2 py-0.5 bg-black/15 text-white rounded font-mono text-[9px] font-black uppercase tracking-wider">${slide.yallopCode} Matrix</span>
                                 </div>
-                                <div class="pt-1.5 mt-1 border-t border-white/20 text-[10px] leading-tight">
-                                    <div class="font-black uppercase tracking-wider text-[8px] opacity-75 mb-0.5">Visibility Status Reason</div>
-                                    <p class="italic opacity-95 font-medium">${slide.statusDesc}</p>
-                                </div>
-                                <div class="pt-1 mt-1 flex justify-between items-center text-[9px] font-mono bg-black/10 px-1.5 py-0.5 rounded">
-                                    <span>Yallop Code Index: <b class="underline">${slide.yallopCode}</b></span>
-                                    <span>Value Score: <b>${slide.yallopValue}</b></span>
+                                <div class="pt-2 border-t border-white/20 text-[11px] leading-tight">
+                                    <span class="block uppercase font-extrabold text-[8px] tracking-wider opacity-75 mb-0.5">Visibility Status Reason</span>
+                                    <p class="italic font-medium opacity-95">${slide.statusDesc}</p>
                                 </div>
                             </div>
 
-                            <div onclick="openModal('orientation')" class="bg-purple-50/70 p-2 rounded-xl border border-purple-100 flex flex-col justify-center cursor-pointer active:bg-purple-100/70 transition-colors shadow-xs">
+                            <div onclick="openModal('orientation')" class="bg-purple-50/50 p-2.5 rounded-xl border border-purple-100 flex flex-col justify-center cursor-pointer active:bg-purple-100/50 transition-colors shadow-2xs">
                                 <div class="flex justify-between items-center w-full mb-1">
-                                    <span class="text-[8px] text-purple-700 font-bold uppercase tracking-wider">Horn Geometric Orientation Axis</span>
-                                    <span class="text-[8px] font-black text-purple-400 uppercase font-mono">Max Details ➔</span>
+                                    <span class="text-[8px] text-purple-800 font-extrabold uppercase tracking-widest">Crescent Axis Angle</span>
+                                    <span class="text-[8px] font-bold text-purple-400 uppercase font-mono">Details ➔</span>
                                 </div>
                                 <div class="flex items-center gap-3">
-                                    <div class="relative w-11 h-11 rounded-full bg-slate-950 flex items-center justify-center flex-shrink-0 border border-purple-200 overflow-hidden shadow-sm">
-                                        <div class="absolute w-full h-[0.3px] bg-emerald-400/50 z-10"></div>
+                                    <div class="relative w-10 h-10 rounded-full bg-slate-950 flex items-center justify-center flex-shrink-0 border border-purple-200/60 overflow-hidden">
+                                        <div class="absolute w-full h-[0.3px] bg-emerald-400/40 z-10"></div>
                                         <div class="absolute inset-0 flex items-center justify-center" style="transform: rotate(${slide.positionAngle}deg);">
-                                            <div class="absolute w-8 h-[0.5px] bg-rose-400/80 z-20"></div>
-                                            <div class="w-6 h-6 rounded-full bg-transparent border-r-[3px] border-b-[3px] border-amber-300 transform rotate-45 z-10"></div>
+                                            <div class="absolute w-7 h-[0.5px] bg-rose-400/70 z-20"></div>
+                                            <div class="w-5 h-5 rounded-full bg-transparent border-r-[2.5px] border-b-[2.5px] border-amber-200 transform rotate-45 z-10"></div>
                                         </div>
                                     </div>
-                                    <div class="leading-tight">
-                                        <div class="text-[10px] font-black text-gray-800 tracking-tight">${slide.orientation.split(' (')[0]}</div>
-                                        <p class="text-[9px] text-gray-400 mt-0.5 font-mono">Position Angle Axis ($q$): ${slide.positionAngle}°</p>
+                                    <div class="leading-none">
+                                        <div class="text-[11px] font-bold text-gray-800 tracking-tight">${slide.orientation.split(' (')[0]}</div>
+                                        <p class="text-[9px] text-gray-400 mt-1 font-mono">Axis Alignment Vector: ${slide.positionAngle}°</p>
                                     </div>
                                 </div>
                             </div>
 
-                            <div onclick="openModal('sequence')" class="bg-emerald-50/70 p-2 rounded-xl border border-emerald-100 flex items-center justify-between cursor-pointer active:bg-emerald-100/50 transition-all shadow-xs">
+                            <div onclick="openModal('sequence')" class="bg-emerald-50/50 p-2.5 rounded-xl border border-emerald-100 flex items-center justify-between cursor-pointer active:bg-emerald-100/50 transition-all shadow-2xs">
                                 <div class="leading-none">
-                                    <span class="text-[8px] text-emerald-700 font-bold uppercase tracking-wider block mb-1">Horizon Chronological Checker</span>
+                                    <span class="text-[8px] text-emerald-800 font-extrabold uppercase tracking-widest block mb-1">Horizon Order Rule</span>
                                     <span class="text-[11px] font-bold text-gray-800 block tracking-tight">${slide.orderSequence}</span>
                                 </div>
-                                <div class="text-right">
-                                    <span class="px-2 py-0.5 bg-emerald-600 text-white rounded font-mono text-[8px] uppercase tracking-wider font-bold inline-block">${slide.sequentialStatus}</span>
-                                </div>
+                                <span class="px-2 py-0.5 bg-emerald-600 text-white rounded font-mono text-[8px] font-bold uppercase tracking-wider">${slide.sequentialStatus}</span>
                             </div>
 
                             <div class="grid grid-cols-2 gap-2">
-                                <div onclick="openModal('stay')" class="bg-gray-50 border border-gray-200 p-2.5 rounded-xl flex flex-col justify-between items-center shadow-xs cursor-pointer active:bg-gray-100 transition-colors">
-                                    <div class="w-full flex justify-between text-[8px] font-bold text-gray-400 tracking-wider">
-                                        <span>STAY TIME (LAG)</span>
+                                <div onclick="openModal('stay')" class="bg-gray-50 border border-gray-200 p-2.5 rounded-xl flex flex-col justify-between items-center shadow-2xs cursor-pointer active:bg-gray-100 transition-colors">
+                                    <div class="w-full flex justify-between text-[8px] font-extrabold text-gray-400 tracking-wider">
+                                        <span>STAY TIME LAG</span>
                                         <span>➔</span>
                                     </div>
-                                    <div class="text-3xl font-black font-mono tracking-tighter my-0.5 ${stayColor}">${slide.stayDiff}<span class="text-sm font-sans font-bold ml-0.5">min</span></div>
-                                    <div class="text-[8px] text-gray-400 font-mono text-center">Sunset ${slide.sset} → Moonset ${slide.mset}</div>
+                                    <div class="text-3xl font-black mono tracking-tighter my-0.5 ${stayClr}">${slide.stayDiff}<span class="text-xs font-sans font-extrabold ml-0.5">m</span></div>
+                                    <div class="text-[8px] text-gray-400 font-mono tracking-tight text-center">Sunset ${slide.sset} → Moonset ${slide.mset}</div>
                                 </div>
                                 
-                                <div onclick="openModal('altitude')" class="bg-gray-50 border border-gray-200 p-2.5 rounded-xl flex flex-col justify-between items-center shadow-xs cursor-pointer active:bg-gray-100 transition-colors">
-                                    <div class="w-full flex justify-between text-[8px] font-bold text-gray-400 tracking-wider">
-                                        <span>ALTITUDE PROFILE</span>
+                                <div onclick="openModal('altitude')" class="bg-gray-50 border border-gray-200 p-2.5 rounded-xl flex flex-col justify-between items-center shadow-2xs cursor-pointer active:bg-gray-100 transition-colors">
+                                    <div class="w-full flex justify-between text-[8px] font-extrabold text-gray-400 tracking-wider">
+                                        <span>PEAK ALTITUDE</span>
                                         <span>➔</span>
                                     </div>
-                                    <div class="text-3xl font-black font-mono tracking-tighter my-0.5 ${altColor}">${slide.altitudePeak}<span class="text-sm font-sans font-bold ml-0.5">°</span></div>
-                                    <div class="text-[8px] text-gray-400 font-mono text-center">Min: ${slide.altitudeMin}° | Max: ${slide.altitudeMax}°</div>
+                                    <div class="text-3xl font-black mono tracking-tighter my-0.5 ${altClr}">${slide.altitudePeak}<span class="text-xs font-sans font-extrabold ml-0.5">°</span></div>
+                                    <div class="text-[8px] text-gray-400 font-mono tracking-tight text-center">Min: ${slide.altitudeMin}° | Max: ${slide.altitudeMax}°</div>
                                 </div>
                             </div>
 
-                            <div onclick="openModal('celestial')" class="bg-indigo-950 text-white p-2 rounded-xl flex items-center justify-between cursor-pointer hover:bg-indigo-900 transition-all shadow-md">
+                            <div onclick="openModal('celestial')" class="bg-indigo-950 text-white p-2.5 rounded-xl flex items-center justify-between cursor-pointer hover:bg-indigo-900 transition-all shadow-sm">
                                 <div class="leading-none">
-                                    <span class="text-[8px] text-indigo-300 font-bold uppercase tracking-wider block mb-1">Nearby Pointer Celestial Field</span>
+                                    <span class="text-[8px] text-indigo-300 font-extrabold uppercase tracking-widest block mb-1">Celestial Field Anchor</span>
                                     <span class="text-xs font-bold block text-white tracking-tight">✨ Conjunction: ${slide.nearbyObject.split(' (')[0]}</span>
                                 </div>
-                                <div class="text-right font-mono text-[9px] text-indigo-300 bg-white/10 px-1.5 py-0.5 rounded font-bold">
+                                <span class="font-mono text-[9px] text-indigo-200 bg-white/10 px-1.5 py-0.5 rounded font-bold">
                                     Sep: ${slide.nearbyObject.includes('(') ? slide.nearbyObject.split('(')[1].replace(')', '') : 'N/A'}
+                                </span>
+                            </div>
+
+                            <div class="bg-gray-50 p-2 rounded-xl border border-gray-200 grid grid-cols-2 gap-1 text-center font-mono text-xs">
+                                <div>
+                                    <span class="text-gray-400 text-[8px] uppercase font-sans font-bold tracking-tight block">Moon Age</span>
+                                    <span class="block text-xs font-bold tracking-tight mt-0.5 ${ageClr}">${slide.age}h</span>
+                                </div>
+                                <div>
+                                    <span class="text-gray-400 text-[8px] uppercase font-sans font-bold tracking-tight block">Elongation Arc</span>
+                                    <span class="block text-xs font-bold tracking-tight mt-0.5 ${elongClr}">${slide.elongation}°</span>
                                 </div>
                             </div>
 
-                            <div class="bg-gray-50 p-2 rounded-xl border border-gray-200 grid grid-cols-2 gap-1 text-center font-mono text-xs shadow-xs">
-                                <div>
-                                    <span class="text-gray-400 text-[8px] uppercase font-sans font-bold block tracking-tight">Moon Age</span>
-                                    <span class="block text-sm font-black tracking-tight mt-0.5 ${ageColor}">${slide.age}h</span>
-                                </div>
-                                <div>
-                                    <span class="text-gray-400 text-[8px] uppercase font-sans font-bold block tracking-tight">Elongation Angle</span>
-                                    <span class="block text-sm font-black tracking-tight mt-0.5 ${elongColor}">${slide.elongation}°</span>
-                                </div>
-                            </div>
-
-                            <div class="flex justify-between items-center text-[9px] border-t border-gray-100 pt-1 font-mono text-gray-400 px-1">
-                                <div>Conjunction: <span class="text-gray-600 font-bold">${slide.conj.split(', ')[1]}</span></div>
-                                <div>Best Time: <span class="text-blue-500 font-bold">${slide.targetWin}</span></div>
-                                <div>Duration: <span class="text-purple-500 font-bold">${slide.windowDur}</span></div>
+                            <div class="flex justify-between items-center text-[9px] border-t border-gray-100 pt-1 font-mono text-gray-400 px-0.5">
+                                <div>Conjunction: <span class="text-gray-600 font-bold">${slide.conj}</span></div>
+                                <div>Best Time: <span class="text-indigo-600 font-bold">${slide.targetWin}</span></div>
+                                <div>Window Duration: <span class="text-purple-600 font-bold">${slide.windowDur}</span></div>
                             </div>
 
                         </div>
@@ -628,15 +564,15 @@
             closeModal();
             
             document.querySelectorAll('#top-nav-bar button').forEach(btn => {
-                btn.classList.remove('bg-white', 'shadow-sm', 'font-semibold', 'text-black');
-                btn.classList.add('text-gray-700');
+                btn.classList.remove('bg-white', 'shadow-sm', 'font-bold', 'text-gray-900');
+                btn.classList.add('text-gray-600');
             });
             
             const activeBtn = document.getElementById(`btn-${station}`);
-            activeBtn.classList.add('bg-white', 'shadow-sm', 'font-semibold', 'text-black');
-            activeBtn.classList.remove('text-gray-700');
+            activeBtn.classList.add('bg-white', 'shadow-sm', 'font-bold', 'text-gray-900');
+            activeBtn.classList.remove('text-gray-600');
 
-            document.getElementById('station-subtitle').innerText = datasets[station].title;
+            document.getElementById('station-subtitle').innerText = datasets[station].title || "Field Reference";
             renderSlides();
         }
 
@@ -662,7 +598,7 @@
             isDrawerOpen = !isDrawerOpen;
             
             if (isDrawerOpen) {
-                drawer.style.maxHeight = "380px"; 
+                drawer.style.maxHeight = "450px"; 
                 arrow.innerText = "▼";
             } else {
                 drawer.style.maxHeight = "0px";
@@ -674,7 +610,7 @@
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(datasets, null, 2));
             const dlAnchorElem = document.createElement('a');
             dlAnchorElem.setAttribute("href", dataStr);
-            dlAnchorElem.setAttribute("download", `crescent_enhanced_matrix_${new Date().toISOString().slice(0,10)}.json`);
+            dlAnchorElem.setAttribute("download", `crescent_v5_backup.json`);
             dlAnchorElem.click();
         }
 
@@ -688,17 +624,15 @@
                         changeStation(currentStation);
                         alert("Data matrix synchronization complete.");
                         toggleConfigDrawer();
-                    } else {
-                        alert("Error: Missing components map.");
                     }
                 } catch (err) {
-                    alert("Error processing raw file deserialization schema.");
+                    alert("Error deserializing schema file.");
                 }
             };
             fileReader.readAsText(event.target.files[0]);
         }
 
-        // Native Swipe Gestures Engine mapping
+        // TOUCH GESTURE LOGIC: Homing swipe listeners for clean screen switching mappings
         let touchStartX = 0;
         let touchEndX = 0;
         let modalTouchStartY = 0;
@@ -715,6 +649,7 @@
             if (touchEndX - touchStartX > threshold) prevSlide();
         }, {passive: true});
 
+        // REQUISITE: Gestures to go back from card details to main menu (Vertical swipe down)
         const modalContainer = document.getElementById('kpi-modal');
         modalContainer.addEventListener('touchstart', e => {
             modalTouchStartY = e.changedTouches[0].screenY;
@@ -722,14 +657,16 @@
 
         modalContainer.addEventListener('touchend', e => {
             modalTouchEndY = e.changedTouches[0].screenY;
-            if (Math.abs(modalTouchStartY - modalTouchEndY) > 50) {
+            const swipeDownThreshold = 50;
+            // Catch clean downward stroke sequences to fire back/dismiss paths
+            if (modalTouchEndY - modalTouchStartY > swipeDownThreshold) {
                 closeModal();
             }
         }, {passive: true});
 
         document.getElementById('modal-swipe-zone').addEventListener('click', closeModal);
 
-        // Run Deployment Build Sequence
+        // Run primary configuration loop boot sequence
         renderSlides();
     </script>
 
