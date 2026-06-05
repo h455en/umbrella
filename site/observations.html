@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>خلاصة نتائج رصد وتحري الهلال</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://unpkg.com/@alpinejs/collapse@3.x.x/dist/cdn.min.js"></script>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.2.3/css/flag-icons.min.css"/>
+    
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+
+    <style>
+        body { font-family: 'Cairo', sans-serif; }
+        .leaflet-popup-content-main { font-family: 'Cairo', sans-serif; text-align: right; direction: rtl; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased min-h-screen pb-12" x-data="appComponent()">
+
+    <header class="bg-indigo-950 text-white shadow-md border-b border-indigo-900 py-3">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center gap-2">
+            <div class="flex items-center gap-2">
+                <div class="bg-amber-500 p-1 rounded-lg text-slate-950">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 3a9 9 0 1 0 9 9 9.1 9.1 0 0 0-.3-2.3A7 7 0 1 1 14.3 3.3 9 9 0 0 0 12 3z"/>
+                    </svg>
+                </div>
+                <h1 class="text-sm font-bold tracking-tight text-white">مركز الفلك الدولي — المشروع الإسلامي لرصد الأهلة (ICOP)</h1>
+            </div>
+            <div class="text-[11px] text-indigo-200 font-medium bg-indigo-900/50 px-2.5 py-1 rounded-md border border-indigo-800">
+                الاقتران المركزي: السبت 16 مايو/آيار 2026 الساعة 20:01 UTC
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 mt-6">
+
+        <section class="mb-6 bg-white rounded-xl p-5 shadow-sm border border-slate-200">
+            <div class="border-b border-slate-100 pb-3 mb-4">
+                <h2 class="text-lg font-extrabold text-slate-900 flex items-center gap-2">
+                    <span class="w-1.5 h-5 bg-amber-500 rounded-full inline-block"></span>
+                    خلاصة نتائج رصد وتحري الهلال — السبت 16 مايو 2026م (29 ذو القعدة 1447 هـ)
+                </h2>
+                <p class="text-xs text-slate-400 mt-0.5">انقر فوق كروت الوسائل لتصفية الجداول والخرائط تلقائياً حسب الأداة المستخدمة</p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                
+                <div @click="toolFilter = 'all'; statusFilter = 'all'" 
+                     :class="toolFilter === 'all' && statusFilter === 'all' ? 'ring-2 ring-indigo-600 bg-indigo-50/20' : 'bg-slate-50'"
+                     class="p-4 rounded-xl border border-slate-100 flex flex-col justify-between cursor-pointer hover:bg-slate-100/70 transition-all">
+                    <span class="text-[11px] font-bold text-slate-400 tracking-wider">إجمالي التقارير والنتائج</span>
+                    <div class="my-2 flex items-baseline gap-1.5">
+                        <span class="text-2xl font-black text-slate-800">57 تقريراً</span>
+                        <span class="text-xs text-emerald-600 font-bold">(58% رؤية)</span>
+                    </div>
+                    <div class="w-full bg-slate-200 rounded-full h-1.5 overflow-hidden">
+                        <div class="bg-emerald-500 h-full rounded-full" style="width: 58%"></div>
+                    </div>
+                </div>
+
+                <div @click="toolFilter = 'العين المجردة'" 
+                     :class="toolFilter === 'العين المجردة' ? 'ring-2 ring-amber-500 bg-amber-50/20' : 'bg-slate-50'"
+                     class="p-4 rounded-xl border border-slate-100 flex flex-col justify-between cursor-pointer hover:bg-slate-100/70 transition-all">
+                    <span class="text-[11px] font-bold text-slate-400 tracking-wider">تصفية: العين المجردة</span>
+                    <div class="my-2 flex items-baseline gap-1.5">
+                        <span class="text-2xl font-black text-amber-600">33 دولة/موقع</span>
+                        <span class="text-xs text-slate-400 font-medium">(33 / 57)</span>
+                    </div>
+                    <span class="text-[10px] text-amber-700 bg-amber-50 font-bold px-2 py-0.5 rounded border border-amber-100 w-max">اضغط للتصفية البصرية</span>
+                </div>
+
+                <div @click="toolFilter = 'كاميرا CCD'" 
+                     :class="toolFilter === 'كاميرا CCD' ? 'ring-2 ring-indigo-600 bg-indigo-50/20' : 'bg-slate-50'"
+                     class="p-4 rounded-xl border border-slate-100 flex flex-col justify-between cursor-pointer hover:bg-slate-100/70 transition-all">
+                    <span class="text-[11px] font-bold text-slate-400 tracking-wider">تصفية: كاميرا CCD</span>
+                    <div class="my-2 flex items-baseline gap-1.5">
+                        <span class="text-2xl font-black text-indigo-600">14 دولة/موقع</span>
+                        <span class="text-xs text-slate-400 font-medium">(14 / 57)</span>
+                    </div>
+                    <span class="text-[10px] text-indigo-700 bg-indigo-50 font-bold px-2 py-0.5 rounded border border-indigo-100 w-max">اضغط للتصفية الرقمية</span>
+                </div>
+
+                <div class="bg-slate-50 p-4 rounded-xl border border-slate-100 flex flex-col justify-between">
+                    <span class="text-[11px] font-bold text-slate-400 tracking-wider">معايير المطابقة الفلكية</span>
+                    <div class="my-1 space-y-1">
+                        <div class="flex items-center justify-between text-[11px] font-bold">
+                            <span class="text-slate-500">معيار يالوب (Yallop):</span>
+                            <span class="text-emerald-700">✓ متوافق</span>
+                        </div>
+                        <div class="flex items-center justify-between text-[11px] font-bold">
+                            <span class="text-slate-500">معيار عودة (Odeh 2006):</span>
+                            <span class="text-emerald-700">✓ متوافق</span>
+                        </div>
+                    </div>
+                    <p class="text-[10px] text-slate-400 leading-none">الرصد الفعلي يدعم المنحنيات بدقة.</p>
+                </div>
+
+            </div>
+        </section>
+
+        <section class="space-y-4">
+            
+            <div class="flex flex-col md:flex-row justify-between items-stretch md:items-center gap-3 bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
+                <div class="flex bg-slate-100 p-0.5 rounded-lg font-bold text-xs">
+                    <button @click="switchTab('table')" :class="activeTab === 'table' ? 'bg-white text-indigo-950 shadow-sm' : 'text-slate-500 hover:text-slate-900'" class="px-4 py-2 rounded-md transition-all flex items-center gap-1.5">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path></svg>
+                        الجدول التفاعلي
+                    </button>
+                    <button @click="switchTab('map')" :class="activeTab === 'map' ? 'bg-white text-indigo-950 shadow-sm' : 'text-slate-500 hover:text-slate-900'" class="px-4 py-2 rounded-md transition-all flex items-center gap-1.5">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 002 2h2a2 2 0 002-2V7.5A2.5 2.5 0 0016.5 5h-.059a2 2 0 01-1.826-1.556C14.305 3.1 13.185 3 12 3c-1.251 0-2.456.1-3.55.295M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        خريطة التوزيع الجغرافي
+                    </button>
+                </div>
+
+                <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 flex-1 max-w-xl">
+                    <div class="relative flex-1">
+                        <input type="text" x-model="searchQuery" placeholder="ابحث عن دولة، مدينة، أو راصد..." class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 pr-8 placeholder:text-slate-400" />
+                        <svg class="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    </div>
+                    <div class="inline-flex bg-slate-100 p-0.5 rounded-lg text-xs font-bold text-slate-600">
+                        <button @click="statusFilter = 'all'" :class="statusFilter === 'all' ? 'bg-white text-indigo-950 shadow-sm' : ''" class="px-2.5 py-1.5 rounded-md transition-all">الكل</button>
+                        <button @click="statusFilter = 'seen'" :class="statusFilter === 'seen' ? 'bg-white text-emerald-700 shadow-sm' : ''" class="px-2.5 py-1.5 rounded-md transition-all">شوهد</button>
+                        <button @click="statusFilter = 'notseen'" :class="statusFilter === 'notseen' ? 'bg-white text-rose-700 shadow-sm' : ''" class="px-2.5 py-1.5 rounded-md transition-all">لم يشاهد</button>
+                    </div>
+                    <template x-if="toolFilter !== 'all'">
+                        <button @click="toolFilter = 'all'" class="bg-amber-100 hover:bg-amber-200 text-amber-900 px-2 py-1.5 rounded-lg text-[11px] font-bold flex items-center gap-1 transition-colors">
+                            إلغاء أداة: <span x-text="toolFilter"></span> ✕
+                        </button>
+                    </template>
+                </div>
+            </div>
+
+            <div x-show="activeTab === 'table'" class="space-y-4">
+                <div x-data="{ open: true }" class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                    <button @click="open = !open" class="w-full bg-slate-50 hover:bg-slate-100/70 px-5 py-3 flex justify-between items-center transition-colors border-b border-slate-100">
+                        <div class="flex items-center gap-3">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-indigo-100 text-indigo-950">
+                                سجل الرصد الميداني الشامل المصفى
+                            </span>
+                            <span class="text-xs text-slate-400 font-medium" x-text="'(مطابق للبحث: ' + filteredLogs.length + ' تقارير)'"></span>
+                        </div>
+                        <svg :class="open ? 'transform rotate-180' : ''" class="w-4 h-4 text-slate-400 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+
+                    <div x-show="open" x-collapse>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-right border-collapse whitespace-nowrap">
+                                <thead>
+                                    <tr class="bg-slate-50/80 text-[11px] font-bold text-slate-400 border-b border-slate-200">
+                                        <th class="px-5 py-3">الدولة والمنطقة</th>
+                                        <th class="px-5 py-3">حالة الرؤية</th>
+                                        <th class="px-5 py-3">الوسائل والأدوات</th>
+                                        <th class="px-5 py-3 text-center">المرفقات</th>
+                                        <th class="px-5 py-3">الراصد والموقع ووقت التحري</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100 text-xs text-slate-700">
+                                    <template x-for="log in filteredLogs" :key="log.id">
+                                        <tr class="hover:bg-slate-50/50 transition-colors">
+                                            <td class="px-5 py-3.5 font-bold text-slate-900">
+                                                <span :class="'fi fi-' + log.flag + ' shadow-sm rounded-sm ml-2 text-sm'"></span>
+                                                <span x-text="log.country"></span>
+                                            </td>
+                                            <td class="px-5 py-3.5">
+                                                <span :class="log.seen ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-rose-50 text-rose-700 border-rose-200'" class="inline-flex items-center px-2 py-0.5 rounded font-bold border" x-text="log.seen ? 'تمت الرؤية' : 'لم تتم الرؤية'"></span>
+                                            </td>
+                                            <td class="px-5 py-3.5">
+                                                <div class="flex gap-1 flex-wrap">
+                                                    <template x-for="tool in log.tools">
+                                                        <span :class="getToolClass(tool)" class="inline-flex items-center px-1.5 py-0.5 rounded font-bold border" x-text="tool"></span>
+                                                    </template>
+                                                </div>
+                                            </td>
+                                            <td class="px-5 py-3.5 text-center">
+                                                <template x-if="log.hasPhoto">
+                                                    <a href="#" class="text-indigo-600 hover:underline font-bold text-[11px]">عرض المرفق</a>
+                                                </template>
+                                                <template x-if="!log.hasPhoto">
+                                                    <span class="text-slate-300">—</span>
+                                                </template>
+                                            </td>
+                                            <td class="px-5 py-3.5 border-r border-slate-100 bg-slate-50/30">
+                                                <div class="flex items-center justify-between gap-4">
+                                                    <div>
+                                                        <span class="font-bold text-slate-800" x-text="log.city"></span>
+                                                        <span class="text-slate-400 block text-[10px] mt-0.5" x-text="log.observer"></span>
+                                                    </div>
+                                                    <div class="flex items-center" :title="log.time">
+                                                        <template x-if="log.time.includes('بعد') || log.time.includes('غروب')">
+                                                            <div class="flex items-center gap-1 text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-100 text-[10px] font-semibold">
+                                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M14 12a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                                                                بعد الغروب
+                                                            </div>
+                                                        </template>
+                                                        <template x-if="log.time.includes('قبل')">
+                                                            <div class="flex items-center gap-1 text-sky-600 bg-sky-50 px-1.5 py-0.5 rounded border border-sky-100 text-[10px] font-semibold">
+                                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M14 12a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                                                                قبل الغروب
+                                                            </div>
+                                                        </template>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </template>
+                                    <template x-if="filteredLogs.length === 0">
+                                        <tr>
+                                            <td colspan="5" class="px-5 py-10 text-center text-slate-400 font-medium">لا توجد سجلات تطابق خيارات ومحددات البحث المعمول بها حالياً.</td>
+                                        </tr>
+                                    </template>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div x-show="activeTab === 'map'" class="bg-white rounded-xl shadow-sm border border-slate-200 p-4">
+                <div class="mb-2 flex justify-between items-center text-xs">
+                    <p class="text-slate-400 font-medium">الخريطة تتوافق ديناميكياً مع خيارات التصفية المدخلة أعلاه.</p>
+                    <div class="flex gap-3 font-bold">
+                        <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span> شوهد</span>
+                        <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block"></span> لم يشاهد</span>
+                    </div>
+                </div>
+                <div id="worldMap" class="w-full h-[520px] bg-slate-50 rounded-xl border border-slate-200 z-10"></div>
+            </div>
+
+        </section>
+    </main>
+
+    <footer class="mt-16 border-t border-slate-200 pt-4 text-center text-xs text-slate-400">
+        <p>© المشروع الإسلامي لرصد الأهلة — مركز الفلك الدولي. تم التحديث والفرز التلقائي المتقدم لحفظ المساحات 1447 هـ.</p>
+    </footer>
+
+    <script>
+        function appComponent() {
+            return {
+                activeTab: 'table',
+                searchQuery: '',
+                statusFilter: 'all',
+                toolFilter: 'all', // Dynamic categorization filtering parameter
+                mapInstance: null,
+                markersGroup: null,
+                
+                // Ground truth logged reports database matrix
+                logs: [
+                    { id: 1, country: 'الأردن', flag: 'jo', city: 'عمان', observer: 'معاذ شقور', time: 'بعد غروب الشمس', seen: true, tools: ['كاميرا CCD'], lat: 31.95, lng: 35.91, hasPhoto: false },
+                    { id: 2, country: 'الأردن', flag: 'jo', city: 'إربد', observer: 'د. أنس صوالحة', time: 'قبل غروب الشمس', seen: true, tools: ['كاميرا CCD'], lat: 32.55, lng: 35.85, hasPhoto: true },
+                    { id: 3, country: 'الإمارات', flag: 'ae', city: 'أبوظبي', observer: 'م. محمد عودة', time: 'بعد غروب الشمس', seen: true, tools: ['كاميرا CCD', 'مرقب / تلسكوب'], lat: 24.45, lng: 54.37, hasPhoto: false },
+                    { id: 4, country: 'ألبانيا', flag: 'al', city: 'تيرانا', observer: 'ليدجو هكا', time: 'بعد غروب الشمس', seen: true, tools: ['العين المجردة', 'منظار / بينوكلر'], lat: 41.32, lng: 19.81, hasPhoto: false },
+                    { id: 5, country: 'الجزائر', flag: 'dz', city: 'الوادي (قمار)', observer: 'مسعود كشيدة', time: 'بعد غروب الشمس', seen: true, tools: ['العين المجردة', 'منظار / بينوكلر'], lat: 33.45, lng: 6.79, hasPhoto: false },
+                    { id: 6, country: 'العراق', flag: 'iq', city: 'بغداد الجديدة', observer: 'م. أحمد البيداني', time: 'بعد غروب الشمس', seen: true, tools: ['العين المجردة', 'مرقب / تلسكوب'], lat: 33.31, lng: 44.48, hasPhoto: false },
+                    { id: 7, country: 'المغرب', flag: 'ma', city: 'طنجة', observer: 'حاتم الحراق', time: 'بعد غروب الشمس', seen: true, tools: ['العين المجردة', 'كاميرا CCD'], lat: 35.75, lng: -5.83, hasPhoto: false },
+                    { id: 8, country: 'الهند', flag: 'in', city: 'كوتش، غوجارات', observer: 'جنيد باتيل (مجموعة راصدين)', time: 'بعد غروب الشمس', seen: true, tools: ['العين المجردة'], lat: 23.25, lng: 69.66, hasPhoto: false },
+                    { id: 9, country: 'بنجلاديش', flag: 'bd', city: 'دكا', observer: 'مير محمد أحسن علي', time: 'بعد غروب الشمس', seen: true, tools: ['العين المجردة'], lat: 23.81, lng: 90.41, hasPhoto: true },
+                    { id: 10, country: 'السعودية', flag: 'sa', city: 'أبها', observer: 'محمد هادي', time: 'بعد غروب الشمس', seen: false, tools: ['العين المجردة'], lat: 18.21, lng: 42.50, hasPhoto: false },
+                    { id: 11, country: 'المملكة المتحدة', flag: 'gb', city: 'يورك', observer: 'م. قمر الدين', time: 'بعد غروب الشمس', seen: false, tools: ['العين المجردة'], lat: 53.95, lng: -1.08, hasPhoto: false },
+                    { id: 12, country: 'أندونيسيا', flag: 'id', city: 'سوراكارتا', observer: 'سوجنج رياضي', time: 'بعد غروب الشمس', seen: false, tools: ['العين المجردة'], lat: -7.56, lng: 110.82, hasPhoto: false },
+                    { id: 13, country: 'نيجيريا', flag: 'ng', city: 'كادونا', observer: 'سموال جبريل', time: 'بعد غروب الشمس', seen: false, tools: ['العين المجردة'], lat: 10.51, lng: 7.42, hasPhoto: false },
+                    { id: 14, country: 'الكويت', flag: 'kw', city: 'الكويت', observer: 'م. ياسر ملا يوسف', time: 'بعد غروب الشمس', seen: true, tools: ['العين المجردة', 'منظار / بينوكلر'], lat: 29.37, lng: 47.97, hasPhoto: false },
+                    { id: 15, country: 'تونس', flag: 'tn', city: 'المهدية', observer: 'ناصر بربورة', time: 'بعد غروب الشمس', seen: true, tools: ['العين المجردة'], lat: 35.50, lng: 11.04, hasPhoto: false }
+                ],
+
+                get filteredLogs() {
+                    return this.logs.filter(log => {
+                        const matchesSearch = log.country.includes(this.searchQuery) || 
+                                              log.city.includes(this.searchQuery) || 
+                                              log.observer.includes(this.searchQuery);
+                        
+                        // Status condition match
+                        let matchesStatus = true;
+                        if (this.statusFilter === 'seen') matchesStatus = log.seen;
+                        if (this.statusFilter === 'notseen') matchesStatus = !log.seen;
+
+                        // Tool category conditional check
+                        let matchesTool = true;
+                        if (this.toolFilter !== 'all') {
+                            matchesTool = log.tools.includes(this.toolFilter);
+                        }
+
+                        return matchesSearch && matchesStatus && matchesTool;
+                    });
+                },
+
+                getToolClass(tool) {
+                    if (tool === 'العين المجردة') return 'bg-amber-50 text-amber-700 border-amber-200';
+                    if (tool === 'كاميرا CCD') return 'bg-indigo-50 text-indigo-700 border-indigo-200';
+                    if (tool === 'منظار / بينوكلر') return 'bg-teal-50 text-teal-700 border-teal-200';
+                    return 'bg-purple-50 text-purple-700 border-purple-200';
+                },
+
+                switchTab(tab) {
+                    this.activeTab = tab;
+                    if (tab === 'map') {
+                        setTimeout(() => this.initMap(), 50);
+                    }
+                },
+
+                initMap() {
+                    if (this.mapInstance) {
+                        this.renderMarkers();
+                        return;
+                    }
+
+                    this.mapInstance = L.map('worldMap', {
+                        center: [26.0, 30.0],
+                        zoom: 3,
+                        minZoom: 2,
+                        maxZoom: 8
+                    });
+
+                    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+                        attribution: '&copy; OpenStreetMap &copy; CARTO'
+                    }).addTo(this.mapInstance);
+
+                    this.markersGroup = L.layerGroup().addTo(this.mapInstance);
+                    this.renderMarkers();
+                    
+                    // Wire watchers for synchronized updates
+                    this.$watch('statusFilter', () => this.renderMarkers());
+                    this.$watch('searchQuery', () => this.renderMarkers());
+                    this.$watch('toolFilter', () => this.renderMarkers());
+                },
+
+                renderMarkers() {
+                    if (!this.markersGroup) return;
+                    this.markersGroup.clearLayers();
+
+                    this.filteredLogs.forEach(log => {
+                        const markerColor = log.seen ? '#10b981' : '#f43f5e';
+                        
+                        const customIcon = L.divIcon({
+                            html: `<div style="background-color: ${markerColor};" class="w-3 h-3 rounded-full border-2 border-white shadow"></div>`,
+                            className: 'custom-map-marker',
+                            iconSize: [12, 12],
+                            iconAnchor: [6, 6]
+                        });
+
+                        const popupTemplate = `
+                            <div class="leaflet-popup-content-main">
+                                <div class="font-bold text-xs text-slate-900 mb-1">
+                                    <span class="fi fi-${log.flag} ml-1 rounded-sm"></span> ${log.country} — ${log.city}
+                                </div>
+                                <div class="text-[11px] text-slate-500"><b>الراصد:</b> ${log.observer}</div>
+                                <div class="text-[11px] text-slate-400 mb-1.5"><b>التوقيت:</b> ${log.time}</div>
+                                <div class="flex gap-1 flex-wrap">
+                                    <span class="px-1.5 py-0.5 rounded text-[10px] font-bold ${log.seen ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">
+                                        ${log.seen ? 'تمت الرؤية' : 'لم تتم الرؤية'}
+                                    </span>
+                                    ${log.tools.map(t => `<span class="px-1 py-0.5 rounded text-[9px] font-medium bg-slate-100 text-slate-600 border border-slate-200">${t}</span>`).join('')}
+                                </div>
+                            </div>
+                        `;
+
+                        L.marker([log.lat, log.lng], { icon: customIcon })
+                         .bindPopup(popupTemplate)
+                         .addTo(this.markersGroup);
+                    });
+                }
+            }
+        }
+    </script>
+</body>
+</html>
