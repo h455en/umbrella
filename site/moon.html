@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crescent Engine v5.2 Premium</title>
+    <title>Crescent Engine v5.5 Core Matrix</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght=300;400;500;600;700;800;900&family=JetBrains+Mono:wght=400;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body {
@@ -30,7 +30,6 @@
             width: 100%;
             max-width: 430px;
         }
-        /* Range layout styling */
         input[type="range"] {
             -webkit-appearance: none;
             appearance: none;
@@ -56,29 +55,29 @@
     <header class="bg-zinc-900/80 backdrop-blur-md border-b border-zinc-800 py-2 px-4 text-[11px] font-semibold tracking-tight text-zinc-400 flex justify-between items-center z-40 sticky top-0">
         <div class="flex items-center gap-1.5">
             <span class="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></span>
-            <span>CRESCENT CORE v5.2</span>
+            <span>CRESCENT CORE v5.5</span>
         </div>
-        <div class="mono text-[10px] text-zinc-400 bg-zinc-800 px-1.5 py-0.5 rounded">DANJON &amp; FIELD ALIGNED</div>
+        <div id="year-indicator" class="mono text-[10px] text-zinc-400 bg-zinc-800 px-1.5 py-0.5 rounded">2026-2027 MATRIX</div>
     </header>
 
     <main class="max-w-[430px] w-full mx-auto flex-grow flex flex-col justify-start p-3 overflow-hidden relative">
         
-        <div id="top-nav-bar" class="bg-zinc-900 border border-zinc-800 p-0.5 rounded-xl flex mb-2.5 text-xs font-semibold z-10 transition-opacity duration-200">
+        <div id="top-nav-bar" class="bg-zinc-900 border border-zinc-800 p-0.5 rounded-xl flex mb-2 text-xs font-semibold z-10 transition-opacity duration-200">
             <button onclick="changeStation('bizerte')" id="btn-bizerte" class="flex-1 py-1.5 rounded-lg bg-zinc-800 shadow-sm font-bold text-white transition-all">Bizerte (TN)</button>
             <button onclick="changeStation('paris')" id="btn-paris" class="flex-1 py-1.5 rounded-lg text-zinc-400 transition-all">Paris (FR)</button>
-            <button onclick="changeStation('tips')" id="btn-tips" class="flex-1 py-1.5 rounded-lg text-zinc-400 transition-all">Field Tips</button>
+            <button onclick="changeStation('tips')" id="btn-tips" class="flex-1 py-1.5 rounded-lg text-zinc-400 transition-all">Field Guidelines</button>
         </div>
 
         <div id="station-wrapper" class="flex-grow flex flex-col justify-between relative overflow-hidden transition-opacity duration-200">
             
-            <div id="nav-header" class="flex justify-between items-center px-1 mb-1.5">
+            <div id="nav-header" class="flex justify-between items-center px-1 mb-1">
                 <div>
                     <h2 class="text-[9px] uppercase font-extrabold tracking-widest text-zinc-500">Vantage Target</h2>
-                    <h3 id="station-subtitle" class="text-lg font-black tracking-tight text-white">Bizerte, Tunisia</h3>
+                    <h3 id="station-subtitle" class="text-base font-black tracking-tight text-white">Bizerte, Tunisia</h3>
                 </div>
-                <div id="slide-arrows" class="flex items-center gap-2">
+                <div id="slide-arrows" class="flex items-center gap-1">
                     <button onclick="prevSlide()" class="p-2 text-zinc-500 hover:text-white active:scale-90 font-black transition-transform select-none">&larr;</button>
-                    <span id="slide-counter" class="text-[10px] font-bold mono bg-zinc-900 border border-zinc-800 text-zinc-400 px-2 py-0.5 rounded-full">1 / 4</span>
+                    <span id="slide-counter" class="text-[10px] font-bold mono bg-zinc-900 border border-zinc-800 text-zinc-400 px-2 py-0.5 rounded-full font-mono">1 / 24</span>
                     <button onclick="nextSlide()" class="p-2 text-zinc-500 hover:text-white active:scale-90 font-black transition-transform select-none">&rarr;</button>
                 </div>
             </div>
@@ -107,13 +106,13 @@
                 </div>
                 
                 <div class="flex-grow overflow-y-auto flex flex-col justify-start pr-0.5">
-                    <h3 id="modal-title" class="text-lg font-black tracking-tight text-white mb-2">Metric</h3>
+                    <h3 id="modal-title" class="text-base font-black tracking-tight text-white mb-2">Metric Details</h3>
                     <div id="modal-desc" class="text-xs text-zinc-400 leading-relaxed flex-grow flex flex-col justify-start">
                         </div>
                 </div>
             </div>
 
-            <div id="modal-swipe-zone" class="w-full text-center py-2.5 border-t border-zinc-800 text-[10px] text-zinc-500 font-bold tracking-wider uppercase select-none cursor-pointer hover:text-zinc-300 transition-colors">
+            <div id="modal-swipe-zone" class="w-full text-center py-2 border-t border-zinc-800 text-[10px] text-zinc-500 font-bold tracking-wider uppercase select-none cursor-pointer hover:text-zinc-300 transition-colors">
                 ↓ Swipe down or tap here to close details
             </div>
         </div>
@@ -121,40 +120,35 @@
     </main>
 
     <div class="relative z-40 bg-zinc-900 border-t border-zinc-800">
-        
         <button onclick="toggleConfigDrawer()" class="w-full py-2 bg-zinc-900 hover:bg-zinc-800 border-b border-zinc-800 text-[10px] font-extrabold uppercase tracking-widest text-zinc-400 flex justify-center items-center gap-1.5 transition-colors select-none">
-            <span id="drawer-arrow">▲</span> CRITERIA MINIMUM THRESHOLDS (LIVE TUNING)
+            <span id="drawer-arrow">▲</span> CONFIGURATION INTERFACE (LIVE MATRIX ADAPTER)
         </button>
 
         <div id="config-drawer" class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out bg-zinc-950">
             <div class="p-4 space-y-4 border-b border-zinc-800 text-xs">
-                
                 <div class="grid grid-cols-1 gap-3">
-                    <div class="bg-zinc-900 p-2.5 rounded-xl border border-zinc-800 shadow-xs">
+                    <div class="bg-zinc-900 p-2.5 rounded-xl border border-zinc-800">
                         <div class="flex justify-between items-center text-[11px] mb-1.5">
                             <span class="font-bold text-zinc-300 uppercase tracking-tight">1. Min Moon Age Floor</span>
                             <span class="mono font-bold text-indigo-400 bg-zinc-800 px-2 py-0.5 rounded text-xs"><span id="lbl-age-min">20.0</span>h</span>
                         </div>
                         <input type="range" id="cfg-age-min" min="12" max="24" step="0.5" value="20" oninput="updateSliders()" class="w-full cursor-pointer">
                     </div>
-
-                    <div class="bg-zinc-900 p-2.5 rounded-xl border border-zinc-800 shadow-xs">
+                    <div class="bg-zinc-900 p-2.5 rounded-xl border border-zinc-800">
                         <div class="flex justify-between items-center text-[11px] mb-1.5">
                             <span class="font-bold text-zinc-300 uppercase tracking-tight">2. Min Elongation Arc</span>
                             <span class="mono font-bold text-indigo-400 bg-zinc-800 px-2 py-0.5 rounded text-xs"><span id="lbl-elong-min">11.0</span>°</span>
                         </div>
                         <input type="range" id="cfg-elong-min" min="8" max="14" step="0.1" value="11" oninput="updateSliders()" class="w-full cursor-pointer">
                     </div>
-
-                    <div class="bg-zinc-900 p-2.5 rounded-xl border border-zinc-800 shadow-xs">
+                    <div class="bg-zinc-900 p-2.5 rounded-xl border border-zinc-800">
                         <div class="flex justify-between items-center text-[11px] mb-1.5">
                             <span class="font-bold text-zinc-300 uppercase tracking-tight">3. Sunset Altitude Floor</span>
                             <span class="mono font-bold text-indigo-400 bg-zinc-800 px-2 py-0.5 rounded text-xs"><span id="lbl-alt-min">10.0</span>°</span>
                         </div>
                         <input type="range" id="cfg-alt-min" min="4" max="15" step="0.5" value="10" oninput="updateSliders()" class="w-full cursor-pointer">
                     </div>
-
-                    <div class="bg-zinc-900 p-2.5 rounded-xl border border-zinc-800 shadow-xs">
+                    <div class="bg-zinc-900 p-2.5 rounded-xl border border-zinc-800">
                         <div class="flex justify-between items-center text-[11px] mb-1.5">
                             <span class="font-bold text-zinc-300 uppercase tracking-tight">4. Stay Time Lag Window</span>
                             <span class="mono font-bold text-indigo-400 bg-zinc-800 px-2 py-0.5 rounded text-xs"><span id="lbl-stay-min">50</span> min</span>
@@ -164,24 +158,25 @@
                 </div>
 
                 <div class="flex gap-2 pt-1">
-                    <button onclick="downloadJSON()" class="flex-1 py-2 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-white rounded-xl font-bold text-xs shadow-xs text-center tracking-tight transition-all">
-                        Backup Data (.JSON)
+                    <button onclick="downloadJSON()" class="flex-1 py-2 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-white rounded-xl font-bold text-xs text-center tracking-tight transition-all">
+                        Export Matrix Config (.JSON)
                     </button>
-                    <label class="flex-1 py-2 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 rounded-xl font-bold text-xs shadow-xs text-center tracking-tight transition-all cursor-pointer">
-                        Sync Matrix File
+                    <label class="flex-1 py-2 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 rounded-xl font-bold text-xs text-center tracking-tight transition-all cursor-pointer">
+                        Import Configuration
                         <input type="file" id="upload-gate" accept=".json" onchange="uploadJSON(event)" class="hidden">
                     </label>
                 </div>
             </div>
         </div>
 
-        <footer class="p-3 text-[10px] text-zinc-600 bg-zinc-950 border-t border-zinc-900 text-center mono tracking-tight">
-            DATA ENGINES CALCULATED COMPLIANCE: IMCCE PARIS &amp; INM TUNISIA
+        <footer class="p-2 text-[10px] text-zinc-600 bg-zinc-950 border-t border-zinc-900 text-center mono tracking-tight">
+            COMPLIANCE CALCULATION ENGINES: IMCCE PARIS | INM TUNISIA
         </footer>
     </div>
 
     <script>
-        const CURRENT_RUN_TIME = new Date("2026-06-05T19:39:42");
+        // Set execution sync perspective target anchor time: June 6, 2026
+        const CURRENT_RUN_TIME = new Date("2026-06-06T15:44:00");
 
         const colorBounds = {
             age:     { optimalMin: 20.0, extremeLow: 13.0 },
@@ -190,24 +185,72 @@
             stay:    { optimalMin: 50.0, extremeLow: 35.0 }
         };
 
-        // RUNTIME MASTER SYNC DATASET - Dynamic Visibility Checks for Objects Added
+        // CORE DATA MATRIX FOR ALL MONTIH PHASES 2026 AND 2027 ACROSS BOTH RECORD LOCATIONS
         let datasets = {
             bizerte: {
                 title: "Bizerte, Tunisia",
                 slides: [
-                    { targetDate: "2026-06-15", dateStr: "15 June, 2026", hijri: "29 Dhul-Hijjah 1447", visibility: "Difficult", statusDesc: "Difficult: Extreme thin profile setup with critical dusk low altitude margins.", yallopCode: "D", yallopValue: -0.12, age: 16.2, elongation: 8.7, altitudePeak: 4.8, altitudeMin: 0.5, altitudeMax: 46.2, stayDiff: 34, orderSequence: "Moonset occurs after Sunset", sequentialStatus: "Observational Lag Open", nearbyObject: "Mercury (0.4° SE of Moon)", objectVisibleInInterval: false, orientation: "Illuminated Bottom-Right (Horns pointing up-left to ~11 o'clock)", positionAngle: -33, directionDeg: 299, azimuth: "299° WNW", conj: "04:54", mrise: "04:52", srise: "05:01", sset: "19:37", targetWin: "19:57", windowRange: "19:52 - 20:11", windowDur: "19 min", mset: "20:11", isha: "21:18" },
-                    { targetDate: "2026-07-15", dateStr: "15 July, 2026", hijri: "29 Muharram 1448", visibility: "Easy", statusDesc: "Easy: Excellent age buffer and favorable tracking parameters above the haze line.", yallopCode: "A", yallopValue: 0.84, age: 34.7, elongation: 16.5, altitudePeak: 10.3, altitudeMin: 1.1, altitudeMax: 52.8, stayDiff: 66, orderSequence: "Moonset occurs after Sunset", sequentialStatus: "Observational Lag Open", nearbyObject: "Venus (2.1° East of Moon)", objectVisibleInInterval: true, orientation: "Crescent Base Balanced (Horns opening straight up to ~12 o'clock)", positionAngle: 2, directionDeg: 290, azimuth: "290° WNW", conj: "11:43", mrise: "05:15", srise: "05:13", sset: "19:32", targetWin: "20:02", windowRange: "19:47 - 20:38", windowDur: "51 min", mset: "20:38", isha: "21:09" },
-                    { targetDate: "2026-08-13", dateStr: "13 August, 2026", hijri: "29 Safar 1448", visibility: "Very Easy", statusDesc: "Very Easy: Favorable elevation axis combined with optimal sky contrast backdrop.", yallopCode: "A", yallopValue: 1.12, age: 26.2, elongation: 12.9, altitudePeak: 11.8, altitudeMin: 0.8, altitudeMax: 58.4, stayDiff: 71, orderSequence: "Moonset occurs after Sunset", sequentialStatus: "Observational Lag Open", nearbyObject: "Regulus (1.5° NE of Moon)", objectVisibleInInterval: true, orientation: "Illuminated Bottom-Left (Horns pointing up-right to ~1 o'clock)", positionAngle: 34, directionDeg: 279, azimuth: "279° W", conj: "18:37", mrise: "05:59", srise: "05:37", sset: "19:05", targetWin: "19:40", windowRange: "19:20 - 20:16", windowDur: "56 min", mset: "20:16", isha: "20:31" },
-                    { targetDate: "2026-09-12", dateStr: "12 September, 2026", hijri: "29 Rabi' al-Awwal 1448", visibility: "Very Easy", statusDesc: "Very Easy: Massive arc distance optimization tracking parameters across structural baseline.", yallopCode: "A", yallopValue: 1.45, age: 39.5, elongation: 18.2, altitudePeak: 9.1, altitudeMin: 0.2, altitudeMax: 61.1, stayDiff: 62, orderSequence: "Moonset occurs after Sunset", sequentialStatus: "Observational Lag Open", nearbyObject: "Spica (3.2° South of Moon)", objectVisibleInInterval: false, orientation: "Illuminated Left Profile (Horns opening right side to ~2 o'clock)", positionAngle: 58, directionDeg: 264, azimuth: "264° W", conj: "04:27", mrise: "06:33", srise: "06:01", sset: "18:22", targetWin: "18:50", windowRange: "18:37 - 19:24", windowDur: "47 min", mset: "19:24", isha: "19:43" }
+                    // 2026 FULL DATA MATRIX
+                    { targetDate: "2026-01-19", dateStr: "19 January, 2026", hijri: "29 Rajab 1447", visibility: "Easy", statusDesc: "Easy: Clear post-sunset elevation vectors with solid moon age profiles.", yallopCode: "B", yallopValue: 0.12, age: 21.3, elongation: 11.2, altitudePeak: 10.2, altitudeMin: 0.8, altitudeMax: 48.2, stayDiff: 55, orderSequence: "Moonset occurs after Sunset", sequentialStatus: "Observational Lag Open", nearbyObject: "Venus (2.4° NE of Moon)", objectVisibleInInterval: true, orientation: "Illuminated Bottom-Left (Horns opening right side to ~1 o'clock)", positionAngle: 25, directionDeg: 244, azimuth: "244° WSW", conj: "18:52", mrise: "07:12", srise: "07:31", sset: "17:35", targetWin: "18:05", windowRange: "17:35 - 18:30", windowDur: "55 min", mset: "18:30", isha: "19:02" },
+                    { targetDate: "2026-02-18", dateStr: "18 February, 2026", hijri: "29 Sha'ban 1447", visibility: "Very Easy", statusDesc: "Very Easy: Favorable western horizon tracking trajectory combined with high altitude peak indices.", yallopCode: "A", yallopValue: 0.78, age: 31.4, elongation: 14.8, altitudePeak: 12.4, altitudeMin: 1.2, altitudeMax: 54.1, stayDiff: 68, orderSequence: "Moonset occurs after Sunset", sequentialStatus: "Observational Lag Open", nearbyObject: "Mercury (1.1° W of Moon)", objectVisibleInInterval: false, orientation: "Crescent Base Balanced (Horns opening straight up to ~12 o'clock)", positionAngle: 5, directionDeg: 262, azimuth: "262° W", conj: "12:01", mrise: "06:58", srise: "07:04", sset: "18:08", targetWin: "18:40", windowRange: "18:08 - 19:16", windowDur: "68 min", mset: "19:16", isha: "19:35" },
+                    { targetDate: "2026-03-20", dateStr: "20 March, 2026", hijri: "29 Ramadan 1447", visibility: "Very Easy", statusDesc: "Very Easy: Outstanding spring positioning layout provides excellent visibility metrics.", yallopCode: "A", yallopValue: 1.15, age: 41.2, elongation: 17.6, altitudePeak: 13.9, altitudeMin: 1.5, altitudeMax: 58.6, stayDiff: 74, orderSequence: "Moonset occurs after Sunset", sequentialStatus: "Observational Lag Open", nearbyObject: "Jupiter (3.1° N of Moon)", objectVisibleInInterval: true, orientation: "Illuminated Left Profile (Horns opening right side to ~2 o'clock)", positionAngle: 42, directionDeg: 278, azimuth: "278° W", conj: "01:23", mrise: "06:11", srise: "06:26", sset: "18:36", targetWin: "19:12", windowRange: "18:36 - 19:50", windowDur: "74 min", mset: "19:50", isha: "20:08" },
+                    { targetDate: "2026-04-18", dateStr: "18 April, 2026", hijri: "29 Shawwal 1447", visibility: "Very Easy", statusDesc: "Very Easy: High arc layout guarantees simple tracking access across twilight arcs.", yallopCode: "A", yallopValue: 0.92, age: 31.6, elongation: 15.1, altitudePeak: 11.5, altitudeMin: 0.9, altitudeMax: 51.3, stayDiff: 62, orderSequence: "Moonset occurs after Sunset", sequentialStatus: "Observational Lag Open", nearbyObject: "Mars (1.8° E of Moon)", objectVisibleInInterval: true, orientation: "Crescent Base Balanced (Horns opening straight up to ~12 o'clock)", positionAngle: 12, directionDeg: 289, azimuth: "289° WNW", conj: "11:52", mrise: "05:22", srise: "05:46", sset: "19:01", targetWin: "19:32", windowRange: "19:01 - 20:03", windowDur: "62 min", mset: "20:03", isha: "20:39" },
+                    { targetDate: "2026-05-17", dateStr: "17 May, 2026", hijri: "29 Dhul-Qadah 1447", visibility: "Difficult", statusDesc: "Difficult: Slim window parameters with tight tracking geometry.", yallopCode: "C", yallopValue: -0.05, age: 21.2, elongation: 9.9, altitudePeak: 6.8, altitudeMin: 0.3, altitudeMax: 47.9, stayDiff: 42, orderSequence: "Moonset occurs after Sunset", sequentialStatus: "Observational Lag Open", nearbyObject: "Saturn (2.9° S of Moon)", objectVisibleInInterval: false, orientation: "Illated Bottom-Right (Horns pointing up-left to ~11 o'clock)", positionAngle: -22, directionDeg: 297, azimuth: "297° WNW", conj: "20:01", mrise: "04:59", srise: "05:15", sset: "19:26", targetWin: "19:48", windowRange: "19:26 - 20:08", windowDur: "42 min", mset: "20:08", isha: "21:05" },
+                    { targetDate: "2026-06-15", dateStr: "15 June, 2026", hijri: "29 Dhul-Hijjah 1447", visibility: "Difficult", statusDesc: "Difficult: Extreme thin profile setup with critical dusk low altitude margins.", yallopCode: "D", yallopValue: -0.12, age: 16.2, elongation: 8.7, altitudePeak: 4.8, altitudeMin: 0.5, altitudeMax: 46.2, stayDiff: 34, orderSequence: "Moonset occurs after Sunset", sequentialStatus: "Observational Lag Open", nearbyObject: "Mercury (0.4° SE of Moon)", objectVisibleInInterval: false, orientation: "Illuminated Bottom-Right (Horns pointing up-left to ~11 o'clock)", positionAngle: -33, directionDeg: 299, azimuth: "299° WNW", conj: "02:54", mrise: "04:52", srise: "05:01", sset: "19:37", targetWin: "19:57", windowRange: "19:52 - 20:11", windowDur: "19 min", mset: "20:11", isha: "21:18" },
+                    { targetDate: "2026-07-15", dateStr: "15 July, 2026", hijri: "29 Muharram 1448", visibility: "Easy", statusDesc: "Easy: Excellent age buffer and favorable tracking parameters above the haze line.", yallopCode: "A", yallopValue: 0.84, age: 34.7, elongation: 16.5, altitudePeak: 10.3, altitudeMin: 1.1, altitudeMax: 52.8, stayDiff: 66, orderSequence: "Moonset occurs after Sunset", sequentialStatus: "Observational Lag Open", nearbyObject: "Venus (2.1° East of Moon)", objectVisibleInInterval: true, orientation: "Crescent Base Balanced (Horns opening straight up to ~12 o'clock)", positionAngle: 2, directionDeg: 290, azimuth: "290° WNW", conj: "09:43", mrise: "05:15", srise: "05:13", sset: "19:32", targetWin: "20:02", windowRange: "19:47 - 20:38", windowDur: "51 min", mset: "20:38", isha: "21:09" },
+                    { targetDate: "2026-08-13", dateStr: "13 August, 2026", hijri: "29 Safar 1448", visibility: "Very Easy", statusDesc: "Very Easy: Favorable elevation axis combined with optimal sky contrast backdrop.", yallopCode: "A", yallopValue: 1.12, age: 26.2, elongation: 12.9, altitudePeak: 11.8, altitudeMin: 0.8, altitudeMax: 58.4, stayDiff: 71, orderSequence: "Moonset occurs after Sunset", sequentialStatus: "Observational Lag Open", nearbyObject: "Regulus (1.5° NE of Moon)", objectVisibleInInterval: true, orientation: "Illuminated Bottom-Left (Horns pointing up-right to ~1 o'clock)", positionAngle: 34, directionDeg: 279, azimuth: "279° W", conj: "17:37", mrise: "05:59", srise: "05:37", sset: "19:05", targetWin: "19:40", windowRange: "19:20 - 20:16", windowDur: "56 min", mset: "20:16", isha: "20:31" },
+                    { targetDate: "2026-09-12", dateStr: "12 September, 2026", hijri: "29 Rabi' al-Awwal 1448", visibility: "Very Easy", statusDesc: "Very Easy: Massive arc distance optimization tracking parameters across structural baseline.", yallopCode: "A", yallopValue: 1.45, age: 39.5, elongation: 18.2, altitudePeak: 9.1, altitudeMin: 0.2, altitudeMax: 61.1, stayDiff: 62, orderSequence: "Moonset occurs after Sunset", sequentialStatus: "Observational Lag Open", nearbyObject: "Spica (3.2° South of Moon)", objectVisibleInInterval: false, orientation: "Illuminated Left Profile (Horns opening right side to ~2 o'clock)", positionAngle: 58, directionDeg: 264, azimuth: "264° W", conj: "03:27", mrise: "06:33", srise: "06:01", sset: "18:22", targetWin: "18:50", windowRange: "18:37 - 19:24", windowDur: "47 min", mset: "19:24", isha: "19:43" },
+                    { targetDate: "2026-10-11", dateStr: "11 October, 2026", hijri: "29 Rabi' ath-Thani 1448", visibility: "Very Easy", statusDesc: "Very Easy: Generous seasonal altitude path and tracking parameters.", yallopCode: "A", yallopValue: 1.05, age: 29.2, elongation: 13.9, altitudePeak: 8.5, altitudeMin: 0.4, altitudeMax: 56.4, stayDiff: 58, orderSequence: "Moonset occurs after Sunset", sequentialStatus: "Observational Lag Open", nearbyObject: "Venus (1.9° N of Moon)", objectVisibleInInterval: true, orientation: "Illuminated Left Profile (Horns pointing right to ~2 o'clock)", positionAngle: 49, directionDeg: 251, azimuth: "251° WSW", conj: "15:50", mrise: "07:15", srise: "06:27", sset: "17:41", targetWin: "18:08", windowRange: "17:41 - 18:39", windowDur: "58 min", mset: "18:39", isha: "18:59" },
+                    { targetDate: "2026-11-10", dateStr: "10 November, 2026", hijri: "29 Jumada al-Awwal 1448", visibility: "Easy", statusDesc: "Easy: Solid elongation values over rule baselines.", yallopCode: "B", yallopValue: 0.22, age: 33.3, elongation: 12.1, altitudePeak: 7.9, altitudeMin: 0.1, altitudeMax: 49.3, stayDiff: 52, orderSequence: "Moonset occurs after Sunset", sequentialStatus: "Observational Lag Open", nearbyObject: "Mercury (2.8° SE of Moon)", objectVisibleInInterval: false, orientation: "Illuminated Bottom-Left (Horns pointing to ~1:30 o'clock)", positionAngle: 38, directionDeg: 242, azimuth: "242° WSW", conj: "07:02", mrise: "07:58", srise: "06:58", sset: "17:09", targetWin: "17:34", windowRange: "17:09 - 18:01", windowDur: "52 min", mset: "18:01", isha: "18:31" },
+                    { targetDate: "2026-12-10", dateStr: "10 December, 2026", hijri: "29 Jumada ath-Thani 1448", visibility: "Very Easy", statusDesc: "Very Easy: Clean clear winter baseline context setup.", yallopCode: "A", yallopValue: 0.69, age: 39.1, elongation: 15.2, altitudePeak: 9.4, altitudeMin: 0.6, altitudeMax: 46.1, stayDiff: 61, orderSequence: "Moonset occurs after Sunset", sequentialStatus: "Observational Lag Open", nearbyObject: "Mars (1.2° S of Moon)", objectVisibleInInterval: true, orientation: "Illuminated Bottom-Left (Horns pointing up-right to ~1 o'clock)", positionAngle: 28, directionDeg: 240, azimuth: "240° WSW", conj: "00:52", mrise: "08:44", srise: "07:27", sset: "16:59", targetWin: "17:28", windowRange: "16:59 - 18:00", windowDur: "61 min", mset: "18:00", isha: "18:24" },
+                    
+                    // 2027 FULL DATA MATRIX
+                    { targetDate: "2027-01-08", dateStr: "08 January, 2027", hijri: "29 Rajab 1448", visibility: "Easy", statusDesc: "Easy: Favorable twilight contrast provides clean access profiles.", yallopCode: "B", yallopValue: 0.19, age: 24.6, elongation: 11.8, altitudePeak: 8.9, altitudeMin: 0.2, altitudeMax: 45.4, stayDiff: 54, orderSequence: "Moonset occurs after Sunset", sequentialStatus: "Observational Lag Open", nearbyObject: "Venus (3.0° N of Moon)", objectVisibleInInterval: true, orientation: "Illuminated Bottom-Left (Horns pointing to ~1:30 o'clock)", positionAngle: 31, directionDeg: 243, azimuth: "243° WSW", conj: "20:24", mrise: "08:31", srise: "07:33", sset: "17:07", targetWin: "17:35", windowRange: "17:07 - 18:01", windowDur: "54 min", mset: "18:01", isha: "18:31" },
+                    { targetDate: "2027-02-07", dateStr: "07 February, 2027", hijri: "29 Sha'ban 1448", visibility: "Very Easy", statusDesc: "Very Easy: Substantial age development ensures reliable observation arcs.", yallopCode: "A", yallopValue: 0.81, age: 30.1, elongation: 14.2, altitudePeak: 11.2, altitudeMin: 0.9, altitudeMax: 51.5, stayDiff: 64, orderSequence: "Moonset occurs after Sunset", sequentialStatus: "Observational Lag Open", nearbyObject: "Mercury (1.5° E of Moon)", objectVisibleInInterval: false, orientation: "Crescent Base Balanced (Horns opening straight up to ~12 o'clock)", positionAngle: 9, directionDeg: 259, azimuth: "259° W", conj: "15:56", mrise: "07:44", srise: "07:13", sset: "17:41", targetWin: "18:12", windowRange: "17:41 - 18:45", windowDur: "64 min", mset: "18:45", isha: "19:07" },
+                    { targetDate: "2027-03-09", dateStr: "09 March, 2027", hijri: "29 Ramadan 1448", visibility: "Very Easy", statusDesc: "Very Easy: Superb geometry tracking loops typical of spring crescents.", yallopCode: "A", yallopValue: 1.28, age: 34.5, elongation: 16.1, altitudePeak: 13.2, altitudeMin: 1.4, altitudeMax: 56.8, stayDiff: 72, orderSequence: "Moonset occurs after Sunset", sequentialStatus: "Observational Lag Open", nearbyObject: "Jupiter (2.2° NE of Moon)", objectVisibleInInterval: true, orientation: "Illuminated Left Profile (Horns opening right side to ~2 o'clock)", positionAngle: 39, directionDeg: 275, azimuth: "275° W", conj: "09:29", mrise: "06:48", srise: "06:39", sset: "18:14", targetWin: "18:50", windowRange: "18:14 - 19:26", windowDur: "72 min", mset: "19:26", isha: "19:48" },
+                    { targetDate: "2027-04-07", dateStr: "07 April, 2027", hijri: "29 Shawwal 1448", visibility: "Difficult", statusDesc: "Difficult: Elongation indices hovering near baseline bounds.", yallopCode: "C", yallopValue: -0.02, age: 17.2, elongation: 9.1, altitudePeak: 5.9, altitudeMin: 0.2, altitudeMax: 49.1, stayDiff: 38, orderSequence: "Moonset occurs after Sunset", sequentialStatus: "Observational Lag Open", nearbyObject: "Saturn (1.1° S of Moon)", objectVisibleInInterval: false, orientation: "Illuminated Bottom-Right (Horns opening to ~11 o'clock)", positionAngle: -18, directionDeg: 287, azimuth: "287° WNW", conj: "23:51", mrise: "05:40", srise: "05:58", sset: "18:46", targetWin: "19:06", windowRange: "18:46 - 19:24", windowDur: "38 min", mset: "19:24", isha: "20:20" },
+                    { targetDate: "2027-05-07", dateStr: "07 May, 2027", hijri: "29 Dhul-Qadah 1448", visibility: "Very Easy", statusDesc: "Very Easy: Clean development profile above horizon limits.", yallopCode: "A", yallopValue: 0.74, age: 30.0, elongation: 13.8, altitudePeak: 10.1, altitudeMin: 0.8, altitudeMax: 46.4, stayDiff: 59, orderSequence: "Moonset occurs after Sunset", sequentialStatus: "Observational Lag Open", nearbyObject: "Mars (2.5° N of Moon)", objectVisibleInInterval: true, orientation: "Crescent Base Balanced (Horns opening straight up to ~12 o'clock)", positionAngle: 14, directionDeg: 295, azimuth: "295° WNW", conj: "10:58", mrise: "05:01", srise: "05:24", sset: "19:15", targetWin: "19:44", windowRange: "19:15 - 20:14", windowDur: "59 min", mset: "20:14", isha: "20:51" },
+                    { targetDate: "2027-06-05", dateStr: "05 June, 2027", hijri: "29 Dhul-Hijjah 1448", visibility: "Difficult", statusDesc: "Difficult: Marginal observation paths on western layers.", yallopCode: "D", yallopValue: -0.15, age: 18.3, elongation: 8.9, altitudePeak: 4.9, altitudeMin: 0.4, altitudeMax: 44.9, stayDiff: 32, orderSequence: "Moonset occurs after Sunset", sequentialStatus: "Observational Lag Open", nearbyObject: "Mercury (0.9° N of Moon)", objectVisibleInInterval: false, orientation: "Illuminated Bottom-Right (Horns pointing up-left to ~11 o'clock)", positionAngle: -28, directionDeg: 299, azimuth: "299° WNW", conj: "19:40", mrise: "04:39", srise: "05:02", sset: "19:39", targetWin: "19:58", windowRange: "19:39 - 20:11", windowDur: "32 min", mset: "20:11", isha: "21:20" },
+                    { targetDate: "2027-07-05", dateStr: "05 July, 2027", hijri: "29 Muharram 1449", visibility: "Very Easy", statusDesc: "Very Easy: Robust separation scale values provide clean capture loops.", yallopCode: "A", yallopValue: 0.95, age: 35.0, elongation: 15.9, altitudePeak: 11.1, altitudeMin: 1.2, altitudeMax: 50.4, stayDiff: 68, orderSequence: "Moonset occurs after Sunset", sequentialStatus: "Observational Lag Open", nearbyObject: "Venus (1.7° E of Moon)", objectVisibleInInterval: true, orientation: "Crescent Base Balanced (Horns opening straight up to ~12 o'clock)", positionAngle: 4, directionDeg: 292, azimuth: "292° WNW", conj: "03:02", mrise: "05:03", srise: "05:11", sset: "19:34", targetWin: "20:05", windowRange: "19:34 - 20:42", windowDur: "68 min", mset: "20:42", isha: "21:13" },
+                    { targetDate: "2027-08-03", dateStr: "03 August, 2027", hijri: "29 Safar 1449", visibility: "Easy", statusDesc: "Easy: Reliable background contrast values after sunset.", yallopCode: "B", yallopValue: 0.41, age: 27.9, elongation: 12.6, altitudePeak: 9.2, altitudeMin: 0.6, altitudeMax: 55.2, stayDiff: 54, orderSequence: "Moonset occurs after Sunset", sequentialStatus: "Observational Lag Open", nearbyObject: "Regulus (1.1° NE of Moon)", objectVisibleInInterval: true, orientation: "Illuminated Bottom-Left (Horns pointing up-right to ~1 o'clock)", positionAngle: 26, directionDeg: 281, azimuth: "281° W", conj: "10:05", mrise: "05:32", srise: "05:34", sset: "19:10", targetWin: "19:40", windowRange: "19:10 - 20:04", windowDur: "54 min", mset: "20:04", isha: "20:38" },
+                    { targetDate: "2027-09-01", dateStr: "01 September, 2027", hijri: "29 Rabi' al-Awwal 1449", visibility: "Difficult", statusDesc: "Difficult: Extreme minimal parameters combined with steep western tracking angles.", yallopCode: "D", yallopValue: -0.19, age: 19.3, elongation: 8.8, altitudePeak: 4.1, altitudeMin: 0.1, altitudeMax: 58.9, stayDiff: 28, orderSequence: "Moonset occurs after Sunset", sequentialStatus: "Observational Lag Open", nearbyObject: "Spica (2.4° S of Moon)", objectVisibleInInterval: false, orientation: "Illuminated Bottom-Right (Horns pointing to ~11 o'clock)", positionAngle: -36, directionDeg: 268, azimuth: "268° W", conj: "17:41", mrise: "06:14", srise: "05:57", sset: "18:29", targetWin: "18:45", windowRange: "18:29 - 18:57", windowDur: "28 min", mset: "18:57", isha: "19:51" },
+                    { targetDate: "2027-10-01", dateStr: "01 October, 2027", hijri: "29 Rabi' ath-Thani 1449", visibility: "Very Easy", statusDesc: "Very Easy: Clean development profile over threshold scales.", yallopCode: "A", yallopValue: 0.89, age: 31.4, elongation: 14.1, altitudePeak: 8.9, altitudeMin: 0.5, altitudeMax: 59.2, stayDiff: 57, orderSequence: "Moonset occurs after Sunset", sequentialStatus: "Observational Lag Open", nearbyObject: "Jupiter (3.5° N of Moon)", objectVisibleInInterval: true, orientation: "Illuminated Left Profile (Horns opening right side to ~2 o'clock)", positionAngle: 44, directionDeg: 254, azimuth: "254° WSW", conj: "02:36", mrise: "06:55", srise: "06:21", sset: "17:46", targetWin: "18:14", windowRange: "17:46 - 18:43", windowDur: "57 min", mset: "18:43", isha: "19:05" },
+                    { targetDate: "2027-10-30", dateStr: "30 October, 2027", hijri: "29 Jumada al-Awwal 1449", visibility: "Easy", statusDesc: "Easy: Stable winter path optimization structures.", yallopCode: "B", yallopValue: 0.34, age: 27.4, elongation: 12.3, altitudePeak: 8.1, altitudeMin: 0.3, altitudeMax: 52.1, stayDiff: 50, orderSequence: "Moonset occurs after Sunset", sequentialStatus: "Observational Lag Open", nearbyObject: "Venus (2.0° S of Moon)", objectVisibleInInterval: true, orientation: "Illuminated Bottom-Left (Horns pointing to ~1:30 o'clock)", positionAngle: 34, directionDeg: 244, azimuth: "244° WSW", conj: "13:36", mrise: "07:34", srise: "06:49", sset: "17:12", targetWin: "17:36", windowRange: "17:12 - 18:02", windowDur: "50 min", mset: "18:02", isha: "18:36" },
+                    { targetDate: "2027-11-29", dateStr: "29 November, 2027", hijri: "29 Jumada ath-Thani 1449", visibility: "Very Easy", statusDesc: "Very Easy: Outstanding winter elongation fields and duration gaps.", yallopCode: "A", yallopValue: 0.98, age: 38.6, elongation: 16.0, altitudePeak: 9.8, altitudeMin: 0.8, altitudeMax: 47.1, stayDiff: 64, orderSequence: "Moonset occurs after Sunset", sequentialStatus: "Observational Lag Open", nearbyObject: "Mars (1.5° N of Moon)", objectVisibleInInterval: true, orientation: "Illuminated Bottom-Left (Horns pointing up-right to ~1 o'clock)", positionAngle: 25, directionDeg: 241, azimuth: "241° WSW", conj: "03:24", mrise: "08:12", srise: "07:21", sset: "16:58", targetWin: "17:30", windowRange: "16:58 - 18:02", windowDur: "64 min", mset: "18:02", isha: "18:25" },
+                    { targetDate: "2027-12-28", dateStr: "28 December, 2027", hijri: "29 Rajab 1449", visibility: "Impossible", statusDesc: "Impossible: Elongation collapse under Danjon threshold metrics directly inside structural layers.", yallopCode: "F", yallopValue: -0.62, age: 20.3, elongation: 6.4, altitudePeak: 2.1, altitudeMin: -1.2, altitudeMax: 42.1, stayDiff: 18, orderSequence: "Moonset occurs after Sunset", sequentialStatus: "Too Short to Track", nearbyObject: "Mercury (0.6° W of Moon)", objectVisibleInInterval: false, orientation: "Illuminated Bottom-Right (Horns opening to ~10 o'clock)", positionAngle: -52, directionDeg: 242, azimuth: "242° WSW", conj: "20:12", mrise: "08:35", srise: "07:34", sset: "17:03", targetWin: "17:15", windowRange: "17:03 - 17:21", windowDur: "18 min", mset: "17:21", isha: "18:27" }
                 ]
             },
             paris: {
                 title: "Paris, France",
                 slides: [
-                    { targetDate: "2026-06-15", dateStr: "15 June, 2026", hijri: "29 Dhul-Hijjah 1447", visibility: "Impossible", statusDesc: "Impossible: Crescent altitude profile drops tracking ability below Danjon baseline thresholds.", yallopCode: "F", yallopValue: -1.05, age: 17.0, elongation: 8.9, altitudePeak: 1.2, altitudeMin: -2.4, altitudeMax: 41.5, stayDiff: 14, orderSequence: "Moonset occurs after Sunset", sequentialStatus: "Too Short to Track", nearbyObject: "Mercury (0.5° SE of Moon)", objectVisibleInInterval: false, orientation: "Illuminated Bottom-Right (Horns pointing up-left to ~10 o'clock)", positionAngle: -48, directionDeg: 309, azimuth: "309° NW", conj: "05:54", mrise: "05:31", srise: "05:47", sset: "21:56", targetWin: "22:05", windowRange: "21:56 - 22:10", windowDur: "14 min", mset: "22:10", isha: "23:59" },
-                    { targetDate: "2026-07-15", dateStr: "15 July, 2026", hijri: "29 Muharram 1448", visibility: "Difficult", statusDesc: "Difficult: Severe lingering light glare from peak northern summer twilight fields.", yallopCode: "C", yallopValue: 0.15, age: 35.6, elongation: 16.8, altitudePeak: 6.2, altitudeMin: -0.4, altitudeMax: 48.9, stayDiff: 47, orderSequence: "Moonset occurs after Sunset", sequentialStatus: "Observational Lag Open", nearbyObject: "Venus (2.3° East of Moon)", objectVisibleInInterval: true, orientation: "Illuminated Bottom-Right (Horns pointing up-left to ~11 o'clock)", positionAngle: -12, directionDeg: 300, azimuth: "300° WNW", conj: "12:43", mrise: "06:14", srise: "06:04", sset: "21:42", targetWin: "22:10", windowRange: "21:57 - 22:29", windowDur: "32 min", mset: "22:29", isha: "23:29" },
-                    { targetDate: "2026-08-13", dateStr: "13 August, 2026", hijri: "29 Safar 1448", visibility: "Easy", statusDesc: "Easy: Favorable solar distance index values provide reliable contrast intervals.", yallopCode: "B", yallopValue: 0.58, age: 27.1, elongation: 13.1, altitudePeak: 8.7, altitudeMin: 0.1, altitudeMax: 54.3, stayDiff: 58, orderSequence: "Moonset occurs after Sunset", sequentialStatus: "Observational Lag Open", nearbyObject: "Regulus (1.4° NE of Moon)", objectVisibleInInterval: false, orientation: "Illuminated Bottom-Left (Horns pointing up-right to ~12:30 o'clock)", positionAngle: 18, directionDeg: 286, azimuth: "286° WNW", conj: "19:37", mrise: "07:05", srise: "06:42", sset: "21:01", targetWin: "21:35", windowRange: "21:16 - 21:59", windowDur: "43 min", mset: "21:59", isha: "22:33" },
-                    { targetDate: "2026-09-12", dateStr: "12 September, 2026", hijri: "29 Rabi' al-Awwal 1448", visibility: "Easy", statusDesc: "Easy: Comfortable tracking arc geometry ensures structural naked-eye spotting windows.", yallopCode: "A", yallopValue: 0.79, age: 40.4, elongation: 18.5, altitudePeak: 6.9, altitudeMin: -0.2, altitudeMax: 57.6, stayDiff: 49, orderSequence: "Moonset occurs after Sunset", sequentialStatus: "Observational Lag Open", nearbyObject: "Spica (3.0° South of Moon)", objectVisibleInInterval: false, orientation: "Illuminated Left Profile (Horns opening right side to ~2 o'clock)", positionAngle: 45, directionDeg: 269, azimuth: "269° W", conj: "05:27", mrise: "07:29", srise: "07:24", sset: "19:59", targetWin: "20:25", windowRange: "20:14 - 20:48", windowDur: "34 min", mset: "20:48", isha: "21:30" }
+                    // 2026 FULL DATA MATRIX
+                    { targetDate: "2026-01-19", dateStr: "19 January, 2026", hijri: "29 Rajab 1447", visibility: "Difficult", statusDesc: "Difficult: Low local elevation axis parameters across winter lines.", yallopCode: "C", yallopValue: -0.04, age: 22.1, elongation: 11.4, altitudePeak: 5.1, altitudeMin: -0.4, altitudeMax: 43.1, stayDiff: 36, orderSequence: "Moonset occurs after Sunset", sequentialStatus: "Observational Lag Open", nearbyObject: "Venus (2.4° NE of Moon)", objectVisibleInInterval: false, orientation: "Illuminated Bottom-Left (Horns pointing up-right to ~2 o'clock)", positionAngle: 18, directionDeg: 252, azimuth: "252° WSW", conj: "19:52", mrise: "08:24", srise: "08:35", sset: "17:22", targetWin: "17:42", windowRange: "17:22 - 17:58", windowDur: "36 min", mset: "17:58", isha: "19:12" },
+                    { targetDate: "2026-02-18", dateStr: "18 February, 2026", hijri: "29 Sha'ban 1447", visibility: "Easy", statusDesc: "Easy: Comfortable processing metrics over the atmospheric line paths.", yallopCode: "B", yallopValue: 0.32, age: 32.2, elongation: 15.1, altitudePeak: 8.6, altitudeMin: 0.3, altitudeMax: 49.5, stayDiff: 49, orderSequence: "Moonset occurs after Sunset", sequentialStatus: "Observational Lag Open", nearbyObject: "Mercury (1.1° W of Moon)", objectVisibleInInterval: false, orientation: "Crescent Base Balanced (Horns opening straight up to ~12 o'clock)", positionAngle: 2, directionDeg: 271, azimuth: "271° W", conj: "12:01", mrise: "07:54", srise: "07:51", sset: "18:11", targetWin: "18:38", windowRange: "18:11 - 19:00", windowDur: "49 min", mset: "19:00", isha: "19:52" },
+                    { targetDate: "2026-03-20", dateStr: "20 March, 2026", hijri: "29 Ramadan 1447", visibility: "Very Easy", statusDesc: "Very Easy: Favorable alignment vectors match optimal twilight limits perfectly.", yallopCode: "A", yallopValue: 0.85, age: 42.0, elongation: 17.9, altitudePeak: 11.2, altitudeMin: 0.8, altitudeMax: 54.3, stayDiff: 62, orderSequence: "Moonset occurs after Sunset", sequentialStatus: "Observational Lag Open", nearbyObject: "Jupiter (3.1° N of Moon)", objectVisibleInInterval: true, orientation: "Illuminated Left Profile (Horns opening right side to ~2 o'clock)", positionAngle: 32, directionDeg: 288, azimuth: "288° WNW", conj: "01:23", mrise: "06:54", srise: "06:53", sset: "19:00", targetWin: "19:35", windowRange: "19:00 - 20:02", windowDur: "62 min", mset: "20:02", isha: "20:39" },
+                    { targetDate: "2026-04-18", dateStr: "18 April, 2026", hijri: "29 Shawwal 1447", visibility: "Easy", statusDesc: "Easy: Clear tracking arc profile geometry ensures reliable acquisition values.", yallopCode: "B", yallopValue: 0.44, age: 32.4, elongation: 15.3, altitudePeak: 8.1, altitudeMin: 0.2, altitudeMax: 48.2, stayDiff: 51, orderSequence: "Moonset occurs after Sunset", sequentialStatus: "Observational Lag Open", nearbyObject: "Mars (1.8° E of Moon)", objectVisibleInInterval: true, orientation: "Crescent Base Balanced (Horns opening straight up to ~12 o'clock)", positionAngle: 6, directionDeg: 299, azimuth: "299° WNW", conj: "11:52", mrise: "05:54", srise: "05:52", sset: "20:46", targetWin: "21:12", windowRange: "20:46 - 21:37", windowDur: "51 min", mset: "21:37", isha: "22:21" },
+                    { targetDate: "2026-05-17", dateStr: "17 May, 2026", hijri: "29 Dhul-Qadah 1447", visibility: "Impossible", statusDesc: "Impossible: Elevation drops tracking limits below baseline markers.", yallopCode: "E", yallopValue: -0.24, age: 22.0, elongation: 10.1, altitudePeak: 2.4, altitudeMin: -1.5, altitudeMax: 43.1, stayDiff: 21, orderSequence: "Moonset occurs after Sunset", sequentialStatus: "Too Short to Track", nearbyObject: "Saturn (2.9° S of Moon)", objectVisibleInInterval: false, orientation: "Illuminated Bottom-Right (Horns pointing up-left to ~10 o'clock)", positionAngle: -34, directionDeg: 306, azimuth: "306° NW", conj: "20:01", mrise: "05:08", srise: "05:10", sset: "21:28", targetWin: "21:40", windowRange: "21:28 - 21:49", windowDur: "21 min", mset: "21:49", isha: "23:24" },
+                    { targetDate: "2026-06-15", dateStr: "15 June, 2026", hijri: "29 Dhul-Hijjah 1447", visibility: "Impossible", statusDesc: "Impossible: Crescent altitude profile drops tracking ability below Danjon baseline thresholds.", yallopCode: "F", yallopValue: -1.05, age: 17.0, elongation: 8.9, altitudePeak: 1.2, altitudeMin: -2.4, altitudeMax: 41.5, stayDiff: 14, orderSequence: "Moonset occurs after Sunset", sequentialStatus: "Too Short to Track", nearbyObject: "Mercury (0.5° SE of Moon)", objectVisibleInInterval: false, orientation: "Illuminated Bottom-Right (Horns pointing up-left to ~10 o'clock)", positionAngle: -48, directionDeg: 309, azimuth: "309° NW", conj: "02:54", mrise: "05:31", srise: "05:47", sset: "21:56", targetWin: "22:05", windowRange: "21:56 - 22:10", windowDur: "14 min", mset: "22:10", isha: "23:59" },
+                    { targetDate: "2026-07-15", dateStr: "15 July, 2026", hijri: "29 Muharram 1448", visibility: "Difficult", statusDesc: "Difficult: Severe lingering light glare from peak northern summer twilight fields.", yallopCode: "C", yallopValue: 0.15, age: 35.6, elongation: 16.8, altitudePeak: 6.2, altitudeMin: -0.4, altitudeMax: 48.9, stayDiff: 47, orderSequence: "Moonset occurs after Sunset", sequentialStatus: "Observational Lag Open", nearbyObject: "Venus (2.3° East of Moon)", objectVisibleInInterval: true, orientation: "Illuminated Bottom-Right (Horns pointing up-left to ~11 o'clock)", positionAngle: -12, directionDeg: 300, azimuth: "300° WNW", conj: "09:43", mrise: "06:14", srise: "06:04", sset: "21:42", targetWin: "22:10", windowRange: "21:57 - 22:29", windowDur: "32 min", mset: "22:29", isha: "23:29" },
+                    { targetDate: "2026-08-13", dateStr: "13 August, 2026", hijri: "29 Safar 1448", visibility: "Easy", statusDesc: "Easy: Favorable solar distance index values provide reliable contrast intervals.", yallopCode: "B", yallopValue: 0.58, age: 27.1, elongation: 13.1, altitudePeak: 8.7, altitudeMin: 0.1, altitudeMax: 54.3, stayDiff: 58, orderSequence: "Moonset occurs after Sunset", sequentialStatus: "Observational Lag Open", nearbyObject: "Regulus (1.4° NE of Moon)", objectVisibleInInterval: false, orientation: "Illuminated Bottom-Left (Horns pointing up-right to ~12:30 o'clock)", positionAngle: 18, directionDeg: 286, azimuth: "286° WNW", conj: "17:37", mrise: "07:05", srise: "06:42", sset: "21:01", targetWin: "21:35", windowRange: "21:16 - 21:59", windowDur: "43 min", mset: "21:59", isha: "22:33" },
+                    { targetDate: "2026-09-12", dateStr: "12 September, 2026", hijri: "29 Rabi' al-Awwal 1448", visibility: "Easy", statusDesc: "Easy: Comfortable tracking arc geometry ensures structural naked-eye spotting windows.", yallopCode: "A", yallopValue: 0.79, age: 40.4, elongation: 18.5, altitudePeak: 6.9, altitudeMin: -0.2, altitudeMax: 57.6, stayDiff: 49, orderSequence: "Moonset occurs after Sunset", sequentialStatus: "Observational Lag Open", nearbyObject: "Spica (3.0° South of Moon)", objectVisibleInInterval: false, orientation: "Illuminated Left Profile (Horns opening right side to ~2 o'clock)", positionAngle: 45, directionDeg: 269, azimuth: "269° W", conj: "03:27", mrise: "07:29", srise: "07:24", sset: "19:59", targetWin: "20:25", windowRange: "20:14 - 20:48", windowDur: "34 min", mset: "20:48", isha: "21:30" },
+                    { targetDate: "2026-10-11", dateStr: "11 October, 2026", hijri: "29 Rabi' ath-Thani 1448", visibility: "Difficult", statusDesc: "Difficult: Steeper low tracking path parameters inside local constraints.", yallopCode: "C", yallopValue: -0.02, age: 30.1, elongation: 14.1, altitudePeak: 3.9, altitudeMin: -0.8, altitudeMax: 50.2, stayDiff: 31, orderSequence: "Moonset occurs after Sunset", sequentialStatus: "Observational Lag Open", nearbyObject: "Venus (1.9° N of Moon)", objectVisibleInInterval: false, orientation: "Illuminated Left Profile (Horns pointing right to ~2.30 o'clock)", positionAngle: 36, directionDeg: 254, azimuth: "254° WSW", conj: "15:50", mrise: "08:31", srise: "08:08", sset: "18:57", targetWin: "19:15", windowRange: "18:57 - 19:28", windowDur: "31 min", mset: "19:28", isha: "20:21" },
+                    { targetDate: "2026-11-10", dateStr: "10 November, 2026", hijri: "29 Jumada al-Awwal 1448", visibility: "Impossible", statusDesc: "Impossible: Elongation collapse under tracking limits.", yallopCode: "E", yallopValue: -0.28, age: 34.1, elongation: 12.3, altitudePeak: 2.1, altitudeMin: -1.4, altitudeMax: 42.1, stayDiff: 19, orderSequence: "Moonset occurs after Sunset", sequentialStatus: "Too Short to Track", nearbyObject: "Mercury (2.8° SE of Moon)", objectVisibleInInterval: false, orientation: "Illuminated Bottom-Left (Horns pointing to ~2 o'clock)", positionAngle: 24, directionDeg: 245, azimuth: "245° WSW", conj: "07:02", mrise: "09:22", srise: "07:56", sset: "17:10", targetWin: "17:21", windowRange: "17:10 - 17:29", windowDur: "19 min", mset: "17:29", isha: "18:51" },
+                    { targetDate: "2026-12-10", dateStr: "10 December, 2026", hijri: "29 Jumada ath-Thani 1448", visibility: "Difficult", statusDesc: "Difficult: Tight horizon tracking parameters over winter boundaries.", yallopCode: "C", yallopValue: -0.06, age: 39.8, elongation: 15.5, altitudePeak: 4.2, altitudeMin: -0.5, altitudeMax: 39.8, stayDiff: 33, orderSequence: "Moonset occurs after Sunset", sequentialStatus: "Observational Lag Open", nearbyObject: "Mars (1.2° S of Moon)", objectVisibleInInterval: false, orientation: "Illuminated Bottom-Left (Horns pointing up-right to ~2 o'clock)", positionAngle: 15, directionDeg: 243, azimuth: "243° WSW", conj: "00:52", mrise: "10:14", srise: "08:35", sset: "16:53", targetWin: "17:12", windowRange: "16:53 - 17:26", windowDur: "33 min", mset: "17:26", isha: "18:40" },
+                    
+                    // 2027 FULL DATA MATRIX
+                    { targetDate: "2027-01-08", dateStr: "08 January, 2027", hijri: "29 Rajab 1448", visibility: "Impossible", statusDesc: "Impossible: Dropping under minimal visibility angles.", yallopCode: "E", yallopValue: -0.21, age: 25.4, elongation: 12.0, altitudePeak: 2.9, altitudeMin: -1.2, altitudeMax: 39.1, stayDiff: 23, orderSequence: "Moonset occurs after Sunset", sequentialStatus: "Too Short to Track", nearbyObject: "Venus (3.0° N of Moon)", objectVisibleInInterval: false, orientation: "Illuminated Bottom-Left (Horns pointing to ~2 o'clock)", positionAngle: 19, directionDeg: 246, azimuth: "246° WSW", conj: "20:24", mrise: "09:58", srise: "08:41", sset: "17:03", targetWin: "17:16", windowRange: "17:03 - 17:26", windowDur: "23 min", mset: "17:26", isha: "18:48" },
+                    { targetDate: "2027-02-07", dateStr: "07 February, 2027", hijri: "29 Sha'ban 1448", visibility: "Easy", statusDesc: "Easy: Solid age development ensures good spotting loops.", yallopCode: "B", yallopValue: 0.39, age: 30.9, elongation: 14.5, altitudePeak: 7.2, altitudeMin: 0.1, altitudeMax: 46.4, stayDiff: 45, orderSequence: "Moonset occurs after Sunset", sequentialStatus: "Observational Lag Open", nearbyObject: "Mercury (1.5° E of Moon)", objectVisibleInInterval: false, orientation: "Crescent Base Balanced (Horns opening straight up to ~12 o'clock)", positionAngle: 4, directionDeg: 265, azimuth: "265° W", conj: "15:56", mrise: "08:51", srise: "08:06", sset: "17:49", targetWin: "18:14", windowRange: "17:49 - 18:34", windowDur: "45 min", mset: "18:34", isha: "19:27" },
+                    { targetDate: "2027-03-09", dateStr: "09 March, 2027", hijri: "29 Ramadan 1448", visibility: "Very Easy", statusDesc: "Very Easy: Favorable alignment vectors match spring conditions perfectly.", yallopCode: "A", yallopValue: 0.94, age: 35.3, elongation: 16.4, altitudePeak: 10.5, altitudeMin: 0.7, altitudeMax: 52.1, stayDiff: 59, orderSequence: "Moonset occurs after Sunset", sequentialStatus: "Observational Lag Open", nearbyObject: "Jupiter (2.2° NE of Moon)", objectVisibleInInterval: true, orientation: "Illuminated Left Profile (Horns opening right side to ~2 o'clock)", positionAngle: 28, directionDeg: 282, azimuth: "282° WNW", conj: "09:29", mrise: "07:44", srise: "07:11", sset: "18:41", targetWin: "19:15", windowRange: "18:41 - 19:40", windowDur: "59 min", mset: "19:40", isha: "20:13" },
+                    { targetDate: "2027-04-07", dateStr: "07 April, 2027", hijri: "29 Shawwal 1448", visibility: "Impossible", statusDesc: "Impossible: Elongation collapse tracking drops parameters below horizons.", yallopCode: "F", yallopValue: -0.42, age: 17.9, elongation: 9.3, altitudePeak: 1.8, altitudeMin: -1.9, altitudeMax: 44.9, stayDiff: 16, orderSequence: "Moonset occurs after Sunset", sequentialStatus: "Too Short to Track", nearbyObject: "Saturn (1.1° S of Moon)", objectVisibleInInterval: false, orientation: "Illuminated Bottom-Right (Horns opening to ~10 o'clock)", positionAngle: -29, directionDeg: 294, azimuth: "294° WNW", conj: "23:51", mrise: "06:18", srise: "06:09", sset: "20:25", targetWin: "20:34", windowRange: "20:25 - 20:41", windowDur: "16 min", mset: "20:41", isha: "21:49" },
+                    { targetDate: "2027-05-07", dateStr: "07 May, 2027", hijri: "29 Dhul-Qadah 1448", visibility: "Easy", statusDesc: "Easy: Comfortable tracking arc geometry ensures reliable windows.", yallopCode: "B", yallopValue: 0.31, age: 30.7, elongation: 14.0, altitudePeak: 6.9, altitudeMin: 0.1, altitudeMax: 43.1, stayDiff: 46, orderSequence: "Moonset occurs after Sunset", sequentialStatus: "Observational Lag Open", nearbyObject: "Mars (2.5° N of Moon)", objectVisibleInInterval: true, orientation: "Crescent Base Balanced (Horns opening straight up to ~12 o'clock)", positionAngle: 8, directionDeg: 302, azimuth: "302° WNW", conj: "10:58", mrise: "05:29", srise: "05:12", sset: "21:11", targetWin: "21:38", windowRange: "21:11 - 21:57", windowDur: "46 min", mset: "21:57", isha: "22:45" },
+                    { targetDate: "2027-06-05", dateStr: "05 June, 2027", hijri: "29 Dhul-Hijjah 1448", visibility: "Impossible", statusDesc: "Impossible: Elevation vector drops below minimal limits.", yallopCode: "E", yallopValue: -0.29, age: 19.0, elongation: 9.1, altitudePeak: 1.4, altitudeMin: -2.1, altitudeMax: 40.5, stayDiff: 15, orderSequence: "Moonset occurs after Sunset", sequentialStatus: "Too Short to Track", nearbyObject: "Mercury (0.9° N of Moon)", objectVisibleInInterval: false, orientation: "Illuminated Bottom-Right (Horns pointing up-left to ~10 o'clock)", positionAngle: -41, directionDeg: 306, azimuth: "306° NW", conj: "19:40", mrise: "04:54", srise: "04:41", sset: "21:48", targetWin: "21:56", windowRange: "21:48 - 22:03", windowDur: "15 min", mset: "22:03", isha: "23:48" },
+                    { targetDate: "2027-07-05", dateStr: "05 July, 2027", hijri: "29 Muharram 1449", visibility: "Difficult", statusDesc: "Difficult: Slim window parameters with high background scatter values.", yallopCode: "C", yallopValue: 0.18, age: 35.8, elongation: 16.1, altitudePeak: 5.5, altitudeMin: -0.5, altitudeMax: 47.1, stayDiff: 39, orderSequence: "Moonset occurs after Sunset", sequentialStatus: "Observational Lag Open", nearbyObject: "Venus (1.7° E of Moon)", objectVisibleInInterval: true, orientation: "Crescent Base Balanced (Horns opening straight up to ~12 o'clock)", positionAngle: -2, directionDeg: 301, azimuth: "301° WNW", conj: "03:02", mrise: "05:32", srise: "04:56", sset: "21:51", targetWin: "22:12", windowRange: "21:51 - 22:30", windowDur: "39 min", mset: "22:30", isha: "23:36" },
+                    { targetDate: "2027-08-03", dateStr: "03 August, 2027", hijri: "29 Safar 1449", visibility: "Easy", statusDesc: "Easy: Solid elongation scales ensure good target spotting windows.", yallopCode: "B", yallopValue: 0.28, age: 28.6, elongation: 12.8, altitudePeak: 6.4, altitudeMin: 0.1, altitudeMax: 51.5, stayDiff: 44, orderSequence: "Moonset occurs after Sunset", sequentialStatus: "Observational Lag Open", nearbyObject: "Regulus (1.1° NE of Moon)", objectVisibleInInterval: false, orientation: "Illuminated Bottom-Left (Horns pointing up-right to ~1 o'clock)", positionAngle: 12, directionDeg: 289, azimuth: "289° WNW", conj: "10:05", mrise: "06:18", srise: "05:32", sset: "21:18", targetWin: "21:44", windowRange: "21:18 - 22:02", windowDur: "44 min", mset: "22:02", isha: "22:46" },
+                    { targetDate: "2027-09-01", dateStr: "01 September, 2027", hijri: "29 Rabi' al-Awwal 1449", visibility: "Impossible", statusDesc: "Impossible: Vector parameters completely fail tracking safety criteria limits.", yallopCode: "F", yallopValue: -0.54, age: 20.1, elongation: 9.0, altitudePeak: 1.1, altitudeMin: -2.3, altitudeMax: 54.3, stayDiff: 12, orderSequence: "Moonset occurs after Sunset", sequentialStatus: "Too Short to Track", nearbyObject: "Spica (2.4° S of Moon)", objectVisibleInInterval: false, orientation: "Illuminated Bottom-Right (Horns pointing to ~10 o'clock)", positionAngle: -46, directionDeg: 274, azimuth: "274° W", conj: "17:41", mrise: "07:05", srise: "06:12", sset: "20:21", targetWin: "20:28", windowRange: "20:21 - 20:33", windowDur: "12 min", mset: "20:33", isha: "21:40" },
+                    { targetDate: "2027-10-01", dateStr: "01 October, 2027", hijri: "29 Rabi' ath-Thani 1449", visibility: "Easy", statusDesc: "Easy: Comfortable tracking arc metrics.", yallopCode: "B", yallopValue: 0.42, age: 32.2, elongation: 14.3, altitudePeak: 4.8, altitudeMin: 0.2, altitudeMax: 53.9, stayDiff: 38, orderSequence: "Moonset occurs after Sunset", sequentialStatus: "Observational Lag Open", nearbyObject: "Jupiter (3.5° N of Moon)", objectVisibleInInterval: false, orientation: "Illuminated Left Profile (Horns opening right side to ~2 o'clock)", positionAngle: 31, directionDeg: 259, azimuth: "259° W", conj: "02:36", mrise: "07:54", srise: "06:58", sset: "19:14", targetWin: "19:35", windowRange: "19:14 - 19:52", windowDur: "38 min", mset: "19:52", isha: "20:31" },
+                    { targetDate: "2027-10-30", dateStr: "30 October, 2027", hijri: "29 Jumada al-Awwal 1449", visibility: "Impossible", statusDesc: "Impossible: Structural collapse below horizon angles.", yallopCode: "E", yallopValue: -0.22, age: 28.1, elongation: 12.5, altitudePeak: 2.2, altitudeMin: -1.3, altitudeMax: 46.2, stayDiff: 20, orderSequence: "Moonset occurs after Sunset", sequentialStatus: "Too Short to Track", nearbyObject: "Venus (2.0° S of Moon)", objectVisibleInInterval: false, orientation: "Illuminated Bottom-Left (Horns pointing to ~2.30 o'clock)", positionAngle: 15, directionDeg: 247, azimuth: "247° WSW", conj: "13:36", mrise: "08:44", srise: "07:44", sset: "17:19", targetWin: "17:30", windowRange: "17:19 - 17:39", windowDur: "20 min", mset: "17:39", isha: "18:59" },
+                    { targetDate: "2027-11-29", dateStr: "29 November, 2027", hijri: "29 Jumada ath-Thani 1449", visibility: "Difficult", statusDesc: "Difficult: Tight horizon constraints.", yallopCode: "C", yallopValue: -0.09, age: 39.4, elongation: 16.3, altitudePeak: 4.1, altitudeMin: -0.4, altitudeMax: 40.2, stayDiff: 32, orderSequence: "Moonset occurs after Sunset", sequentialStatus: "Observational Lag Open", nearbyObject: "Mars (1.5° N of Moon)", objectVisibleInInterval: false, orientation: "Illuminated Bottom-Left (Horns pointing up-right to ~2 o'clock)", positionAngle: 11, directionDeg: 243, azimuth: "243° WSW", conj: "03:24", mrise: "09:31", srise: "08:31", sset: "16:54", targetWin: "17:12", windowRange: "16:54 - 17:26", windowDur: "32 min", mset: "17:26", isha: "18:38" },
+                    { targetDate: "2027-12-28", dateStr: "28 December, 2027", hijri: "29 Rajab 1449", visibility: "Impossible", statusDesc: "Impossible: Elongation collapse under Danjon baseline bounds.", yallopCode: "F", yallopValue: -0.95, age: 21.0, elongation: 6.6, altitudePeak: 0.5, altitudeMin: -2.8, altitudeMax: 38.6, stayDiff: 11, orderSequence: "Moonset occurs after Sunset", sequentialStatus: "Too Short to Track", nearbyObject: "Mercury (0.6° W of Moon)", objectVisibleInInterval: false, orientation: "Illuminated Bottom-Right (Horns opening to ~9 o'clock)", positionAngle: -61, directionDeg: 244, azimuth: "244° WSW", conj: "20:12", mrise: "09:44", srise: "08:44", sset: "16:59", targetWin: "17:06", windowRange: "16:59 - 17:10", windowDur: "11 min", mset: "17:10", isha: "18:41" }
                 ]
             },
             tips: {
@@ -247,6 +290,20 @@
             return diffDays > 0 ? `in ${diffDays} days` : `${Math.abs(diffDays)} days ago`;
         }
 
+        // AUTO-INDEXER CALCULATOR ENGINES TO AUTOMATICALLY PINPOINT THE CHRONOLOGICAL NEXT MONTH SLIDE
+        function calculateDefaultObservationIndex(stationKey) {
+            const list = datasets[stationKey].slides;
+            if (!list || list.length === 0 || list[0].type === 'tip_card_system') return 0;
+            
+            // Loop looking for the earliest date strictly greater than current simulated time baseline
+            for (let i = 0; i < list.length; i++) {
+                if (new Date(list[i].targetDate) >= CURRENT_RUN_TIME) {
+                    return i;
+                }
+            }
+            return list.length - 1; 
+        }
+
         function updateSliders() {
             colorBounds.age.optimalMin = parseFloat(document.getElementById('cfg-age-min').value);
             colorBounds.elong.optimalMin = parseFloat(document.getElementById('cfg-elong-min').value);
@@ -261,7 +318,6 @@
             renderSlides();
         }
 
-        // DYNAMIC MAX MODAL DETAIL PANEL (LEVEL 3 INJECTIONS)
         function openModal(key) {
             const slide = datasets[currentStation].slides[currentSlideIndex];
             const modal = document.getElementById('kpi-modal');
@@ -286,7 +342,7 @@
                                 <thead>
                                     <tr class="bg-zinc-900 text-zinc-400 font-bold uppercase tracking-wider border-b border-zinc-800">
                                         <th class="p-2">Class</th>
-                                        <th class="p-2">Criterion Matrix Range</th>
+                                        <th class="p-2">Range</th>
                                         <th class="p-2">Visibility Standard Status</th>
                                     </tr>
                                 </thead>
@@ -299,22 +355,22 @@
                                     <tr class="${slide.yallopCode === 'B' ? 'bg-emerald-950/40 text-emerald-300 font-bold' : ''}">
                                         <td class="p-2 font-bold text-emerald-500">B</td>
                                         <td class="p-2 mono">–0.014 &lt; q &le; +0.216</td>
-                                        <td class="p-2">Visible under perfect atmospheric conditions</td>
+                                        <td class="p-2">Visible under perfect conditions</td>
                                     </tr>
                                     <tr class="${slide.yallopCode === 'C' ? 'bg-amber-950/40 text-amber-300 font-bold' : ''}">
                                         <td class="p-2 font-bold text-amber-400">C</td>
                                         <td class="p-2 mono">–0.160 &lt; q &le; –0.014</td>
-                                        <td class="p-2">Optical aid needed before eye acquisition</td>
+                                        <td class="p-2">Optical aid needed before eye spot</td>
                                     </tr>
                                     <tr class="${slide.yallopCode === 'D' ? 'bg-amber-950/40 text-amber-300 font-bold' : ''}">
                                         <td class="p-2 font-bold text-amber-500">D</td>
                                         <td class="p-2 mono">–0.232 &lt; q &le; –0.160</td>
-                                        <td class="p-2">Only visible with binoculars/telescopes</td>
+                                        <td class="p-2">Only visible with telescopes/binoculars</td>
                                     </tr>
                                     <tr class="${slide.yallopCode === 'E' ? 'bg-rose-950/40 text-rose-300 font-bold' : ''}">
                                         <td class="p-2 font-bold text-rose-400">E</td>
                                         <td class="p-2 mono">–0.293 &lt; q &le; –0.232</td>
-                                        <td class="p-2">Not visible with conventional equipment</td>
+                                        <td class="p-2">Not visible with conventional lenses</td>
                                     </tr>
                                     <tr class="${slide.yallopCode === 'F' ? 'bg-rose-950/40 text-rose-400 font-bold' : ''}">
                                         <td class="p-2 font-bold text-rose-500">F</td>
@@ -323,11 +379,6 @@
                                     </tr>
                                 </tbody>
                             </table>
-                        </div>
-
-                        <div class="bg-zinc-950 border border-zinc-800 p-2.5 rounded-xl flex justify-between items-center text-[11px]">
-                            <span class="font-bold text-zinc-500 uppercase">Target Month Parameters:</span>
-                            <span class="mono font-black text-white text-xs bg-zinc-800 px-2 py-0.5 rounded border border-zinc-700">Code ${slide.yallopCode} (q = ${slide.yallopValue})</span>
                         </div>
                     </div>
                 `;
@@ -340,7 +391,7 @@
                             <p class="text-zinc-400 leading-tight">${slide.orientation}</p>
                         </div>
                         <div class="bg-zinc-950 p-2.5 rounded-xl border border-zinc-800 font-mono space-y-1">
-                            <div class="flex justify-between"><span>• Parallax Axis Angle:</span> <span class="text-white font-bold">${slide.positionAngle}°</span></div>
+                            <div class="flex justify-between"><span>• Position Axis Angle:</span> <span class="text-white font-bold">${slide.positionAngle}°</span></div>
                             <div class="flex justify-between"><span>• Target Sky Azimuth:</span> <span class="text-white font-bold">${slide.azimuth}</span></div>
                             <div class="flex justify-between"><span>• True Bearing Heading:</span> <span class="text-white font-bold">${slide.directionDeg}°</span></div>
                         </div>
@@ -405,7 +456,6 @@
             document.getElementById('station-wrapper').classList.remove('opacity-10', 'pointer-events-none');
         }
 
-        // SLIDE RENDER PROCESSING PARSER ENGINE
         function renderSlides() {
             container.innerHTML = '';
             const stationData = datasets[currentStation];
@@ -435,13 +485,12 @@
                     const badgeClass = fontBadgeColor(slide.visibility);
                     const remainingDaysStr = calculateDaysRemaining(slide.targetDate);
 
-                    // Celestial reference card rendering condition based on twilight interval validation
                     let celestialCardHTML = '';
                     if (slide.objectVisibleInInterval) {
                         celestialCardHTML = `
-                            <div onclick="openModal('celestial')" class="bg-zinc-950 text-white p-2.5 rounded-xl border border-zinc-800 flex items-center justify-between cursor-pointer hover:bg-zinc-800 transition-all shadow-sm">
+                            <div onclick="openModal('celestial')" class="bg-zinc-950 text-white p-2 rounded-xl border border-zinc-800 flex items-center justify-between cursor-pointer hover:bg-zinc-800 transition-all shadow-sm">
                                 <div class="leading-none">
-                                    <span class="text-[8px] text-indigo-400 font-extrabold uppercase tracking-widest block mb-1">Celestial Field Anchor</span>
+                                    <span class="text-[8px] text-indigo-400 font-extrabold uppercase tracking-widest block mb-0.5">Celestial Field Anchor</span>
                                     <span class="text-xs font-bold block text-white tracking-tight">✨ Conjunction: ${slide.nearbyObject.split(' (')[0]}</span>
                                 </div>
                                 <span class="font-mono text-[9px] text-emerald-400 bg-zinc-900 px-1.5 py-0.5 rounded font-bold border border-zinc-800 flex items-center gap-1">
@@ -451,9 +500,9 @@
                         `;
                     } else {
                         celestialCardHTML = `
-                            <div onclick="openModal('celestial')" class="bg-zinc-950/40 text-zinc-500 p-2.5 rounded-xl border border-zinc-900 flex items-center justify-between cursor-pointer opacity-50">
+                            <div onclick="openModal('celestial')" class="bg-zinc-950/40 text-zinc-500 p-2 rounded-xl border border-zinc-900 flex items-center justify-between cursor-pointer opacity-50">
                                 <div class="leading-none">
-                                    <span class="text-[8px] text-zinc-600 font-extrabold uppercase tracking-widest block mb-1">Celestial Field Anchor</span>
+                                    <span class="text-[8px] text-zinc-600 font-extrabold uppercase tracking-widest block mb-0.5">Celestial Field Anchor</span>
                                     <span class="text-xs font-medium block tracking-tight">No Visible Auxiliary Alignments</span>
                                 </div>
                                 <span class="font-mono text-[8px] text-zinc-600 bg-zinc-950 px-1.5 py-0.5 rounded">Interval Clear</span>
@@ -461,30 +510,28 @@
                         `;
                     }
 
-                    // Render auxiliary dot inside the widget circle frame if object matches interval tracking
                     let dotIndicatorHTML = '';
                     if (slide.objectVisibleInInterval) {
-                        // Position a bright reference marker inside the canvas layout offset from the central geometry plane
                         dotIndicatorHTML = `<div class="absolute w-1.5 h-1.5 bg-indigo-400 rounded-full top-2 right-2 animate-pulse shadow-[0_0_4px_rgba(129,140,248,0.8)]"></div>`;
                     }
 
                     div.innerHTML = `
-                        <div class="flex flex-col h-full justify-between space-y-2">
+                        <div class="flex flex-col h-full justify-between space-y-1.5">
                             
-                            <div onclick="openModal('yallop')" class="${badgeClass} p-3 rounded-xl border transition-all flex flex-col justify-start space-y-1.5 shadow-xs cursor-pointer hover:brightness-110 active:scale-[0.99]">
+                            <div onclick="openModal('yallop')" class="${badgeClass} p-2.5 rounded-xl border transition-all flex flex-col justify-start space-y-1 shadow-xs cursor-pointer hover:brightness-110 active:scale-[0.99]">
                                 <div class="flex justify-between items-start w-full">
                                     <div>
                                         <h4 class="text-xs font-black tracking-tight text-white leading-none">${slide.dateStr}</h4>
-                                        <p class="text-[10px] font-bold opacity-90 mt-1 mono text-zinc-300">${slide.hijri} <span class="text-indigo-400 font-medium">(${remainingDaysStr})</span></p>
+                                        <p class="text-[10px] font-bold opacity-90 mt-1 mono text-zinc-300 font-mono">${slide.hijri} <span class="text-indigo-400 font-medium">(${remainingDaysStr})</span></p>
                                     </div>
-                                    <span class="px-2 py-0.5 bg-zinc-950 border border-zinc-800 text-zinc-300 rounded font-mono text-[9px] font-bold uppercase tracking-wider">${slide.yallopCode} Index</span>
+                                    <span class="px-1.5 py-0.5 bg-zinc-950 border border-zinc-800 text-zinc-300 rounded font-mono text-[9px] font-bold uppercase tracking-wider">${slide.yallopCode} Index</span>
                                 </div>
-                                <div class="pt-2 border-t border-zinc-800/80 text-[11px] leading-tight">
+                                <div class="pt-1.5 border-t border-zinc-800/80 text-[11px] leading-tight">
                                     <p class="italic font-medium text-zinc-300">${slide.statusDesc}</p>
                                 </div>
                             </div>
 
-                            <div onclick="openModal('orientation')" class="bg-zinc-950 p-2.5 rounded-xl border border-zinc-800 flex flex-col justify-center cursor-pointer active:bg-zinc-800 transition-colors shadow-2xs">
+                            <div onclick="openModal('orientation')" class="bg-zinc-950 p-2 rounded-xl border border-zinc-800 flex flex-col justify-center cursor-pointer active:bg-zinc-800 transition-colors shadow-2xs">
                                 <div class="flex justify-between items-center w-full mb-1">
                                     <span class="text-[8px] text-purple-400 font-extrabold uppercase tracking-widest">Crescent Axis Angle</span>
                                     <span class="text-[8px] font-bold text-zinc-500 uppercase font-mono">Details ➔</span>
@@ -505,44 +552,43 @@
                                 </div>
                             </div>
 
-                            <div onclick="openModal('sequence')" class="bg-zinc-950 p-2.5 rounded-xl border border-zinc-800 flex items-center justify-between cursor-pointer active:bg-zinc-800 transition-all shadow-2xs">
+                            <div onclick="openModal('sequence')" class="bg-zinc-950 p-2 rounded-xl border border-zinc-800 flex items-center justify-between cursor-pointer active:bg-zinc-800 transition-all shadow-2xs">
                                 <div class="leading-none">
-                                    <span class="text-[8px] text-emerald-400 font-extrabold uppercase tracking-widest block mb-1">Horizon Order Rule</span>
+                                    <span class="text-[8px] text-emerald-400 font-extrabold uppercase tracking-widest block mb-0.5">Horizon Order Rule</span>
                                     <span class="text-[11px] font-bold text-zinc-200 block tracking-tight">${slide.orderSequence}</span>
                                 </div>
-                                <span class="px-2 py-0.5 bg-zinc-900 border border-zinc-800 text-emerald-400 rounded font-mono text-[8px] font-extrabold uppercase tracking-wider">${slide.sequentialStatus}</span>
+                                <span class="px-1.5 py-0.5 bg-zinc-900 border border-zinc-800 text-emerald-400 rounded font-mono text-[8px] font-extrabold uppercase tracking-wider">${slide.sequentialStatus}</span>
                             </div>
 
                             <div class="grid grid-cols-2 gap-2">
-                                <div onclick="openModal('stay')" class="bg-zinc-950 border border-zinc-800 p-2.5 rounded-xl flex flex-col justify-between items-center shadow-2xs cursor-pointer active:bg-zinc-800 transition-colors">
+                                <div onclick="openModal('stay')" class="bg-zinc-950 border border-zinc-800 p-2 rounded-xl flex flex-col justify-between items-center shadow-2xs cursor-pointer active:bg-zinc-800 transition-colors">
                                     <div class="w-full flex justify-between text-[8px] font-extrabold text-zinc-500 tracking-wider">
                                         <span>STAY TIME LAG</span>
                                         <span>➔</span>
                                     </div>
-                                    <div class="text-3xl font-black mono tracking-tighter my-0.5 ${stayClr}">${slide.stayDiff}<span class="text-xs font-sans font-extrabold ml-0.5">m</span></div>
-                                    <div class="text-[8px] text-zinc-500 font-mono tracking-tight text-center">Sunset ${slide.sset} → Moonset ${slide.mset}</div>
+                                    <div class="text-2xl font-black mono tracking-tighter my-0.5 ${stayClr} font-mono">${slide.stayDiff}<span class="text-xs font-sans font-extrabold ml-0.5">m</span></div>
+                                    <div class="text-[8px] text-zinc-500 font-mono tracking-tight text-center font-mono">Sunset ${slide.sset} → Mset ${slide.mset}</div>
                                 </div>
-                                
-                                <div onclick="openModal('altitude')" class="bg-zinc-950 border border-zinc-800 p-2.5 rounded-xl flex flex-col justify-between items-center shadow-2xs cursor-pointer active:bg-zinc-800 transition-colors">
+                                <div onclick="openModal('altitude')" class="bg-zinc-950 border border-zinc-800 p-2 rounded-xl flex flex-col justify-between items-center shadow-2xs cursor-pointer active:bg-zinc-800 transition-colors">
                                     <div class="w-full flex justify-between text-[8px] font-extrabold text-zinc-500 tracking-wider">
                                         <span>PEAK ALTITUDE</span>
                                         <span>➔</span>
                                     </div>
-                                    <div class="text-3xl font-black mono tracking-tighter my-0.5 ${altClr}">${slide.altitudePeak}<span class="text-xs font-sans font-extrabold ml-0.5">°</span></div>
-                                    <div class="text-[8px] text-zinc-500 font-mono tracking-tight text-center">Min: ${slide.altitudeMin}° | Max: ${slide.altitudeMax}°</div>
+                                    <div class="text-2xl font-black mono tracking-tighter my-0.5 ${altClr} font-mono">${slide.altitudePeak}<span class="text-xs font-sans font-extrabold ml-0.5">°</span></div>
+                                    <div class="text-[8px] text-zinc-500 font-mono tracking-tight text-center font-mono">Min: ${slide.altitudeMin}° | Max: ${slide.altitudeMax}°</div>
                                 </div>
                             </div>
 
                             ${celestialCardHTML}
 
-                            <div class="bg-zinc-950 p-2 rounded-xl border border-zinc-800 grid grid-cols-2 gap-1 text-center font-mono text-xs">
+                            <div class="bg-zinc-950 p-1.5 rounded-xl border border-zinc-800 grid grid-cols-2 gap-1 text-center font-mono text-xs">
                                 <div>
                                     <span class="text-zinc-500 text-[8px] uppercase font-sans font-bold tracking-tight block">Moon Age</span>
-                                    <span class="block text-xs font-bold tracking-tight mt-0.5 ${ageClr}">${slide.age}h</span>
+                                    <span class="block text-xs font-bold tracking-tight mt-0.5 ${ageClr} font-mono">${slide.age}h</span>
                                 </div>
                                 <div>
                                     <span class="text-zinc-500 text-[8px] uppercase font-sans font-bold tracking-tight block">Elongation Arc</span>
-                                    <span class="block text-xs font-bold tracking-tight mt-0.5 ${elongClr}">${slide.elongation}°</span>
+                                    <span class="block text-xs font-bold tracking-tight mt-0.5 ${elongClr} font-mono">${slide.elongation}°</span>
                                 </div>
                             </div>
 
@@ -560,6 +606,7 @@
 
             updateSlidePosition();
             updateControls();
+            updateHeaderYear();
         }
 
         function updateSlidePosition() {
@@ -571,9 +618,20 @@
             document.getElementById('slide-counter').innerText = `${currentSlideIndex + 1} / ${total}`;
         }
 
+        function updateHeaderYear() {
+            const slide = datasets[currentStation].slides[currentSlideIndex];
+            if (slide && slide.targetDate) {
+                const year = slide.targetDate.substring(0, 4);
+                document.getElementById('year-indicator').innerText = `${year} MATRIX`;
+            }
+        }
+
         function changeStation(station) {
             currentStation = station;
-            currentSlideIndex = 0;
+            
+            // DYNAMIC AUTO-INDEXING FOR SELECTING NEXT OBSERVATION TARGET BY DEFAULT
+            currentSlideIndex = calculateDefaultObservationIndex(station);
+            
             closeModal();
             
             document.querySelectorAll('#top-nav-bar button').forEach(btn => {
@@ -582,10 +640,12 @@
             });
             
             const activeBtn = document.getElementById(`btn-${station}`);
-            activeBtn.classList.add('bg-zinc-800', 'shadow-sm', 'font-bold', 'text-white');
-            activeBtn.classList.remove('text-zinc-400');
+            if (activeBtn) {
+                activeBtn.classList.add('bg-zinc-800', 'shadow-sm', 'font-bold', 'text-white');
+                activeBtn.classList.remove('text-zinc-400');
+            }
 
-            document.getElementById('station-subtitle').innerText = datasets[station].title || "Field Reference";
+            document.getElementById('station-subtitle').innerText = datasets[station].title || "Field Guidelines";
             renderSlides();
         }
 
@@ -594,6 +654,7 @@
                 currentSlideIndex++;
                 updateSlidePosition();
                 updateControls();
+                updateHeaderYear();
             }
         }
 
@@ -602,6 +663,7 @@
                 currentSlideIndex--;
                 updateSlidePosition();
                 updateControls();
+                updateHeaderYear();
             }
         }
 
@@ -623,7 +685,7 @@
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(datasets, null, 2));
             const dlAnchorElem = document.createElement('a');
             dlAnchorElem.setAttribute("href", dataStr);
-            dlAnchorElem.setAttribute("download", `crescent_v52_dark.json`);
+            dlAnchorElem.setAttribute("download", `crescent_core_v55.json`);
             dlAnchorElem.click();
         }
 
@@ -645,7 +707,7 @@
             fileReader.readAsText(event.target.files[0]);
         }
 
-        // TOUCH GESTURE LOGIC MAPPINGS
+        // TOUCH SURFACE GESTURE MAPPINGS
         let touchStartX = 0;
         let touchEndX = 0;
         let modalTouchStartY = 0;
@@ -662,7 +724,6 @@
             if (touchEndX - touchStartX > threshold) prevSlide();
         }, {passive: true});
 
-        // Vertical Swipe-to-Dismiss Gestures for card details matching user specs
         const modalContainer = document.getElementById('kpi-modal');
         modalContainer.addEventListener('touchstart', e => {
             modalTouchStartY = e.changedTouches[0].screenY;
@@ -678,7 +739,8 @@
 
         document.getElementById('modal-swipe-zone').addEventListener('click', closeModal);
 
-        // Run boot loops
+        // Core execution bootstrap sequence setup - targets default sliding layout calculation loop directly
+        currentSlideIndex = calculateDefaultObservationIndex(currentStation);
         renderSlides();
     </script>
 
