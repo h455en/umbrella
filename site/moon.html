@@ -73,7 +73,7 @@
             <div id="nav-header" class="flex justify-between items-center px-1 mb-1">
                 <div>
                     <h2 class="text-[9px] uppercase font-extrabold tracking-widest text-zinc-500">Vantage Target</h2>
-                    <h3 id="station-subtitle" class="text-base font-black tracking-tight text-white">Bizerte, Tunisia</h3>
+                    <h3 id="station-subtitle" class="text-sm font-black tracking-tight text-white leading-tight">Bizerte, Tunisia <span class="text-[10px] text-zinc-400 font-mono block font-normal mt-0.5">37.2744° N, 9.8739° E</span></h3>
                 </div>
                 <div id="slide-arrows" class="flex items-center gap-1">
                     <button onclick="prevSlide()" class="p-2 text-zinc-500 hover:text-white active:scale-90 font-black transition-transform select-none">&larr;</button>
@@ -175,8 +175,8 @@
     </div>
 
     <script>
-        // Set execution sync perspective target anchor time: June 6, 2026
-        const CURRENT_RUN_TIME = new Date("2026-06-06T15:44:00");
+        // Execution synchronization date anchor: June 10, 2026
+        const CURRENT_RUN_TIME = new Date("2026-06-10T16:48:25");
 
         const colorBounds = {
             age:     { optimalMin: 20.0, extremeLow: 13.0 },
@@ -185,12 +185,11 @@
             stay:    { optimalMin: 50.0, extremeLow: 35.0 }
         };
 
-        // CORE DATA MATRIX FOR ALL MONTIH PHASES 2026 AND 2027 ACROSS BOTH RECORD LOCATIONS
         let datasets = {
             bizerte: {
                 title: "Bizerte, Tunisia",
+                coords: "37.2744° N, 9.8739° E",
                 slides: [
-                    // 2026 FULL DATA MATRIX
                     { targetDate: "2026-01-19", dateStr: "19 January, 2026", hijri: "29 Rajab 1447", visibility: "Easy", statusDesc: "Easy: Clear post-sunset elevation vectors with solid moon age profiles.", yallopCode: "B", yallopValue: 0.12, age: 21.3, elongation: 11.2, altitudePeak: 10.2, altitudeMin: 0.8, altitudeMax: 48.2, stayDiff: 55, orderSequence: "Moonset occurs after Sunset", sequentialStatus: "Observational Lag Open", nearbyObject: "Venus (2.4° NE of Moon)", objectVisibleInInterval: true, orientation: "Illuminated Bottom-Left (Horns opening right side to ~1 o'clock)", positionAngle: 25, directionDeg: 244, azimuth: "244° WSW", conj: "18:52", mrise: "07:12", srise: "07:31", sset: "17:35", targetWin: "18:05", windowRange: "17:35 - 18:30", windowDur: "55 min", mset: "18:30", isha: "19:02" },
                     { targetDate: "2026-02-18", dateStr: "18 February, 2026", hijri: "29 Sha'ban 1447", visibility: "Very Easy", statusDesc: "Very Easy: Favorable western horizon tracking trajectory combined with high altitude peak indices.", yallopCode: "A", yallopValue: 0.78, age: 31.4, elongation: 14.8, altitudePeak: 12.4, altitudeMin: 1.2, altitudeMax: 54.1, stayDiff: 68, orderSequence: "Moonset occurs after Sunset", sequentialStatus: "Observational Lag Open", nearbyObject: "Mercury (1.1° W of Moon)", objectVisibleInInterval: false, orientation: "Crescent Base Balanced (Horns opening straight up to ~12 o'clock)", positionAngle: 5, directionDeg: 262, azimuth: "262° W", conj: "12:01", mrise: "06:58", srise: "07:04", sset: "18:08", targetWin: "18:40", windowRange: "18:08 - 19:16", windowDur: "68 min", mset: "19:16", isha: "19:35" },
                     { targetDate: "2026-03-20", dateStr: "20 March, 2026", hijri: "29 Ramadan 1447", visibility: "Very Easy", statusDesc: "Very Easy: Outstanding spring positioning layout provides excellent visibility metrics.", yallopCode: "A", yallopValue: 1.15, age: 41.2, elongation: 17.6, altitudePeak: 13.9, altitudeMin: 1.5, altitudeMax: 58.6, stayDiff: 74, orderSequence: "Moonset occurs after Sunset", sequentialStatus: "Observational Lag Open", nearbyObject: "Jupiter (3.1° N of Moon)", objectVisibleInInterval: true, orientation: "Illuminated Left Profile (Horns opening right side to ~2 o'clock)", positionAngle: 42, directionDeg: 278, azimuth: "278° W", conj: "01:23", mrise: "06:11", srise: "06:26", sset: "18:36", targetWin: "19:12", windowRange: "18:36 - 19:50", windowDur: "74 min", mset: "19:50", isha: "20:08" },
@@ -222,8 +221,8 @@
             },
             paris: {
                 title: "Paris, France",
+                coords: "48.8566° N, 2.3522° E",
                 slides: [
-                    // 2026 FULL DATA MATRIX
                     { targetDate: "2026-01-19", dateStr: "19 January, 2026", hijri: "29 Rajab 1447", visibility: "Difficult", statusDesc: "Difficult: Low local elevation axis parameters across winter lines.", yallopCode: "C", yallopValue: -0.04, age: 22.1, elongation: 11.4, altitudePeak: 5.1, altitudeMin: -0.4, altitudeMax: 43.1, stayDiff: 36, orderSequence: "Moonset occurs after Sunset", sequentialStatus: "Observational Lag Open", nearbyObject: "Venus (2.4° NE of Moon)", objectVisibleInInterval: false, orientation: "Illuminated Bottom-Left (Horns pointing up-right to ~2 o'clock)", positionAngle: 18, directionDeg: 252, azimuth: "252° WSW", conj: "19:52", mrise: "08:24", srise: "08:35", sset: "17:22", targetWin: "17:42", windowRange: "17:22 - 17:58", windowDur: "36 min", mset: "17:58", isha: "19:12" },
                     { targetDate: "2026-02-18", dateStr: "18 February, 2026", hijri: "29 Sha'ban 1447", visibility: "Easy", statusDesc: "Easy: Comfortable processing metrics over the atmospheric line paths.", yallopCode: "B", yallopValue: 0.32, age: 32.2, elongation: 15.1, altitudePeak: 8.6, altitudeMin: 0.3, altitudeMax: 49.5, stayDiff: 49, orderSequence: "Moonset occurs after Sunset", sequentialStatus: "Observational Lag Open", nearbyObject: "Mercury (1.1° W of Moon)", objectVisibleInInterval: false, orientation: "Crescent Base Balanced (Horns opening straight up to ~12 o'clock)", positionAngle: 2, directionDeg: 271, azimuth: "271° W", conj: "12:01", mrise: "07:54", srise: "07:51", sset: "18:11", targetWin: "18:38", windowRange: "18:11 - 19:00", windowDur: "49 min", mset: "19:00", isha: "19:52" },
                     { targetDate: "2026-03-20", dateStr: "20 March, 2026", hijri: "29 Ramadan 1447", visibility: "Very Easy", statusDesc: "Very Easy: Favorable alignment vectors match optimal twilight limits perfectly.", yallopCode: "A", yallopValue: 0.85, age: 42.0, elongation: 17.9, altitudePeak: 11.2, altitudeMin: 0.8, altitudeMax: 54.3, stayDiff: 62, orderSequence: "Moonset occurs after Sunset", sequentialStatus: "Observational Lag Open", nearbyObject: "Jupiter (3.1° N of Moon)", objectVisibleInInterval: true, orientation: "Illuminated Left Profile (Horns opening right side to ~2 o'clock)", positionAngle: 32, directionDeg: 288, azimuth: "288° WNW", conj: "01:23", mrise: "06:54", srise: "06:53", sset: "19:00", targetWin: "19:35", windowRange: "19:00 - 20:02", windowDur: "62 min", mset: "20:02", isha: "20:39" },
@@ -255,6 +254,7 @@
             },
             tips: {
                 title: "Field Deployment Guidelines",
+                coords: "Global Operation Context",
                 slides: [{ type: "tip_card_system" }]
             }
         };
@@ -283,21 +283,22 @@
         }
 
         function calculateDaysRemaining(targetDateStr) {
-            const target = new Date(targetDateStr);
-            const diffTime = target - CURRENT_RUN_TIME;
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            const target = new Date(targetDateStr + "T00:00:00");
+            const baseline = new Date(CURRENT_RUN_TIME.getFullYear(), CURRENT_RUN_TIME.getMonth(), CURRENT_RUN_TIME.getDate());
+            
+            const diffTime = target - baseline;
+            const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
+            
             if (diffDays === 0) return "today";
             return diffDays > 0 ? `in ${diffDays} days` : `${Math.abs(diffDays)} days ago`;
         }
 
-        // AUTO-INDEXER CALCULATOR ENGINES TO AUTOMATICALLY PINPOINT THE CHRONOLOGICAL NEXT MONTH SLIDE
         function calculateDefaultObservationIndex(stationKey) {
             const list = datasets[stationKey].slides;
             if (!list || list.length === 0 || list[0].type === 'tip_card_system') return 0;
             
-            // Loop looking for the earliest date strictly greater than current simulated time baseline
             for (let i = 0; i < list.length; i++) {
-                if (new Date(list[i].targetDate) >= CURRENT_RUN_TIME) {
+                if (new Date(list[i].targetDate + "T23:59:59") >= CURRENT_RUN_TIME) {
                     return i;
                 }
             }
@@ -330,13 +331,11 @@
                     <div class="space-y-3 w-full text-zinc-300">
                         <div class="p-3 bg-zinc-950 rounded-xl border border-zinc-800 text-[11px]">
                             <span class="text-rose-400 font-bold block mb-1 uppercase tracking-wider text-[9px]">The Danjon Limit Summary</span>
-                            French astronomer André Danjon established that when the geocentric elongation angle separating the Sun and Moon drops below roughly <b>7°</b>, the crescent's physical tips (cusps) completely fail to form. At this extreme proximity, micro-shadows from rough lunar surface typography collapse the silhouette entirely, cutting off visibility across all human optical pipelines regardless of telescope magnification.
+                            French astronomer André Danjon established that when the geocentric elongation angle separating the Sun and Moon drops below roughly <b>7°</b>, the crescent's physical tips (cusps) completely fail to form. Micro-shadows from rough lunar surface typography collapse the silhouette entirely.
                         </div>
-
                         <p class="text-[11px] text-zinc-400 leading-tight">
-                            Yallop’s formula builds on this parameter baseline, deriving value <code class="bg-zinc-800 px-1 rounded text-white font-bold font-mono">q</code> from uncorrected geocentric sun/moon elevation differentials alongside topocentric width variables:
+                            Yallop’s formula derives value <code class="bg-zinc-800 px-1 rounded text-white font-bold font-mono">q</code> from uncorrected sun/moon elevation differentials alongside topocentric width variables:
                         </p>
-                        
                         <div class="border border-zinc-800 rounded-xl overflow-hidden bg-zinc-950 shadow-xs">
                             <table class="w-full text-left border-collapse text-[10px]">
                                 <thead>
@@ -522,12 +521,17 @@
                                 <div class="flex justify-between items-start w-full">
                                     <div>
                                         <h4 class="text-xs font-black tracking-tight text-white leading-none">${slide.dateStr}</h4>
-                                        <p class="text-[10px] font-bold opacity-90 mt-1 mono text-zinc-300 font-mono">${slide.hijri} <span class="text-indigo-400 font-medium">(${remainingDaysStr})</span></p>
+                                        <p class="text-[10px] font-bold opacity-90 mt-1 mono text-zinc-300 font-mono">
+                                            ${slide.hijri} <span class="text-indigo-400 font-medium">(${remainingDaysStr})</span>
+                                        </p>
                                     </div>
                                     <span class="px-1.5 py-0.5 bg-zinc-950 border border-zinc-800 text-zinc-300 rounded font-mono text-[9px] font-bold uppercase tracking-wider">${slide.yallopCode} Index</span>
                                 </div>
-                                <div class="pt-1.5 border-t border-zinc-800/80 text-[11px] leading-tight">
+                                <div class="pt-1.5 border-t border-zinc-800/80 flex items-center justify-between text-[11px] leading-tight">
                                     <p class="italic font-medium text-zinc-300">${slide.statusDesc}</p>
+                                    <span class="text-[10px] bg-zinc-950/60 px-2 py-0.5 border border-zinc-800 rounded font-mono font-bold tracking-tight text-zinc-200 flex-shrink-0 ml-2">
+                                        🌅 Sunset: ${slide.sset}
+                                    </span>
                                 </div>
                             </div>
 
@@ -561,34 +565,39 @@
                             </div>
 
                             <div class="grid grid-cols-2 gap-2">
-                                <div onclick="openModal('stay')" class="bg-zinc-950 border border-zinc-800 p-2 rounded-xl flex flex-col justify-between items-center shadow-2xs cursor-pointer active:bg-zinc-800 transition-colors">
+                                <div onclick="openModal('stay')" class="bg-zinc-950 border border-zinc-800 p-2.5 rounded-xl flex flex-col justify-between items-center shadow-2xs cursor-pointer active:bg-zinc-800 transition-colors">
                                     <div class="w-full flex justify-between text-[8px] font-extrabold text-zinc-500 tracking-wider">
                                         <span>STAY TIME LAG</span>
                                         <span>➔</span>
                                     </div>
-                                    <div class="text-2xl font-black mono tracking-tighter my-0.5 ${stayClr} font-mono">${slide.stayDiff}<span class="text-xs font-sans font-extrabold ml-0.5">m</span></div>
+                                    <div class="text-4xl font-black mono tracking-tighter my-1.5 ${stayClr} font-mono">${slide.stayDiff}<span class="text-sm font-sans font-extrabold ml-0.5">m</span></div>
                                     <div class="text-[8px] text-zinc-500 font-mono tracking-tight text-center font-mono">Sunset ${slide.sset} → Mset ${slide.mset}</div>
                                 </div>
-                                <div onclick="openModal('altitude')" class="bg-zinc-950 border border-zinc-800 p-2 rounded-xl flex flex-col justify-between items-center shadow-2xs cursor-pointer active:bg-zinc-800 transition-colors">
+                                
+                                <div onclick="openModal('altitude')" class="bg-zinc-950 border border-zinc-800 p-2.5 rounded-xl flex flex-col justify-between items-center shadow-2xs cursor-pointer active:bg-zinc-800 transition-colors">
                                     <div class="w-full flex justify-between text-[8px] font-extrabold text-zinc-500 tracking-wider">
                                         <span>PEAK ALTITUDE</span>
                                         <span>➔</span>
                                     </div>
-                                    <div class="text-2xl font-black mono tracking-tighter my-0.5 ${altClr} font-mono">${slide.altitudePeak}<span class="text-xs font-sans font-extrabold ml-0.5">°</span></div>
-                                    <div class="text-[8px] text-zinc-500 font-mono tracking-tight text-center font-mono">Min: ${slide.altitudeMin}° | Max: ${slide.altitudeMax}°</div>
+                                    <div class="text-4xl font-black mono tracking-tighter my-1.5 ${altClr} font-mono">${slide.altitudePeak}<span class="text-sm font-sans font-extrabold ml-0.5">°</span></div>
+                                    <div class="text-[8px] text-zinc-400 font-mono tracking-tight text-center font-mono font-bold">
+                                        At Best Window: <span class="text-indigo-400 font-extrabold">${slide.targetWin}</span>
+                                    </div>
                                 </div>
                             </div>
 
                             ${celestialCardHTML}
 
-                            <div class="bg-zinc-950 p-1.5 rounded-xl border border-zinc-800 grid grid-cols-2 gap-1 text-center font-mono text-xs">
-                                <div>
-                                    <span class="text-zinc-500 text-[8px] uppercase font-sans font-bold tracking-tight block">Moon Age</span>
-                                    <span class="block text-xs font-bold tracking-tight mt-0.5 ${ageClr} font-mono">${slide.age}h</span>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div class="bg-zinc-950 border border-zinc-800 p-2 rounded-xl flex flex-col justify-between items-center">
+                                    <span class="text-zinc-500 text-[8px] uppercase font-sans font-bold tracking-wider w-full text-left">Moon Age</span>
+                                    <span class="text-3xl font-black tracking-tight mt-1 ${ageClr} font-mono w-full text-left leading-none">${slide.age}<span class="text-xs font-sans font-bold ml-0.5">h</span></span>
+                                    <span class="text-[8px] text-zinc-600 font-mono w-full text-left mt-1">Hours from Conjunction</span>
                                 </div>
-                                <div>
-                                    <span class="text-zinc-500 text-[8px] uppercase font-sans font-bold tracking-tight block">Elongation Arc</span>
-                                    <span class="block text-xs font-bold tracking-tight mt-0.5 ${elongClr} font-mono">${slide.elongation}°</span>
+                                <div class="bg-zinc-950 border border-zinc-800 p-2 rounded-xl flex flex-col justify-between items-center">
+                                    <span class="text-zinc-500 text-[8px] uppercase font-sans font-bold tracking-wider w-full text-left">Elongation Arc</span>
+                                    <span class="text-3xl font-black tracking-tight mt-1 ${elongClr} font-mono w-full text-left leading-none">${slide.elongation}<span class="text-xs font-sans font-bold ml-0.5">°</span></span>
+                                    <span class="text-[8px] text-zinc-600 font-mono w-full text-left mt-1">Sun-Moon Separation</span>
                                 </div>
                             </div>
 
@@ -628,10 +637,7 @@
 
         function changeStation(station) {
             currentStation = station;
-            
-            // DYNAMIC AUTO-INDEXING FOR SELECTING NEXT OBSERVATION TARGET BY DEFAULT
             currentSlideIndex = calculateDefaultObservationIndex(station);
-            
             closeModal();
             
             document.querySelectorAll('#top-nav-bar button').forEach(btn => {
@@ -645,7 +651,11 @@
                 activeBtn.classList.remove('text-zinc-400');
             }
 
-            document.getElementById('station-subtitle').innerText = datasets[station].title || "Field Guidelines";
+            // Updates location title text block alongside its underlying coordinates parameters row
+            document.getElementById('station-subtitle').innerHTML = `
+                ${datasets[station].title} 
+                <span class="text-[10px] text-zinc-400 font-mono block font-normal mt-0.5">${datasets[station].coords}</span>
+            `;
             renderSlides();
         }
 
@@ -739,8 +749,14 @@
 
         document.getElementById('modal-swipe-zone').addEventListener('click', closeModal);
 
-        // Core execution bootstrap sequence setup - targets default sliding layout calculation loop directly
+        // Core execution bootstrap sequence setup
         currentSlideIndex = calculateDefaultObservationIndex(currentStation);
+        
+        // Initialize header with accurate location string content schema text formats
+        document.getElementById('station-subtitle').innerHTML = `
+            ${datasets[currentStation].title} 
+            <span class="text-[10px] text-zinc-400 font-mono block font-normal mt-0.5">${datasets[currentStation].coords}</span>
+        `;
         renderSlides();
     </script>
 
