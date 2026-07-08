@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Almanach 2026 — Bizerte</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: { sans: ['Roboto', 'sans-serif'] },
+        colors: {
+          night: '#0b0f2b',
+          panel: '#151a3d',
+          panel2: '#1e2452',
+          border: '#2a2f5a',
+          gold: '#ffd166',
+          sky: '#6ec6ff',
+          green: '#9be89b'
+        }
+      }
+    }
+  }
+</script>
+<style>
+  body { font-family: 'Roboto', sans-serif; }
+  a.wikilink { text-decoration: underline dotted; text-underline-offset: 3px; }
+  a.wikilink:hover { color: #ffd166; }
+  .timeline-line { background: #2a2f5a; }
+  .dot-pulse { box-shadow: 0 0 0 0 rgba(239,68,68,0.6); animation: pulse 2s infinite; }
+  @keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(239,68,68,0.6); }
+    70% { box-shadow: 0 0 0 6px rgba(239,68,68,0); }
+    100% { box-shadow: 0 0 0 0 rgba(239,68,68,0); }
+  }
+</style>
+</head>
+<body class="bg-night text-gray-100">
+
+<header class="py-1 px-3 bg-panel border-b border-border flex justify-between items-center text-[10px] sm:text-xs text-gray-400">
+  <span>Almanach 2026 · <span class="text-gold">Bizerte, Tunisie</span></span>
+  <span id="clock" class="text-sky font-medium"></span>
+</header>
+
+<main class="max-w-4xl mx-auto px-3 sm:px-6 py-5">
+  <h1 class="text-center text-gold font-black text-xl sm:text-2xl mb-1">🌌 Événements entre Maghrib et Fajr</h1>
+  <p class="text-center text-gray-400 text-xs sm:text-sm mb-4">Heure locale Bizerte en grand · (GMT) entre parenthèses</p>
+
+  <div id="tabs" class="flex flex-wrap gap-1.5 justify-center mb-4"></div>
+  <div id="panels"></div>
+</main>
+
+<footer class="py-1.5 px-3 bg-panel border-t border-border text-center text-[10px] sm:text-xs text-gray-500">
+  Source : astropixels.com — Année 2026
+</footer>
+
+<script>
+// ---------- Realtime clock ----------
+function updateClock() {
+  const now = new Date();
+  const opts = { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' };
+  const dateStr = now.toLocaleDateString('fr-FR', opts);
+  const timeStr = now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+  document.getElementById('clock').textContent = `${dateStr} · ${timeStr}`;
+}
+updateClock();
+setInterval(updateClock, 1000);
+
+// ---------- Wikipedia links ----------
+const links = {
+  "Antarès": "https://fr.wikipedia.org/wiki/Antar%C3%A8s",
+  "Spica": "https://fr.wikipedia.org/wiki/Spica",
+  "Regulus": "https://fr.wikipedia.org/wiki/Regulus",
+  "Pollux": "https://fr.wikipedia.org/wiki/Pollux_(%C3%A9toile)",
+  "Pléiades": "https://fr.wikipedia.org/wiki/Pl%C3%A9iades_(amas)",
+  "Jupiter": "https://fr.wikipedia.org/wiki/Jupiter_(planète)",
+  "Mars": "https://fr.wikipedia.org/wiki/Mars_(planète)",
+  "Mercure": "https://fr.wikipedia.org/wiki/Mercure_(planète)",
+  "Vénus": "https://fr.wikipedia.org/wiki/Vénus_(planète)",
+  "Saturne": "https://fr.wikipedia.org/wiki/Saturne_(planète)",
+  "Neptune": "https://fr.wikipedia.org/wiki/Neptune_(planète)",
+  "Uranus": "https://fr.wikipedia.org/wiki/Uranus_(planète)",
+  "Lune": "https://fr.wikipedia.org/wiki/Lune",
+  "Terre": "https://fr.wikipedia.org/wiki/Terre",
+  "Quadrantides": "https://fr.wikipedia.org/wiki/Quadrantides",
+  "Lyrides": "https://fr.wikipedia.org/wiki/Lyrides",
+  "Perséides": "https://fr.wikipedia.org/wiki/Perséides",
+  "Orionides": "https://fr.wikipedia.org/wiki/Orionides",
+  "Léonides": "https://fr.wikipedia.org/wiki/Léonides",
+  "Ursides": "https://fr.wikipedia.org/wiki/Ursides",
+  "Taurides Sud": "https://fr.wikipedia.org/wiki/Taurides",
+  "Taurides Nord": "https://fr.wikipedia.org/wiki/Taurides"
+};
+const constelLinks = {
+  "Bouvier": "https://fr.wikipedia.org/wiki/Bouvier_(constellation)",
+  "Cancer": "https://fr.wikipedia.org/wiki/Cancer_(constellation)",
+  "Gémeaux": "https://fr.wikipedia.org/wiki/Gémeaux_(constellation)",
+  "Vierge": "https://fr.wikipedia.org/wiki/Vierge_(constellation)",
+  "Scorpion": "https://fr.wikipedia.org/wiki/Scorpion_(constellation)",
+  "Capricorne": "https://fr.wikipedia.org/wiki/Capricorne_(constellation)",
+  "Taureau": "https://fr.wikipedia.org/wiki/Taureau_(constellation)",
+  "Lion": "https://fr.wikipedia.org/wiki/Lion_(constellation)",
+  "Verseau": "https://fr.wikipedia.org/wiki/Verseau_(constellation)",
+  "Poissons": "https://fr.wikipedia.org/wiki/Poissons_(constellation)",
+  "Balance": "https://fr.wikipedia.org/wiki/Balance_(constellation)",
+  "Bélier": "https://fr.wikipedia.org/wiki/Bélier_(constellation)",
+  "Lyre": "https://fr.wikipedia.org/wiki/Lyre_(constellation)",
+  "Sagittaire": "https://fr.wikipedia.org/wiki/Sagittaire_(constellation)",
+  "Persée": "https://fr.wikipedia.org/wiki/Persée_(constellation)",
+  "Orion": "https://fr.wikipedia.org/wiki/Orion_(constellation)",
+  "Petite Ourse": "https://fr.wikipedia.org/wiki/Petite_Ourse"
+};
+
+function linkify(text) {
+  let out = text;
+  for (const term in links) {
+    const re = new RegExp(term, "g");
+    out = out.replace(re, `<a class="wikilink text-sky" href="${links[term]}" target="_blank" rel="noopener">${term}</a>`);
+  }
+  return out;
+}
+function constelLink(name) {
+  if (name === "—" || !constelLinks[name]) return name;
+  return `<a class="wikilink text-green" href="${constelLinks[name]}" target="_blank" rel="noopener">${name}</a>`;
+}
+
+// ---------- Data ----------
+const monthOrder = ["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"];
+
+const data = {
+"Janvier": { maghrib:"17:35", icha:"18:55", fajr:"06:05", events:[
+  ["01","21:43","22:43","Lune au périgée (360 348 km)","Point le plus proche de la Terre sur l'orbite lunaire.","—"],
+  ["03","17h","18h","Terre au périhélie (0,98330 UA)","La Terre est au point le plus proche du Soleil sur son orbite.","—"],
+  ["03","22h","23h","Pluie d'étoiles filantes des Quadrantides","Pic d'activité d'une pluie de météores intense mais brève.","Bouvier"],
+  ["03","22:01","23:01","Jupiter à 3,7° S de la Lune","Rapprochement apparent entre Jupiter et la Lune.","Cancer"],
+  ["04","03:28","04:28","Pollux à 3,0° N de la Lune","La Lune passe près de l'étoile Pollux.","Gémeaux"],
+  ["10","23:50","00:50","Spica à 1,6° N de la Lune","La Lune passe près de l'étoile Spica.","Vierge"],
+  ["13","20:48","21:48","Lune à l'apogée (405 437 km)","Point le plus éloigné de la Terre sur l'orbite lunaire.","—"],
+  ["14","19:28","20:28","Antarès à 0,6° N de la Lune","La Lune passe près de l'étoile Antarès.","Scorpion"],
+  ["18","19:52","20:52","NOUVELLE LUNE","La Lune est invisible, entre la Terre et le Soleil.","Capricorne"],
+  ["22","00:03","01:03","Lune au nœud ascendant","La Lune traverse l'écliptique du sud vers le nord.","—"],
+  ["22","20h","21h","Vénus à l'aphélie","Vénus au point le plus éloigné du Soleil.","—"],
+  ["26","04:47","05:47","PREMIER QUARTIER","Moitié de la face visible de la Lune éclairée, phase croissante.","Taureau"],
+  ["27","21:07","22:07","Pléiades à 1,1° S de la Lune","La Lune passe près de l'amas des Pléiades.","Taureau"],
+  ["29","21:53","22:53","Lune au périgée (365 878 km)","Point le plus proche de la Terre sur l'orbite lunaire.","—"],
+  ["31","02:31","03:31","Jupiter à 3,8° S de la Lune","Rapprochement apparent entre Jupiter et la Lune.","Cancer"]
+]},
+"Février": { maghrib:"18:05", icha:"19:25", fajr:"06:00", events:[
+  ["01","22:09","23:09","PLEINE LUNE","Face visible de la Lune entièrement éclairée.","Cancer"],
+  ["03","02:48","03:48","Regulus à 0,4° S de la Lune","La Lune passe près de l'étoile Regulus.","Lion"],
+  ["03","19:18","20:18","Lune au nœud descendant","La Lune traverse l'écliptique du nord vers le sud.","—"],
+  ["11","03:19","04:19","Antarès à 0,7° N de la Lune","La Lune passe près de l'étoile Antarès.","Scorpion"],
+  ["18","23:03","00:03","Mercure 0,1° N de la Lune (occultation)","La Lune passe devant Mercure et le cache temporairement.","Verseau"],
+  ["19","18h","19h","Mercure à sa plus grande élongation (18,1° E)","Meilleur moment pour observer Mercure en soirée.","Verseau"],
+  ["19","23:54","00:54","Saturne à 4,6° S de la Lune","Rapprochement apparent entre Saturne et la Lune.","Poissons"],
+  ["24","02:43","03:43","Pléiades à 1,2° S de la Lune","La Lune passe près de l'amas des Pléiades.","Taureau"],
+  ["24","23:18","00:18","Lune au périgée (370 132 km)","Point le plus proche de la Terre sur l'orbite lunaire.","—"],
+  ["27","21:34","22:34","Pollux à 3,0° N de la Lune","La Lune passe près de l'étoile Pollux.","Gémeaux"]
+]},
+"Mars": { maghrib:"18:25", icha:"19:45", fajr:"05:25", events:[
+  ["06","17:24","18:24","Spica à 1,8° N de la Lune","La Lune passe près de l'étoile Spica.","Vierge"],
+  ["15","19h","20h","Mercure à 3,4° N de Mars","Rapprochement apparent entre Mercure et Mars.","Poissons"],
+  ["17","21:51","22:51","Mars à 1,5° S de la Lune","Rapprochement apparent entre Mars et la Lune.","Poissons"],
+  ["19","01:23","02:23","NOUVELLE LUNE","La Lune est invisible dans le ciel.","Poissons"],
+  ["25","19:18","20:18","PREMIER QUARTIER","Moitié de la face visible de la Lune éclairée.","Gémeaux"],
+  ["27","03:18","04:18","Pollux à 3,0° N de la Lune","La Lune passe près de l'étoile Pollux.","Gémeaux"],
+  ["29","19:00","20:00","Regulus à 0,4° S de la Lune","La Lune passe près de l'étoile Regulus.","Lion"]
+]},
+"Avril": { maghrib:"19:00", icha:"20:20", fajr:"04:45", events:[
+  ["02","02:12","03:12","PLEINE LUNE","Face visible de la Lune entièrement éclairée.","Balance"],
+  ["03","01:32","02:32","Spica à 1,8° N de la Lune","La Lune passe près de l'étoile Spica.","Vierge"],
+  ["03","23h","00h","Mercure à sa plus grande élongation (27,8° O)","Meilleur moment pour observer Mercure le matin.","Poissons"],
+  ["06","19:21","20:21","Antarès à 0,6° N de la Lune","La Lune passe près de l'étoile Antarès.","Scorpion"],
+  ["13","23:43","00:43","Lune au nœud ascendant","La Lune traverse l'écliptique du sud vers le nord.","—"],
+  ["16","00:45","01:45","Mars à 3,7° S de la Lune","Rapprochement apparent entre Mars et la Lune.","Bélier"],
+  ["19","19h","20h","Mars à 1,2° N de Saturne","Rapprochement apparent entre Mars et Saturne.","Poissons"],
+  ["20","22h","23h","Mercure à 1,7° S de Mars","Rapprochement apparent entre Mercure et Mars.","Bélier"],
+  ["22","19h","20h","Pluie d'étoiles filantes des Lyrides","Météores issus des débris de la comète Thatcher.","Lyre"],
+  ["22","22:06","23:06","Jupiter à 3,6° S de la Lune","Rapprochement apparent entre Jupiter et la Lune.","Cancer"],
+  ["24","02:32","03:32","PREMIER QUARTIER","Moitié de la face visible de la Lune éclairée.","Gémeaux"],
+  ["26","00:37","01:37","Regulus à 0,2° S de la Lune","La Lune passe très près de l'étoile Regulus.","Lion"]
+]},
+"Mai": { maghrib:"19:25", icha:"20:45", fajr:"04:10", events:[
+  ["04","02:20","03:20","Antarès à 0,5° N de la Lune","La Lune passe près de l'étoile Antarès.","Scorpion"],
+  ["04","22:30","23:30","Lune à l'apogée (405 843 km)","Point le plus éloigné de la Terre sur l'orbite lunaire.","—"],
+  ["09","21:10","22:10","DERNIER QUARTIER","Moitié de la face visible de la Lune éclairée, phase décroissante.","Verseau"],
+  ["16","20:01","21:01","NOUVELLE LUNE","La Lune est invisible dans le ciel.","Taureau"],
+  ["19","01:50","02:50","Vénus à 2,9° S de la Lune","Rapprochement apparent entre Vénus et la Lune.","Taureau"]
+]},
+"Juin": { maghrib:"19:45", icha:"21:05", fajr:"03:55", events:[
+  ["09","20h","21h","Vénus à 1,6° N de Jupiter","Rapprochement apparent entre Vénus et Jupiter.","Gémeaux"],
+  ["14","23:18","00:18","Lune au périgée (357 196 km)","Point le plus proche de la Terre sur l'orbite lunaire.","—"],
+  ["15","02:54","03:54","NOUVELLE LUNE","La Lune est invisible dans le ciel.","Gémeaux"],
+  ["15","20h","21h","Mercure à sa plus grande élongation (24,5° E)","Meilleur moment pour observer Mercure en soirée.","Gémeaux"],
+  ["16","19:32","20:32","Mercure à 2,6° S de la Lune","Rapprochement apparent entre Mercure et la Lune.","Gémeaux"],
+  ["17","02:08","03:08","Pollux à 3,6° N de la Lune","La Lune passe près de l'étoile Pollux.","Gémeaux"],
+  ["17","20:21","21:21","Vénus à 0,3° S de la Lune (occultation)","La Lune passe devant Vénus et la cache temporairement.","Gémeaux"],
+  ["21","21:55","22:55","PREMIER QUARTIER","Moitié de la face visible de la Lune éclairée.","Vierge"],
+  ["23","20:11","21:11","Spica à 2,2° N de la Lune","La Lune passe près de l'étoile Spica.","Vierge"],
+  ["29","23:57","00:57","PLEINE LUNE","Face visible de la Lune entièrement éclairée.","Sagittaire"]
+]},
+"Juillet": { maghrib:"19:45", icha:"21:05", fajr:"04:05", events:[
+  ["07","19:29","20:29","DERNIER QUARTIER","Moitié de la face visible de la Lune éclairée.","Bélier"],
+  ["10","22:54","23:54","Pléiades à 1,1° S de la Lune","La Lune passe près de l'amas des Pléiades.","Taureau"],
+  ["13","01h","02h","Mercure en conjonction inférieure","Mercure passe entre la Terre et le Soleil, invisible.","Cancer"],
+  ["17","00:07","01:07","Regulus à 0,5° N de la Lune","La Lune passe près de l'étoile Regulus.","Lion"],
+  ["17","00:27","01:27","Lune au nœud descendant","La Lune traverse l'écliptique du nord vers le sud.","—"],
+  ["24","21:00","22:00","Antarès à 0,6° N de la Lune","La Lune passe près de l'étoile Antarès.","Scorpion"]
+]},
+"Août": { maghrib:"19:25", icha:"20:40", fajr:"04:30", events:[
+  ["06","02:21","03:21","DERNIER QUARTIER","Moitié de la face visible de la Lune éclairée.","Taureau"],
+  ["10","22:38","23:38","Pollux à 3,6° N de la Lune","La Lune passe près de l'étoile Pollux.","Gémeaux"],
+  ["13","02h","03h","Pluie d'étoiles filantes des Perséides","Une des pluies de météores les plus actives, issue de Swift-Tuttle.","Persée"],
+  ["20","02:46","03:46","PREMIER QUARTIER","Moitié de la face visible de la Lune éclairée.","Scorpion"],
+  ["27","18:47","19:47","Lune au nœud ascendant","La Lune traverse l'écliptique du sud vers le nord.","—"]
+]},
+"Septembre": { maghrib:"18:50", icha:"20:05", fajr:"05:00", events:[
+  ["06","18:24","19:24","Mars à 3,0° S de la Lune","Rapprochement apparent entre Mars et la Lune.","Vierge"],
+  ["06","20:26","21:26","Lune au périgée (368 255 km)","Point le plus proche de la Terre sur l'orbite lunaire.","—"],
+  ["08","18:13","19:13","Jupiter 0,8° S de la Lune (occultation)","La Lune passe devant Jupiter et le cache temporairement.","Lion"],
+  ["09","19:17","20:17","Lune au nœud descendant","La Lune traverse l'écliptique du nord vers le sud.","—"],
+  ["09","19:36","20:36","Regulus à 0,5° N de la Lune","La Lune passe près de l'étoile Regulus.","Lion"],
+  ["11","03:27","04:27","NOUVELLE LUNE","La Lune est invisible dans le ciel.","Vierge"],
+  ["13","20:53","21:53","Spica à 2,4° N de la Lune","La Lune passe près de l'étoile Spica.","Vierge"],
+  ["18","20:44","21:44","PREMIER QUARTIER","Moitié de la face visible de la Lune éclairée.","Sagittaire"],
+  ["19","03:00","04:00","Lune à l'apogée (404 217 km)","Point le plus éloigné de la Terre sur l'orbite lunaire.","—"],
+  ["23","00:06","01:06","Équinoxe d'automne","Le Soleil traverse l'équateur céleste, jour et nuit quasi égaux.","Vierge"],
+  ["24","02:40","03:40","Lune au nœud ascendant","La Lune traverse l'écliptique du sud vers le nord.","—"],
+  ["26","00h","01h","Neptune à l'opposition","Neptune au plus proche et au plus brillant de l'année.","Poissons"],
+  ["26","01:49","02:49","Mercure à 0,8° N de Spica","Rapprochement apparent entre Mercure et l'étoile Spica.","Vierge"]
+]},
+"Octobre": { maghrib:"18:10", icha:"19:25", fajr:"05:25", events:[
+  ["01","20:41","21:41","Lune au périgée (369 338 km)","Point le plus proche de la Terre sur l'orbite lunaire.","—"],
+  ["07","01:19","02:19","Lune au nœud descendant","La Lune traverse l'écliptique du nord vers le sud.","—"],
+  ["07","02:57","03:57","Regulus à 0,6° N de la Lune","La Lune passe près de l'étoile Regulus.","Lion"],
+  ["12","02:30","03:30","Vénus à 3,1° S de la Lune","Rapprochement apparent entre Vénus et la Lune.","Vierge"],
+  ["12","20:08","21:08","Mercure à 2,1° N de la Lune","Rapprochement apparent entre Mercure et la Lune.","Balance"],
+  ["14","20:25","21:25","Antarès à 0,4° N de la Lune","La Lune passe très près de l'étoile Antarès.","Scorpion"],
+  ["16","22:56","23:56","Lune à l'apogée (404 639 km)","Point le plus éloigné de la Terre sur l'orbite lunaire.","—"],
+  ["21","18h","19h","Pluie d'étoiles filantes des Orionides","Débris de la comète de Halley entrant dans l'atmosphère.","Orion"],
+  ["24","03h","04h","Vénus en conjonction inférieure","Vénus passe entre la Terre et le Soleil, invisible.","Vierge"],
+  ["26","04:12","05:12","PLEINE LUNE","Face visible de la Lune entièrement éclairée.","Bélier"],
+  ["28","01:11","02:11","Pléiades à 1,0° S de la Lune","La Lune passe près de l'amas des Pléiades.","Taureau"],
+  ["28","18:01","19:01","Lune au périgée (364 411 km)","Point le plus proche de la Terre sur l'orbite lunaire.","—"],
+  ["31","18:00","19:00","Pollux à 4,0° N de la Lune","La Lune passe près de l'étoile Pollux.","Gémeaux"]
+]},
+"Novembre": { maghrib:"17:40", icha:"19:00", fajr:"05:55", events:[
+  ["01","20:28","21:28","DERNIER QUARTIER","Moitié de la face visible de la Lune éclairée.","Lion"],
+  ["02","23:11","00:11","Jupiter 0,5° N de la Lune (occultation)","La Lune passe devant Jupiter et le cache temporairement.","Lion"],
+  ["03","03:02","04:02","Lune au nœud descendant","La Lune traverse l'écliptique du nord vers le sud.","—"],
+  ["05","19h","20h","Pluie d'étoiles filantes des Taurides Sud","Météores issus de la comète Encke, activité modeste et étalée.","Taureau"],
+  ["11","03:58","04:58","Antarès à 0,3° N de la Lune","La Lune passe très près de l'étoile Antarès.","Scorpion"],
+  ["12","18h","19h","Pluie d'étoiles filantes des Taurides Nord","Météores issus de l'astéroïde 2004 TG10.","Taureau"],
+  ["13","17:50","18:50","Lune à l'apogée (405 619 km)","Point le plus éloigné de la Terre sur l'orbite lunaire.","—"],
+  ["16","04h","05h","Mars à 1,2° N de Jupiter","Rapprochement apparent entre Mars et Jupiter.","Lion"],
+  ["18","00h","01h","Pluie d'étoiles filantes des Léonides","Météores issus de la comète Tempel-Tuttle, parfois spectaculaire.","Lion"],
+  ["20","23h","00h","Mercure à sa plus grande élongation (19,6° O)","Meilleur moment pour observer Mercure le matin.","Balance"],
+  ["25","20:58","21:58","Lune au périgée (359 348 km)","Point le plus proche de la Terre sur l'orbite lunaire.","—"],
+  ["25","23h","00h","Uranus à l'opposition","Uranus au plus proche et au plus brillant de l'année.","Taureau"],
+  ["28","01:27","02:27","Pollux à 4,2° N de la Lune","La Lune passe près de l'étoile Pollux.","Gémeaux"],
+  ["30","03:34","04:34","Lune au nœud descendant","La Lune traverse l'écliptique du nord vers le sud.","—"],
+  ["30","19:32","20:32","Mars à 3,3° N de la Lune","Rapprochement apparent entre Mars et la Lune.","Sagittaire"]
+]},
+"Décembre": { maghrib:"17:30", icha:"18:50", fajr:"06:15", events:[
+  ["04","18:36","19:36","Spica à 2,5° N de la Lune","La Lune passe près de l'étoile Spica.","Vierge"],
+  ["09","00:52","01:52","NOUVELLE LUNE","La Lune est invisible dans le ciel.","Sagittaire"],
+  ["21","20:50","21:50","Solstice d'hiver","Jour le plus court et nuit la plus longue de l'année.","Sagittaire"],
+  ["21","22:37","23:37","Pléiades à 1,0° S de la Lune","La Lune passe près de l'amas des Pléiades.","Taureau"],
+  ["22","22h","23h","Pluie d'étoiles filantes des Ursides","Météores issus de la comète 8P/Tuttle, activité modeste et régulière.","Petite Ourse"],
+  ["24","01:28","02:28","PLEINE LUNE","Face visible de la Lune entièrement éclairée.","Gémeaux"],
+  ["25","21h","22h","Vénus au périhélie","Vénus au point le plus proche du Soleil.","—"],
+  ["27","17:32","18:32","Jupiter à 1,5° N de la Lune","Rapprochement apparent entre Jupiter et la Lune.","Lion"],
+  ["27","22:44","23:44","Regulus à 1,4° N de la Lune","La Lune passe près de l'étoile Regulus.","Lion"],
+  ["30","18:59","19:59","DERNIER QUARTIER","Moitié de la face visible de la Lune éclairée.","Vierge"]
+]}
+};
+
+// ---------- Determine "today" & closest event per month ----------
+const today = new Date();
+const todayDay = today.getDate();
+const currentMonthIndex = today.getMonth(); // 0-11
+const currentMonthName = monthOrder[currentMonthIndex];
+
+function closestEventIndex(events) {
+  let minDiff = Infinity, idx = 0;
+  events.forEach((e, i) => {
+    const day = parseInt(e[0], 10);
+    const diff = Math.abs(day - todayDay);
+    if (diff < minDiff) { minDiff = diff; idx = i; }
+  });
+  return idx;
+}
+
+// ---------- Render ----------
+const tabsEl = document.getElementById('tabs');
+const panelsEl = document.getElementById('panels');
+
+monthOrder.forEach((month, mi) => {
+  const m = data[month];
+  const isCurrent = month === currentMonthName;
+
+  const btn = document.createElement('button');
+  btn.id = 'tab-' + month;
+  btn.className = 'px-3 py-1.5 rounded-md text-xs sm:text-sm border ' +
+    (isCurrent ? 'bg-sky text-night font-bold border-sky' : 'bg-panel text-gray-300 border-border hover:bg-panel2');
+  btn.innerHTML = `${month} <span class="ml-1 rounded-full px-1.5 text-[10px] ${isCurrent ? 'bg-black/20' : 'bg-white/10'}">${m.events.length}</span>`;
+  btn.onclick = () => switchTab(month);
+  tabsEl.appendChild(btn);
+
+  const panel = document.createElement('div');
+  panel.id = 'panel-' + month;
+  panel.className = 'month-panel' + (isCurrent ? '' : ' hidden');
+
+  const prayerInfo = `
+    <div class="text-center text-gold text-xs sm:text-sm mb-3 bg-panel border border-border rounded-md py-2 px-2">
+      🕌 Maghrib ≈ ${m.maghrib} · Icha ≈ (${m.icha}) · Fajr ≈ ${m.fajr}
+      <div class="text-gray-500 text-[10px] mt-0.5">heure locale Bizerte, approx. mi-mois</div>
+    </div>`;
+
+  const closestIdx = (isCurrent) ? closestEventIndex(m.events) : -1;
+
+  // Mobile cards with dot+line on the left
+  const cards = m.events.map((e, i) => {
+    const isRed = i === closestIdx;
+    return `
+    <div class="flex gap-2 sm:hidden">
+      <div class="relative w-4 flex-shrink-0">
+        <div class="absolute left-1/2 top-0 bottom-0 w-0.5 -translate-x-1/2 timeline-line"></div>
+        <div class="absolute left-1/2 top-4 -translate-x-1/2 -translate-y-1/2 w-3 h-3 rounded-full border-2 border-night ${isRed ? 'bg-red-500 dot-pulse' : 'bg-sky'}"></div>
+      </div>
+      <div class="bg-panel border border-border rounded-lg p-3 flex-1 mb-2 ${isRed ? 'ring-1 ring-red-500/50' : ''}">
+        <div class="flex justify-between items-start mb-1">
+          <span class="text-sky font-bold text-sm">${e[0]} ${month.slice(0,3).toLowerCase()} ${isRed ? '<span class=\"text-red-400 text-[10px]\">● proche</span>' : ''}</span>
+          <span class="text-right">
+            <div class="text-gold font-black text-lg leading-none">${e[2]}</div>
+            <div class="text-gray-500 text-[11px]">(${e[1]} GMT)</div>
+          </span>
+        </div>
+        <div class="font-medium text-sm mb-1">${linkify(e[3])}</div>
+        <div class="text-gray-400 text-xs mb-1">${e[4]}</div>
+        <div class="text-green text-xs">🌌 ${constelLink(e[5])}</div>
+      </div>
+    </div>`;
+  }).join('');
+
+  // Desktop table with dot+line first column
+  const rows = m.events.map((e, i) => {
+    const isRed = i === closestIdx;
+    return `
+    <tr class="border-b border-border hover:bg-panel2 ${isRed ? 'bg-red-950/20' : ''}">
+      <td class="relative w-8 p-0">
+        <div class="absolute left-1/2 top-0 bottom-0 w-0.5 -translate-x-1/2 timeline-line"></div>
+        <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-3 rounded-full border-2 border-night ${isRed ? 'bg-red-500 dot-pulse' : 'bg-sky'}"></div>
+      </td>
+      <td class="py-2 px-3 text-sky font-bold whitespace-nowrap">${e[0]} ${month.slice(0,3).toLowerCase()}${isRed ? ' <span class="text-red-400 text-[10px]">● proche</span>' : ''}</td>
+      <td class="py-2 px-3 whitespace-nowrap">
+        <div class="text-gold font-black text-base leading-none">${e[2]}</div>
+        <div class="text-gray-500 text-xs">(${e[1]} GMT)</div>
+      </td>
+      <td class="py-2 px-3">${linkify(e[3])}</td>
+      <td class="py-2 px-3 text-gray-400">${e[4]}</td>
+      <td class="py-2 px-3 whitespace-nowrap">${constelLink(e[5])}</td>
+    </tr>`;
+  }).join('');
+
+  panel.innerHTML = `
+    ${prayerInfo}
+    <div class="flex flex-col sm:hidden">${cards}</div>
+    <div class="hidden sm:block overflow-x-auto rounded-lg border border-border">
+      <table class="w-full bg-panel text-sm">
+        <thead>
+          <tr class="bg-panel2 text-gold text-xs">
+            <th class="py-2 px-3 w-8"></th>
+            <th class="py-2 px-3 text-left">Date</th>
+            <th class="py-2 px-3 text-left">Heure locale (GMT)</th>
+            <th class="py-2 px-3 text-left">Événement</th>
+            <th class="py-2 px-3 text-left">Explication</th>
+            <th class="py-2 px-3 text-left">Constellation</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>`;
+
+  panelsEl.appendChild(panel);
+});
+
+function switchTab(month) {
+  monthOrder.forEach(m => {
+    const isNow = m === month;
+    document.getElementById('tab-' + m).className = 'px-3 py-1.5 rounded-md text-xs sm:text-sm border ' +
+      (isNow ? 'bg-sky text-night font-bold border-sky' : 'bg-panel text-gray-300 border-border hover:bg-panel2');
+    document.getElementById('tab-' + m).innerHTML = `${m} <span class="ml-1 rounded-full px-1.5 text-[10px] ${isNow ? 'bg-black/20' : 'bg-white/10'}">${data[m].events.length}</span>`;
+    document.getElementById('panel-' + m).classList.toggle('hidden', !isNow);
+  });
+}
+</script>
+
+</body>
+</html>
