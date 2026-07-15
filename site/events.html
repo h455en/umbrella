@@ -22,6 +22,12 @@
   .timeline-line { background: #2a2f5a; }
   .dot-pulse { box-shadow: 0 0 0 0 rgba(239,68,68,0.6); animation: pulse 2s infinite; }
   @keyframes pulse { 0%{box-shadow:0 0 0 0 rgba(239,68,68,.6)} 70%{box-shadow:0 0 0 6px rgba(239,68,68,0)} 100%{box-shadow:0 0 0 0 rgba(239,68,68,0)} }
+  .arabic { font-family: 'Traditional Arabic', 'Amiri', serif; direction: rtl; }
+  .clickable { cursor: pointer; }
+  .detail-row { display: none; }
+  .detail-row.open { display: table-row; }
+  .detail-card { display: none; }
+  .detail-card.open { display: block; }
 </style>
 </head>
 <body class="bg-night text-gray-100">
@@ -31,10 +37,7 @@
     <span>Bizerte, Tunisie</span>
     <span id="clock" class="text-sky font-medium"></span>
   </div>
-  <div class="text-center">
-    <span class="text-gold font-black text-lg sm:text-xl">🌌 Sky Gazing</span>
-    <span class="block text-gray-500 text-[10px] sm:text-xs">Heure locale en grand · (GMT) entre parenthèses</span>
-  </div>
+  <div class="text-center text-gold font-black text-lg sm:text-xl">🌌 Sky Gazing</div>
 </header>
 
 <main class="max-w-4xl mx-auto px-3 sm:px-6 py-5">
@@ -91,6 +94,28 @@ const constelLinks = {
   "Persée":"https://fr.wikipedia.org/wiki/Persée_(constellation)","Orion":"https://fr.wikipedia.org/wiki/Orion_(constellation)",
   "Petite Ourse":"https://fr.wikipedia.org/wiki/Petite_Ourse"
 };
+
+// Noms arabes traditionnels des principales étoiles par constellation
+const constelArabic = {
+  "Bouvier": { ar:"العَوَّاء", stars:[["Arcturus","السماك الرامح","As-Simak Ar-Ramih"],["Izar","عِزار","Izar"],["Muphrid","المفرد الرامح","Al-Mufrid Ar-Ramih"],["Nekkar","النَّكَّار","An-Nakkar"]] },
+  "Cancer": { ar:"السَّرَطان", stars:[["Acubens","الزُّبانى","Az-Zubana"],["Al Tarf","الطَّرف","At-Tarf"],["Asellus Borealis","الحمار الشمالي","Al-Himar Ash-Shamali"],["Asellus Australis","الحمار الجنوبي","Al-Himar Al-Janubi"]] },
+  "Gémeaux": { ar:"الجَوْزاء (التوأمان)", stars:[["Castor","الرأس المُقَدَّم","Ar-Ras Al-Muqaddam"],["Pollux","الرأس المُؤَخَّر","Ar-Ras Al-Muakhkhar"],["Alhena","الهَنعَة","Al-Han'ah"],["Mebsuta","المبسوطة","Al-Mabsuta"]] },
+  "Vierge": { ar:"العَذْراء", stars:[["Spica","السُّنبُلة","As-Sunbula"],["Zavijava","الزاوية","Az-Zawiya"],["Heze","هزّة","Hiza"]] },
+  "Scorpion": { ar:"العَقْرَب", stars:[["Antarès","قلب العقرب","Qalb Al-Aqrab"],["Shaula","الشَّولاء","Ash-Shawla"],["Dschubba","الجَبْهة","Al-Jabha"],["Graffias","العَقرب","Al-Aqrab"]] },
+  "Capricorne": { ar:"الجَدْي", stars:[["Algedi","الجَدْي","Al-Jady"],["Dabih","الذَّابِح","Adh-Dhabih"],["Nashira","الناشِرة","An-Nashira"],["Deneb Algedi","ذَنَب الجَدْي","Dhanab Al-Jady"]] },
+  "Taureau": { ar:"الثَّوْر", stars:[["Aldébaran","الدَّبَران","Ad-Dabaran"],["Elnath","النَّطْح","An-Natih"],["Alcyone (Pléiades)","الثُّرَيّا","Ath-Thurayya"]] },
+  "Lion": { ar:"الأسَد", stars:[["Régulus","قلب الأسد","Qalb Al-Asad"],["Denebola","ذَنَب الأسد","Dhanab Al-Asad"],["Algieba","الجَبْهة","Al-Jabha"],["Chertan","الخَرْثان","Al-Kharthan"]] },
+  "Verseau": { ar:"الدَّلْو (سَاكِب الماء)", stars:[["Sadalmelik","سَعْد الملك","Sa'd Al-Malik"],["Sadalsuud","سَعْد السُّعود","Sa'd As-Su'ud"],["Sadachbia","سَعْد الأخبية","Sa'd Al-Akhbiya"],["Skat","السَّقاية","As-Saqaya"]] },
+  "Poissons": { ar:"الحُوت", stars:[["Alrescha","الرِّشاء","Ar-Risha"]] },
+  "Balance": { ar:"الميزان", stars:[["Zubenelgenubi","الزُّبانى الجنوبي","Az-Zubana Al-Janubi"],["Zubeneschamali","الزُّبانى الشمالي","Az-Zubana Ash-Shamali"]] },
+  "Bélier": { ar:"الحَمَل", stars:[["Hamal","الحَمَل","Al-Hamal"],["Sheratan","الشَّراطان","Ash-Sharatan"],["Mesarthim","الشَّرَطين","Ash-Sharatayn"]] },
+  "Lyre": { ar:"القِيثارة (النَّسر الواقع)", stars:[["Véga","النَّسر الواقع","An-Nasr Al-Waqi'"],["Sheliak","الشِّلياق","Ash-Shilyaq"],["Sulafat","السُّلافة","As-Sulafa"]] },
+  "Sagittaire": { ar:"القَوْس", stars:[["Kaus Australis","قوس الجنوبي","Qaws Al-Janubi"],["Nunki","نُنكي","Nunki"],["Ascella","الإبط","Al-Ibt"]] },
+  "Persée": { ar:"بَرْساوُس (حَامِل رَأس الغُول)", stars:[["Mirfak","مِرفَق الثُّرَيّا","Mirfaq Ath-Thurayya"],["Algol","رأس الغُول","Ra's Al-Ghul"]] },
+  "Orion": { ar:"الجَوْزاء", stars:[["Bételgeuse","يَد الجَوزاء","Yad Al-Jawza"],["Rigel","رِجل الجَوزاء","Rijl Al-Jawza"],["Alnitak","النِّطاق","An-Nitaq"],["Alnilam","النِّظام","An-Nizam"],["Mintaka","المِنطَقة","Al-Mintaqa"]] },
+  "Petite Ourse": { ar:"الدُّب الأصغر", stars:[["Polaris","الجَدي (نجم الشمال)","Al-Jady (Najm Ash-Shamal)"],["Kochab","الكَوكب","Al-Kawkab"]] }
+};
+
 function linkify(text) {
   let out = text;
   for (const term in links) out = out.replace(new RegExp(term,"g"), `<a class="wikilink text-sky" href="${links[term]}" target="_blank" rel="noopener">${term}</a>`);
@@ -98,7 +123,23 @@ function linkify(text) {
 }
 function constelLink(name) {
   if (name === "—" || !constelLinks[name]) return name;
-  return `<a class="wikilink text-green" href="${constelLinks[name]}" target="_blank" rel="noopener">${name}</a>`;
+  return `<a class="wikilink text-green" href="${constelLinks[name]}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${name}</a>`;
+}
+function arabicDetailHtml(constellation) {
+  const info = constelArabic[constellation];
+  if (!info) return `<div class="text-gray-500 text-xs">Pas de détail disponible pour cette constellation.</div>`;
+  const starsHtml = info.stars.map(s => `
+    <div class="flex justify-between items-center border-b border-border/50 py-1">
+      <span class="text-gray-300 text-xs">${s[0]}</span>
+      <span class="arabic text-gold text-sm">${s[1]}</span>
+      <span class="text-gray-500 text-[10px] italic">${s[2]}</span>
+    </div>`).join('');
+  return `
+    <div class="mt-2 pt-2 border-t border-border">
+      <div class="text-green text-xs mb-1">Nom arabe de la constellation : <span class="arabic text-base">${info.ar}</span></div>
+      <div class="text-gray-400 text-[11px] mb-1">Étoiles principales :</div>
+      ${starsHtml}
+    </div>`;
 }
 
 const monthOrder = ["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"];
@@ -337,6 +378,7 @@ const topGalaxies = [
 const today = new Date();
 const currentMonthIndex = today.getMonth();
 const currentMonthName = monthOrder[currentMonthIndex];
+let uid = 0;
 
 function closestEventIndex(events) {
   let minDiff = Infinity, idx = 0;
@@ -400,13 +442,14 @@ monthOrder.forEach((month, mi) => {
 
   const cards = m.events.map((e, i) => {
     const isRed = i === closestIdx;
+    const id = 'card-' + (uid++);
     return `
     <div class="flex gap-2 sm:hidden">
       <div class="relative w-4 flex-shrink-0">
         <div class="absolute left-1/2 top-0 bottom-0 w-0.5 -translate-x-1/2 timeline-line"></div>
         <div class="absolute left-1/2 top-4 -translate-x-1/2 -translate-y-1/2 w-3 h-3 rounded-full border-2 border-night ${isRed ? 'bg-red-500 dot-pulse' : 'bg-sky'}"></div>
       </div>
-      <div class="bg-panel border border-border rounded-lg p-3 flex-1 mb-2 ${isRed ? 'ring-1 ring-red-500/50' : ''}">
+      <div class="bg-panel border border-border rounded-lg p-3 flex-1 mb-2 clickable ${isRed ? 'ring-1 ring-red-500/50' : ''}" onclick="toggleDetail('${id}')">
         <div class="flex justify-between items-start mb-1">
           <span class="text-sky font-bold text-sm">${e[0]} ${month.slice(0,3).toLowerCase()} ${isRed ? '<span class="text-red-400 text-[10px]">● proche</span>' : ''}</span>
           <span class="text-right">
@@ -416,15 +459,17 @@ monthOrder.forEach((month, mi) => {
         </div>
         <div class="font-medium text-sm mb-1">${linkify(e[3])}</div>
         <div class="text-gray-400 text-xs mb-1">${e[4]}</div>
-        <div class="text-green text-xs">🌌 ${constelLink(e[5])}</div>
+        <div class="text-green text-xs">🌌 ${constelLink(e[5])} <span class="text-gray-500 text-[10px]">(clic pour détail)</span></div>
+        <div id="${id}" class="detail-card">${arabicDetailHtml(e[5])}</div>
       </div>
     </div>`;
   }).join('');
 
   const rows = m.events.map((e, i) => {
     const isRed = i === closestIdx;
+    const id = 'row-' + (uid++);
     return `
-    <tr class="border-b border-border hover:bg-panel2 ${isRed ? 'bg-red-950/20' : ''}">
+    <tr class="border-b border-border hover:bg-panel2 clickable ${isRed ? 'bg-red-950/20' : ''}" onclick="toggleDetail('${id}')">
       <td class="relative w-8 p-0">
         <div class="absolute left-1/2 top-0 bottom-0 w-0.5 -translate-x-1/2 timeline-line"></div>
         <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-3 rounded-full border-2 border-night ${isRed ? 'bg-red-500 dot-pulse' : 'bg-sky'}"></div>
@@ -437,7 +482,8 @@ monthOrder.forEach((month, mi) => {
       <td class="py-2 px-3">${linkify(e[3])}</td>
       <td class="py-2 px-3 text-gray-400">${e[4]}</td>
       <td class="py-2 px-3 whitespace-nowrap">${constelLink(e[5])}</td>
-    </tr>`;
+    </tr>
+    <tr class="detail-row" id="${id}"><td colspan="6" class="bg-panel2 px-4 py-2">${arabicDetailHtml(e[5])}</td></tr>`;
   }).join('');
 
   panel.innerHTML = `
@@ -455,6 +501,10 @@ monthOrder.forEach((month, mi) => {
     </div>`;
   panelsEl.appendChild(panel);
 });
+
+function toggleDetail(id) {
+  document.getElementById(id).classList.toggle('open');
+}
 
 // ---- Ready tab ----
 const readyBtn = document.createElement('button');
@@ -533,12 +583,8 @@ function switchTab(name) {
   allTabs.forEach(m => {
     const isNow = m === name;
     const el = document.getElementById('tab-' + m);
-    if (m === 'Ready') {
-      el.className = 'px-3 py-1.5 rounded-md text-xs sm:text-sm border ' + (isNow ? 'bg-sky text-night font-bold border-sky' : 'bg-panel text-gray-300 border-border hover:bg-panel2');
-    } else {
-      el.className = 'px-3 py-1.5 rounded-md text-xs sm:text-sm border ' + (isNow ? 'bg-sky text-night font-bold border-sky' : 'bg-panel text-gray-300 border-border hover:bg-panel2');
-      el.innerHTML = `${m} <span class="ml-1 rounded-full px-1.5 text-[10px] ${isNow ? 'bg-black/20' : 'bg-white/10'}">${data[m].events.length}</span>`;
-    }
+    el.className = 'px-3 py-1.5 rounded-md text-xs sm:text-sm border ' + (isNow ? 'bg-sky text-night font-bold border-sky' : 'bg-panel text-gray-300 border-border hover:bg-panel2');
+    if (m !== 'Ready') el.innerHTML = `${m} <span class="ml-1 rounded-full px-1.5 text-[10px] ${isNow ? 'bg-black/20' : 'bg-white/10'}">${data[m].events.length}</span>`;
     document.getElementById('panel-' + m).classList.toggle('hidden', !isNow);
   });
 }
