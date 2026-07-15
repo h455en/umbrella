@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Sky Gazing — Bizerte 2026</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&family=Noto+Naskh+Arabic:wght@400;700&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
 <script>
   tailwind.config = {
@@ -22,27 +22,36 @@
   .timeline-line { background: #2a2f5a; }
   .dot-pulse { box-shadow: 0 0 0 0 rgba(239,68,68,0.6); animation: pulse 2s infinite; }
   @keyframes pulse { 0%{box-shadow:0 0 0 0 rgba(239,68,68,.6)} 70%{box-shadow:0 0 0 6px rgba(239,68,68,0)} 100%{box-shadow:0 0 0 0 rgba(239,68,68,0)} }
-  .arabic { font-family: 'Traditional Arabic', 'Amiri', serif; direction: rtl; }
+  .arabic { font-family: 'Noto Naskh Arabic', serif; direction: rtl; }
   .clickable { cursor: pointer; }
   .detail-row { display: none; }
   .detail-row.open { display: table-row; }
   .detail-card { display: none; }
   .detail-card.open { display: block; }
+  .scrollbar-hide::-webkit-scrollbar { display: none; }
+  .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
 </style>
 </head>
 <body class="bg-night text-gray-100">
 
-<header class="py-2 px-3 bg-panel border-b border-border sticky top-0 z-10">
-  <div class="flex justify-between items-center text-[10px] sm:text-xs text-gray-400 mb-1">
-    <span>Bizerte, Tunisie</span>
+<header class="py-1.5 px-2 bg-panel border-b border-border sticky top-0 z-10 overflow-x-auto whitespace-nowrap scrollbar-hide">
+  <div class="flex items-center justify-center gap-1.5 text-[10px] sm:text-xs">
+    <span class="text-gold font-black text-sm">🌌 Sky Gazing</span>
+    <span class="text-gray-600">·</span>
+    <span class="text-gray-400">Bizerte, Tunisie</span>
+    <span class="text-gray-600">·</span>
     <span id="clock" class="text-sky font-medium"></span>
   </div>
-  <div class="text-center text-gold font-black text-lg sm:text-xl">🌌 Sky Gazing</div>
 </header>
 
 <main class="max-w-4xl mx-auto px-3 sm:px-6 py-5">
-  <div id="tabs" class="flex flex-wrap gap-1.5 justify-center mb-4"></div>
+  <div class="flex items-center gap-1 mb-4">
+    <button id="tabPrev" class="flex-shrink-0 w-7 h-7 rounded-md bg-panel border border-border text-sky text-sm hover:bg-panel2">‹</button>
+    <div id="tabs" class="flex gap-1 overflow-x-auto flex-1 scrollbar-hide"></div>
+    <button id="tabNext" class="flex-shrink-0 w-7 h-7 rounded-md bg-panel border border-border text-sky text-sm hover:bg-panel2">›</button>
+  </div>
   <div id="panels"></div>
+  <p class="text-center text-gray-600 text-[10px] mt-2 sm:hidden">👈 glissez pour changer de mois 👉</p>
 </main>
 
 <footer class="py-1.5 px-3 bg-panel border-t border-border text-center text-[10px] sm:text-xs text-gray-500">
@@ -54,34 +63,23 @@ function updateClock() {
   const now = new Date();
   const dateStr = now.toLocaleDateString('fr-FR', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' });
   const timeStr = now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-  document.getElementById('clock').textContent = `${dateStr} · ${timeStr}`;
+  document.getElementById('clock').textContent = `${dateStr} ${timeStr}`;
 }
 updateClock();
 setInterval(updateClock, 1000);
 
 const links = {
-  "Antarès": "https://fr.wikipedia.org/wiki/Antar%C3%A8s",
-  "Spica": "https://fr.wikipedia.org/wiki/Spica",
-  "Regulus": "https://fr.wikipedia.org/wiki/Regulus",
-  "Pollux": "https://fr.wikipedia.org/wiki/Pollux_(%C3%A9toile)",
-  "Pléiades": "https://fr.wikipedia.org/wiki/Pl%C3%A9iades_(amas)",
-  "Jupiter": "https://fr.wikipedia.org/wiki/Jupiter_(planète)",
-  "Mars": "https://fr.wikipedia.org/wiki/Mars_(planète)",
-  "Mercure": "https://fr.wikipedia.org/wiki/Mercure_(planète)",
-  "Vénus": "https://fr.wikipedia.org/wiki/Vénus_(planète)",
-  "Saturne": "https://fr.wikipedia.org/wiki/Saturne_(planète)",
-  "Neptune": "https://fr.wikipedia.org/wiki/Neptune_(planète)",
-  "Uranus": "https://fr.wikipedia.org/wiki/Uranus_(planète)",
-  "Lune": "https://fr.wikipedia.org/wiki/Lune",
-  "Terre": "https://fr.wikipedia.org/wiki/Terre",
-  "Quadrantides": "https://fr.wikipedia.org/wiki/Quadrantides",
-  "Lyrides": "https://fr.wikipedia.org/wiki/Lyrides",
-  "Perséides": "https://fr.wikipedia.org/wiki/Perséides",
-  "Orionides": "https://fr.wikipedia.org/wiki/Orionides",
-  "Léonides": "https://fr.wikipedia.org/wiki/Léonides",
-  "Ursides": "https://fr.wikipedia.org/wiki/Ursides",
-  "Taurides Sud": "https://fr.wikipedia.org/wiki/Taurides",
-  "Taurides Nord": "https://fr.wikipedia.org/wiki/Taurides"
+  "Antarès": "https://fr.wikipedia.org/wiki/Antar%C3%A8s", "Spica": "https://fr.wikipedia.org/wiki/Spica",
+  "Regulus": "https://fr.wikipedia.org/wiki/Regulus", "Pollux": "https://fr.wikipedia.org/wiki/Pollux_(%C3%A9toile)",
+  "Pléiades": "https://fr.wikipedia.org/wiki/Pl%C3%A9iades_(amas)", "Jupiter": "https://fr.wikipedia.org/wiki/Jupiter_(planète)",
+  "Mars": "https://fr.wikipedia.org/wiki/Mars_(planète)", "Mercure": "https://fr.wikipedia.org/wiki/Mercure_(planète)",
+  "Vénus": "https://fr.wikipedia.org/wiki/Vénus_(planète)", "Saturne": "https://fr.wikipedia.org/wiki/Saturne_(planète)",
+  "Neptune": "https://fr.wikipedia.org/wiki/Neptune_(planète)", "Uranus": "https://fr.wikipedia.org/wiki/Uranus_(planète)",
+  "Lune": "https://fr.wikipedia.org/wiki/Lune", "Terre": "https://fr.wikipedia.org/wiki/Terre",
+  "Quadrantides": "https://fr.wikipedia.org/wiki/Quadrantides", "Lyrides": "https://fr.wikipedia.org/wiki/Lyrides",
+  "Perséides": "https://fr.wikipedia.org/wiki/Perséides", "Orionides": "https://fr.wikipedia.org/wiki/Orionides",
+  "Léonides": "https://fr.wikipedia.org/wiki/Léonides", "Ursides": "https://fr.wikipedia.org/wiki/Ursides",
+  "Taurides Sud": "https://fr.wikipedia.org/wiki/Taurides", "Taurides Nord": "https://fr.wikipedia.org/wiki/Taurides"
 };
 const constelLinks = {
   "Bouvier":"https://fr.wikipedia.org/wiki/Bouvier_(constellation)","Cancer":"https://fr.wikipedia.org/wiki/Cancer_(constellation)",
@@ -95,25 +93,42 @@ const constelLinks = {
   "Petite Ourse":"https://fr.wikipedia.org/wiki/Petite_Ourse"
 };
 
-// Noms arabes traditionnels des principales étoiles par constellation
+// Formes simplifiées (schématiques, non à l'échelle) — [x,y] en % d'un repère 0-100
 const constelArabic = {
-  "Bouvier": { ar:"العَوَّاء", stars:[["Arcturus","السماك الرامح","As-Simak Ar-Ramih"],["Izar","عِزار","Izar"],["Muphrid","المفرد الرامح","Al-Mufrid Ar-Ramih"],["Nekkar","النَّكَّار","An-Nakkar"]] },
-  "Cancer": { ar:"السَّرَطان", stars:[["Acubens","الزُّبانى","Az-Zubana"],["Al Tarf","الطَّرف","At-Tarf"],["Asellus Borealis","الحمار الشمالي","Al-Himar Ash-Shamali"],["Asellus Australis","الحمار الجنوبي","Al-Himar Al-Janubi"]] },
-  "Gémeaux": { ar:"الجَوْزاء (التوأمان)", stars:[["Castor","الرأس المُقَدَّم","Ar-Ras Al-Muqaddam"],["Pollux","الرأس المُؤَخَّر","Ar-Ras Al-Muakhkhar"],["Alhena","الهَنعَة","Al-Han'ah"],["Mebsuta","المبسوطة","Al-Mabsuta"]] },
-  "Vierge": { ar:"العَذْراء", stars:[["Spica","السُّنبُلة","As-Sunbula"],["Zavijava","الزاوية","Az-Zawiya"],["Heze","هزّة","Hiza"]] },
-  "Scorpion": { ar:"العَقْرَب", stars:[["Antarès","قلب العقرب","Qalb Al-Aqrab"],["Shaula","الشَّولاء","Ash-Shawla"],["Dschubba","الجَبْهة","Al-Jabha"],["Graffias","العَقرب","Al-Aqrab"]] },
-  "Capricorne": { ar:"الجَدْي", stars:[["Algedi","الجَدْي","Al-Jady"],["Dabih","الذَّابِح","Adh-Dhabih"],["Nashira","الناشِرة","An-Nashira"],["Deneb Algedi","ذَنَب الجَدْي","Dhanab Al-Jady"]] },
-  "Taureau": { ar:"الثَّوْر", stars:[["Aldébaran","الدَّبَران","Ad-Dabaran"],["Elnath","النَّطْح","An-Natih"],["Alcyone (Pléiades)","الثُّرَيّا","Ath-Thurayya"]] },
-  "Lion": { ar:"الأسَد", stars:[["Régulus","قلب الأسد","Qalb Al-Asad"],["Denebola","ذَنَب الأسد","Dhanab Al-Asad"],["Algieba","الجَبْهة","Al-Jabha"],["Chertan","الخَرْثان","Al-Kharthan"]] },
-  "Verseau": { ar:"الدَّلْو (سَاكِب الماء)", stars:[["Sadalmelik","سَعْد الملك","Sa'd Al-Malik"],["Sadalsuud","سَعْد السُّعود","Sa'd As-Su'ud"],["Sadachbia","سَعْد الأخبية","Sa'd Al-Akhbiya"],["Skat","السَّقاية","As-Saqaya"]] },
-  "Poissons": { ar:"الحُوت", stars:[["Alrescha","الرِّشاء","Ar-Risha"]] },
-  "Balance": { ar:"الميزان", stars:[["Zubenelgenubi","الزُّبانى الجنوبي","Az-Zubana Al-Janubi"],["Zubeneschamali","الزُّبانى الشمالي","Az-Zubana Ash-Shamali"]] },
-  "Bélier": { ar:"الحَمَل", stars:[["Hamal","الحَمَل","Al-Hamal"],["Sheratan","الشَّراطان","Ash-Sharatan"],["Mesarthim","الشَّرَطين","Ash-Sharatayn"]] },
-  "Lyre": { ar:"القِيثارة (النَّسر الواقع)", stars:[["Véga","النَّسر الواقع","An-Nasr Al-Waqi'"],["Sheliak","الشِّلياق","Ash-Shilyaq"],["Sulafat","السُّلافة","As-Sulafa"]] },
-  "Sagittaire": { ar:"القَوْس", stars:[["Kaus Australis","قوس الجنوبي","Qaws Al-Janubi"],["Nunki","نُنكي","Nunki"],["Ascella","الإبط","Al-Ibt"]] },
-  "Persée": { ar:"بَرْساوُس (حَامِل رَأس الغُول)", stars:[["Mirfak","مِرفَق الثُّرَيّا","Mirfaq Ath-Thurayya"],["Algol","رأس الغُول","Ra's Al-Ghul"]] },
-  "Orion": { ar:"الجَوْزاء", stars:[["Bételgeuse","يَد الجَوزاء","Yad Al-Jawza"],["Rigel","رِجل الجَوزاء","Rijl Al-Jawza"],["Alnitak","النِّطاق","An-Nitaq"],["Alnilam","النِّظام","An-Nizam"],["Mintaka","المِنطَقة","Al-Mintaqa"]] },
-  "Petite Ourse": { ar:"الدُّب الأصغر", stars:[["Polaris","الجَدي (نجم الشمال)","Al-Jady (Najm Ash-Shamal)"],["Kochab","الكَوكب","Al-Kawkab"]] }
+  "Bouvier": { ar:"العَوَّاء", stars:[["Arcturus","السماك الرامح","As-Simak Ar-Ramih"],["Izar","عِزار","Izar"],["Muphrid","المفرد الرامح","Al-Mufrid Ar-Ramih"],["Nekkar","النَّكَّار","An-Nakkar"]],
+    shape:{points:[[50,85],[62,55],[45,20],[28,32],[47,60]], lines:[[0,4],[4,1],[1,2],[2,3],[3,0]]} },
+  "Cancer": { ar:"السَّرَطان", stars:[["Acubens","الزُّبانى","Az-Zubana"],["Al Tarf","الطَّرف","At-Tarf"],["Asellus Borealis","الحمار الشمالي","Al-Himar Ash-Shamali"],["Asellus Australis","الحمار الجنوبي","Al-Himar Al-Janubi"]],
+    shape:{points:[[75,80],[52,45],[57,58],[28,72]], lines:[[0,2],[2,1],[2,3]]} },
+  "Gémeaux": { ar:"الجَوْزاء (التوأمان)", stars:[["Castor","الرأس المُقَدَّم","Ar-Ras Al-Muqaddam"],["Pollux","الرأس المُؤَخَّر","Ar-Ras Al-Muakhkhar"],["Alhena","الهَنعَة","Al-Han'ah"],["Mebsuta","المبسوطة","Al-Mabsuta"]],
+    shape:{points:[[25,10],[20,50],[15,90],[55,10],[50,50],[45,90]], lines:[[0,1],[1,2],[3,4],[4,5],[0,3]]} },
+  "Vierge": { ar:"العَذْراء", stars:[["Spica","السُّنبُلة","As-Sunbula"],["Zavijava","الزاوية","Az-Zawiya"],["Heze","هزّة","Hiza"]],
+    shape:{points:[[70,88],[20,20],[42,42],[57,57],[63,20]], lines:[[1,2],[2,3],[3,0],[3,4]]} },
+  "Scorpion": { ar:"العَقْرَب", stars:[["Antarès","قلب العقرب","Qalb Al-Aqrab"],["Shaula","الشَّولاء","Ash-Shawla"],["Dschubba","الجَبْهة","Al-Jabha"],["Graffias","العَقرب","Al-Aqrab"]],
+    shape:{points:[[18,15],[13,27],[35,42],[57,60],[72,76],[78,82]], lines:[[1,0],[0,2],[2,3],[3,4],[4,5]]} },
+  "Capricorne": { ar:"الجَدْي", stars:[["Algedi","الجَدْي","Al-Jady"],["Dabih","الذَّابِح","Adh-Dhabih"],["Nashira","الناشِرة","An-Nashira"],["Deneb Algedi","ذَنَب الجَدْي","Dhanab Al-Jady"]],
+    shape:{points:[[15,32],[22,52],[70,72],[82,60]], lines:[[0,1],[1,2],[2,3],[3,0]]} },
+  "Taureau": { ar:"الثَّوْر", stars:[["Aldébaran","الدَّبَران","Ad-Dabaran"],["Elnath","النَّطْح","An-Natih"],["Alcyone (Pléiades)","الثُّرَيّا","Ath-Thurayya"]],
+    shape:{points:[[15,15],[45,50],[57,57],[85,15],[85,78]], lines:[[0,4],[1,3],[1,2],[2,0]]} },
+  "Lion": { ar:"الأسَد", stars:[["Régulus","قلب الأسد","Qalb Al-Asad"],["Denebola","ذَنَب الأسد","Dhanab Al-Asad"],["Algieba","الجَبْهة","Al-Jabha"],["Chertan","الخَرْثان","Al-Kharthan"]],
+    shape:{points:[[27,22],[32,57],[67,32],[72,47],[90,62]], lines:[[0,2],[0,1],[2,3],[3,4]]} },
+  "Verseau": { ar:"الدَّلْو (سَاكِب الماء)", stars:[["Sadalmelik","سَعْد الملك","Sa'd Al-Malik"],["Sadalsuud","سَعْد السُّعود","Sa'd As-Su'ud"],["Sadachbia","سَعْد الأخبية","Sa'd Al-Akhbiya"],["Skat","السَّقاية","As-Saqaya"]],
+    shape:{points:[[20,20],[37,37],[57,47],[77,62]], lines:[[0,1],[1,2],[2,3]]} },
+  "Poissons": { ar:"الحُوت", stars:[["Alrescha","الرِّشاء","Ar-Risha"]],
+    shape:{points:[[50,87],[30,52],[15,20],[65,52],[80,20]], lines:[[0,1],[1,2],[0,3],[3,4]]} },
+  "Balance": { ar:"الميزان", stars:[["Zubenelgenubi","الزُّبانى الجنوبي","Az-Zubana Al-Janubi"],["Zubeneschamali","الزُّبانى الشمالي","Az-Zubana Ash-Shamali"]],
+    shape:{points:[[25,60],[70,30],[50,77]], lines:[[0,1],[0,2]]} },
+  "Bélier": { ar:"الحَمَل", stars:[["Hamal","الحَمَل","Al-Hamal"],["Sheratan","الشَّراطان","Ash-Sharatan"],["Mesarthim","الشَّرَطين","Ash-Sharatayn"]],
+    shape:{points:[[25,25],[42,37],[72,62]], lines:[[0,1],[1,2]]} },
+  "Lyre": { ar:"القِيثارة (النَّسر الواقع)", stars:[["Véga","النَّسر الواقع","An-Nasr Al-Waqi'"],["Sheliak","الشِّلياق","Ash-Shilyaq"],["Sulafat","السُّلافة","As-Sulafa"]],
+    shape:{points:[[30,18],[70,42],[65,68],[48,60]], lines:[[0,1],[1,2],[2,3],[3,0]]} },
+  "Sagittaire": { ar:"القَوْس", stars:[["Kaus Australis","قوس الجنوبي","Qaws Al-Janubi"],["Nunki","نُنكي","Nunki"],["Ascella","الإبط","Al-Ibt"]],
+    shape:{points:[[20,20],[50,15],[65,35],[60,55],[40,60],[30,40]], lines:[[0,1],[1,2],[2,3],[3,4],[4,5],[5,0]]} },
+  "Persée": { ar:"بَرْساوُس (حَامِل رَأس الغُول)", stars:[["Mirfak","مِرفَق الثُّرَيّا","Mirfaq Ath-Thurayya"],["Algol","رأس الغُول","Ra's Al-Ghul"]],
+    shape:{points:[[30,55],[50,30],[65,45],[70,65]], lines:[[0,1],[1,2],[2,3]]} },
+  "Orion": { ar:"الجَوْزاء", stars:[["Bételgeuse","يَد الجَوزاء","Yad Al-Jawza"],["Rigel","رِجل الجَوزاء","Rijl Al-Jawza"],["Alnitak","النِّطاق","An-Nitaq"],["Alnilam","النِّظام","An-Nizam"],["Mintaka","المِنطَقة","Al-Mintaqa"]],
+    shape:{points:[[70,20],[30,20],[60,50],[50,50],[40,50],[30,80],[65,80]], lines:[[0,2],[1,4],[2,3],[3,4],[4,5],[2,6]]} },
+  "Petite Ourse": { ar:"الدُّب الأصغر", stars:[["Polaris","الجَدي (نجم الشمال)","Al-Jady (Najm Ash-Shamal)"],["Kochab","الكَوكب","Al-Kawkab"]],
+    shape:{points:[[50,10],[48,30],[45,50],[55,55],[70,58],[72,42],[58,38]], lines:[[0,1],[1,2],[2,3],[3,4],[4,5],[5,6],[6,3]]} }
 };
 
 function linkify(text) {
@@ -124,6 +139,14 @@ function linkify(text) {
 function constelLink(name) {
   if (name === "—" || !constelLinks[name]) return name;
   return `<a class="wikilink text-green" href="${constelLinks[name]}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${name}</a>`;
+}
+function constelSvg(name) {
+  const info = constelArabic[name];
+  if (!info || !info.shape) return '';
+  const { points, lines } = info.shape;
+  const lineSvg = lines.map(([a,b]) => `<line x1="${points[a][0]}" y1="${points[a][1]}" x2="${points[b][0]}" y2="${points[b][1]}" stroke="#6ec6ff" stroke-width="1.4" opacity="0.8"/>`).join('');
+  const dotSvg = points.map(p => `<circle cx="${p[0]}" cy="${p[1]}" r="2.6" fill="#ffd166"/>`).join('');
+  return `<svg viewBox="0 0 100 100" class="w-28 h-28 mx-auto my-2 bg-panel2/40 rounded-md p-1">${lineSvg}${dotSvg}</svg>`;
 }
 function arabicDetailHtml(constellation) {
   const info = constelArabic[constellation];
@@ -136,9 +159,27 @@ function arabicDetailHtml(constellation) {
     </div>`).join('');
   return `
     <div class="mt-2 pt-2 border-t border-border">
-      <div class="text-green text-xs mb-1">Nom arabe de la constellation : <span class="arabic text-base">${info.ar}</span></div>
-      <div class="text-gray-400 text-[11px] mb-1">Étoiles principales :</div>
+      <div class="text-green text-xs mb-1">Nom arabe : <span class="arabic text-base">${info.ar}</span></div>
+      <div class="text-center">${constelSvg(constellation)}<div class="text-gray-600 text-[9px]">schéma simplifié, non à l'échelle</div></div>
+      <div class="text-gray-400 text-[11px] mb-1 mt-2">Étoiles principales :</div>
       ${starsHtml}
+    </div>`;
+}
+function satelliteDetailHtml() {
+  const lat = 37.2744, lng = 9.8739;
+  const issUrl = `https://www.heavens-above.com/PassSummary.aspx?satid=25544&lat=${lat}&lng=${lng}&loc=Bizerte&alt=9&tz=CET`;
+  const tgUrl = `https://www.heavens-above.com/PassSummary.aspx?satid=48274&lat=${lat}&lng=${lng}&loc=Bizerte&alt=9&tz=CET`;
+  return `
+    <div class="mt-2 pt-2 border-t border-border">
+      <div class="text-gray-400 text-xs mb-2">Les passages visibles changent chaque jour selon l'orbite. Cliquez pour voir les prochains passages en direct, déjà calculés pour Bizerte :</div>
+      <a href="${issUrl}" target="_blank" rel="noopener" class="block bg-panel2 border border-border rounded-md p-2 mb-2 hover:bg-border" onclick="event.stopPropagation()">
+        <div class="text-sky font-bold text-sm">🛰️ ISS (Zarya) — passages à Bizerte</div>
+        <div class="text-gray-500 text-[10px]">heavens-above.com</div>
+      </a>
+      <a href="${tgUrl}" target="_blank" rel="noopener" class="block bg-panel2 border border-border rounded-md p-2 hover:bg-border" onclick="event.stopPropagation()">
+        <div class="text-sky font-bold text-sm">🛰️ Tiangong — passages à Bizerte</div>
+        <div class="text-gray-500 text-[10px]">heavens-above.com</div>
+      </a>
     </div>`;
 }
 
@@ -155,224 +196,175 @@ const data = {
   ["10","23:50","00:50","Spica à 1,6° N de la Lune","La Lune passe près de l'étoile Spica.","Vierge"],
   ["13","20:48","21:48","Lune à l'apogée (405 437 km)","Point le plus éloigné de la Terre sur l'orbite lunaire.","—"],
   ["14","19:28","20:28","Antarès à 0,6° N de la Lune","La Lune passe près de l'étoile Antarès.","Scorpion"],
-  ["18","19:52","20:52","🌑 NOUVELLE LUNE","La Lune est invisible, entre la Terre et le Soleil. Meilleure nuit d'observation du mois.","Capricorne"],
+  ["18","19:52","20:52","🌑 NOUVELLE LUNE","La Lune est invisible. Meilleure nuit d'observation du mois.","Capricorne"],
   ["22","00:03","01:03","Lune au nœud ascendant","La Lune traverse l'écliptique du sud vers le nord.","—"],
-  ["22","20h","21h","Vénus à l'aphélie","Vénus au point le plus éloigné du Soleil.","—"],
-  ["26","04:47","05:47","PREMIER QUARTIER","Moitié de la face visible de la Lune éclairée, phase croissante.","Taureau"],
+  ["26","04:47","05:47","PREMIER QUARTIER","Moitié de la face visible de la Lune éclairée.","Taureau"],
   ["27","21:07","22:07","Pléiades à 1,1° S de la Lune","La Lune passe près de l'amas des Pléiades.","Taureau"],
-  ["29","21:53","22:53","Lune au périgée (365 878 km)","Point le plus proche de la Terre sur l'orbite lunaire.","—"],
-  ["31","02:31","03:31","Jupiter à 3,8° S de la Lune","Rapprochement apparent entre Jupiter et la Lune.","Cancer"]
+  ["31","02:31","03:31","Jupiter à 3,8° S de la Lune","Rapprochement apparent entre Jupiter et la Lune.","Cancer"],
+  ["—","🛰️","🛰️","Passages satellites (ISS & Tiangong)","Cliquez pour voir les prochains passages visibles depuis Bizerte.","—"]
 ]},
 "Février": { maghrib:"18:05", icha:"19:25", fajr:"06:00", newMoonDay:17, events:[
   ["01","22:09","23:09","PLEINE LUNE","Face visible de la Lune entièrement éclairée.","Cancer"],
   ["03","02:48","03:48","Regulus à 0,4° S de la Lune","La Lune passe près de l'étoile Regulus.","Lion"],
-  ["03","19:18","20:18","Lune au nœud descendant","La Lune traverse l'écliptique du nord vers le sud.","—"],
   ["11","03:19","04:19","Antarès à 0,7° N de la Lune","La Lune passe près de l'étoile Antarès.","Scorpion"],
-  ["17","12:01","13:01","🌑 NOUVELLE LUNE (diurne, hors fenêtre nocturne)","La Lune est en conjonction ; invisible ce jour-là de toute façon (jour).","Verseau"],
-  ["18","23:03","00:03","Mercure 0,1° N de la Lune (occultation)","La Lune passe devant Mercure et le cache temporairement.","Verseau"],
-  ["19","18h","19h","Mercure à sa plus grande élongation (18,1° E)","Meilleur moment pour observer Mercure en soirée.","Verseau"],
-  ["19","23:54","00:54","Saturne à 4,6° S de la Lune","Rapprochement apparent entre Saturne et la Lune.","Poissons"],
-  ["24","02:43","03:43","Pléiades à 1,2° S de la Lune","La Lune passe près de l'amas des Pléiades.","Taureau"],
-  ["24","23:18","00:18","Lune au périgée (370 132 km)","Point le plus proche de la Terre sur l'orbite lunaire.","—"],
-  ["27","21:34","22:34","Pollux à 3,0° N de la Lune","La Lune passe près de l'étoile Pollux.","Gémeaux"]
+  ["17","12:01","13:01","🌑 NOUVELLE LUNE (diurne)","Invisible ce jour-là (conjonction en journée).","Verseau"],
+  ["18","23:03","00:03","Mercure 0,1° N de la Lune (occultation)","La Lune passe devant Mercure.","Verseau"],
+  ["19","23:54","00:54","Saturne à 4,6° S de la Lune","Rapprochement apparent Saturne-Lune.","Poissons"],
+  ["24","02:43","03:43","Pléiades à 1,2° S de la Lune","La Lune passe près des Pléiades.","Taureau"],
+  ["27","21:34","22:34","Pollux à 3,0° N de la Lune","La Lune passe près de Pollux.","Gémeaux"],
+  ["—","🛰️","🛰️","Passages satellites (ISS & Tiangong)","Cliquez pour voir les prochains passages visibles depuis Bizerte.","—"]
 ]},
 "Mars": { maghrib:"18:25", icha:"19:45", fajr:"05:25", newMoonDay:19, events:[
-  ["06","17:24","18:24","Spica à 1,8° N de la Lune","La Lune passe près de l'étoile Spica.","Vierge"],
-  ["15","19h","20h","Mercure à 3,4° N de Mars","Rapprochement apparent entre Mercure et Mars.","Poissons"],
-  ["17","21:51","22:51","Mars à 1,5° S de la Lune","Rapprochement apparent entre Mars et la Lune.","Poissons"],
-  ["19","01:23","02:23","🌑 NOUVELLE LUNE","La Lune est invisible dans le ciel. Meilleure nuit d'observation du mois.","Poissons"],
+  ["06","17:24","18:24","Spica à 1,8° N de la Lune","La Lune passe près de Spica.","Vierge"],
+  ["17","21:51","22:51","Mars à 1,5° S de la Lune","Rapprochement apparent Mars-Lune.","Poissons"],
+  ["19","01:23","02:23","🌑 NOUVELLE LUNE","Meilleure nuit d'observation du mois.","Poissons"],
   ["25","19:18","20:18","PREMIER QUARTIER","Moitié de la face visible de la Lune éclairée.","Gémeaux"],
-  ["27","03:18","04:18","Pollux à 3,0° N de la Lune","La Lune passe près de l'étoile Pollux.","Gémeaux"],
-  ["29","19:00","20:00","Regulus à 0,4° S de la Lune","La Lune passe près de l'étoile Regulus.","Lion"]
+  ["27","03:18","04:18","Pollux à 3,0° N de la Lune","La Lune passe près de Pollux.","Gémeaux"],
+  ["29","19:00","20:00","Regulus à 0,4° S de la Lune","La Lune passe près de Regulus.","Lion"],
+  ["—","🛰️","🛰️","Passages satellites (ISS & Tiangong)","Cliquez pour voir les prochains passages visibles depuis Bizerte.","—"]
 ]},
 "Avril": { maghrib:"19:00", icha:"20:20", fajr:"04:45", newMoonDay:17, events:[
   ["02","02:12","03:12","PLEINE LUNE","Face visible de la Lune entièrement éclairée.","Balance"],
-  ["03","01:32","02:32","Spica à 1,8° N de la Lune","La Lune passe près de l'étoile Spica.","Vierge"],
-  ["03","23h","00h","Mercure à sa plus grande élongation (27,8° O)","Meilleur moment pour observer Mercure le matin.","Poissons"],
-  ["06","19:21","20:21","Antarès à 0,6° N de la Lune","La Lune passe près de l'étoile Antarès.","Scorpion"],
-  ["13","23:43","00:43","Lune au nœud ascendant","La Lune traverse l'écliptique du sud vers le nord.","—"],
-  ["16","00:45","01:45","Mars à 3,7° S de la Lune","Rapprochement apparent entre Mars et la Lune.","Bélier"],
-  ["17","11:52","12:52","🌑 NOUVELLE LUNE (diurne, hors fenêtre nocturne)","La Lune est en conjonction ; invisible ce jour-là de toute façon (jour).","Poissons"],
-  ["19","19h","20h","Mars à 1,2° N de Saturne","Rapprochement apparent entre Mars et Saturne.","Poissons"],
-  ["20","22h","23h","Mercure à 1,7° S de Mars","Rapprochement apparent entre Mercure et Mars.","Bélier"],
-  ["22","19h","20h","Pluie d'étoiles filantes des Lyrides","Météores issus des débris de la comète Thatcher.","Lyre"],
-  ["22","22:06","23:06","Jupiter à 3,6° S de la Lune","Rapprochement apparent entre Jupiter et la Lune.","Cancer"],
+  ["03","01:32","02:32","Spica à 1,8° N de la Lune","La Lune passe près de Spica.","Vierge"],
+  ["06","19:21","20:21","Antarès à 0,6° N de la Lune","La Lune passe près d'Antarès.","Scorpion"],
+  ["16","00:45","01:45","Mars à 3,7° S de la Lune","Rapprochement apparent Mars-Lune.","Bélier"],
+  ["17","11:52","12:52","🌑 NOUVELLE LUNE (diurne)","Invisible ce jour-là (conjonction en journée).","Poissons"],
+  ["22","19h","20h","Pluie d'étoiles filantes des Lyrides","Débris de la comète Thatcher.","Lyre"],
+  ["22","22:06","23:06","Jupiter à 3,6° S de la Lune","Rapprochement apparent Jupiter-Lune.","Cancer"],
   ["24","02:32","03:32","PREMIER QUARTIER","Moitié de la face visible de la Lune éclairée.","Gémeaux"],
-  ["26","00:37","01:37","Regulus à 0,2° S de la Lune","La Lune passe très près de l'étoile Regulus.","Lion"]
+  ["26","00:37","01:37","Regulus à 0,2° S de la Lune","La Lune passe très près de Regulus.","Lion"],
+  ["—","🛰️","🛰️","Passages satellites (ISS & Tiangong)","Cliquez pour voir les prochains passages visibles depuis Bizerte.","—"]
 ]},
 "Mai": { maghrib:"19:25", icha:"20:45", fajr:"04:10", newMoonDay:16, events:[
-  ["04","02:20","03:20","Antarès à 0,5° N de la Lune","La Lune passe près de l'étoile Antarès.","Scorpion"],
-  ["04","22:30","23:30","Lune à l'apogée (405 843 km)","Point le plus éloigné de la Terre sur l'orbite lunaire.","—"],
-  ["09","21:10","22:10","DERNIER QUARTIER","Moitié de la face visible de la Lune éclairée, phase décroissante.","Verseau"],
-  ["16","20:01","21:01","🌑 NOUVELLE LUNE","La Lune est invisible dans le ciel. Meilleure nuit d'observation du mois.","Taureau"],
-  ["19","01:50","02:50","Vénus à 2,9° S de la Lune","Rapprochement apparent entre Vénus et la Lune.","Taureau"]
+  ["04","02:20","03:20","Antarès à 0,5° N de la Lune","La Lune passe près d'Antarès.","Scorpion"],
+  ["09","21:10","22:10","DERNIER QUARTIER","Moitié de la face visible de la Lune éclairée.","Verseau"],
+  ["16","20:01","21:01","🌑 NOUVELLE LUNE","Meilleure nuit d'observation du mois.","Taureau"],
+  ["19","01:50","02:50","Vénus à 2,9° S de la Lune","Rapprochement apparent Vénus-Lune.","Taureau"],
+  ["—","🛰️","🛰️","Passages satellites (ISS & Tiangong)","Cliquez pour voir les prochains passages visibles depuis Bizerte.","—"]
 ]},
 "Juin": { maghrib:"19:45", icha:"21:05", fajr:"03:55", newMoonDay:15, events:[
-  ["09","20h","21h","Vénus à 1,6° N de Jupiter","Rapprochement apparent entre Vénus et Jupiter.","Gémeaux"],
-  ["14","23:18","00:18","Lune au périgée (357 196 km)","Point le plus proche de la Terre sur l'orbite lunaire.","—"],
-  ["15","02:54","03:54","🌑 NOUVELLE LUNE","La Lune est invisible dans le ciel. Meilleure nuit d'observation du mois.","Gémeaux"],
-  ["15","20h","21h","Mercure à sa plus grande élongation (24,5° E)","Meilleur moment pour observer Mercure en soirée.","Gémeaux"],
-  ["16","19:32","20:32","Mercure à 2,6° S de la Lune","Rapprochement apparent entre Mercure et la Lune.","Gémeaux"],
-  ["17","02:08","03:08","Pollux à 3,6° N de la Lune","La Lune passe près de l'étoile Pollux.","Gémeaux"],
-  ["17","20:21","21:21","Vénus à 0,3° S de la Lune (occultation)","La Lune passe devant Vénus et la cache temporairement.","Gémeaux"],
+  ["09","20h","21h","Vénus à 1,6° N de Jupiter","Rapprochement apparent Vénus-Jupiter.","Gémeaux"],
+  ["15","02:54","03:54","🌑 NOUVELLE LUNE","Meilleure nuit d'observation du mois.","Gémeaux"],
+  ["17","20:21","21:21","Vénus à 0,3° S de la Lune (occultation)","La Lune passe devant Vénus.","Gémeaux"],
   ["21","21:55","22:55","PREMIER QUARTIER","Moitié de la face visible de la Lune éclairée.","Vierge"],
-  ["23","20:11","21:11","Spica à 2,2° N de la Lune","La Lune passe près de l'étoile Spica.","Vierge"],
-  ["29","23:57","00:57","PLEINE LUNE","Face visible de la Lune entièrement éclairée.","Sagittaire"]
+  ["23","20:11","21:11","Spica à 2,2° N de la Lune","La Lune passe près de Spica.","Vierge"],
+  ["29","23:57","00:57","PLEINE LUNE","Face visible de la Lune entièrement éclairée.","Sagittaire"],
+  ["—","🛰️","🛰️","Passages satellites (ISS & Tiangong)","Cliquez pour voir les prochains passages visibles depuis Bizerte.","—"]
 ]},
 "Juillet": { maghrib:"19:45", icha:"21:05", fajr:"04:05", newMoonDay:14, events:[
   ["07","19:29","20:29","DERNIER QUARTIER","Moitié de la face visible de la Lune éclairée.","Bélier"],
-  ["10","22:54","23:54","Pléiades à 1,1° S de la Lune","La Lune passe près de l'amas des Pléiades.","Taureau"],
-  ["13","01h","02h","Mercure en conjonction inférieure","Mercure passe entre la Terre et le Soleil, invisible.","Cancer"],
-  ["14","09:43","10:43","🌑 NOUVELLE LUNE (diurne, hors fenêtre nocturne)","La Lune est en conjonction ; invisible ce jour-là de toute façon (jour).","Cancer"],
-  ["17","00:07","01:07","Regulus à 0,5° N de la Lune","La Lune passe près de l'étoile Regulus.","Lion"],
-  ["17","00:27","01:27","Lune au nœud descendant","La Lune traverse l'écliptique du nord vers le sud.","—"],
-  ["24","21:00","22:00","Antarès à 0,6° N de la Lune","La Lune passe près de l'étoile Antarès.","Scorpion"]
+  ["10","22:54","23:54","Pléiades à 1,1° S de la Lune","La Lune passe près des Pléiades.","Taureau"],
+  ["14","09:43","10:43","🌑 NOUVELLE LUNE (diurne)","Invisible ce jour-là (conjonction en journée).","Cancer"],
+  ["17","00:07","01:07","Regulus à 0,5° N de la Lune","La Lune passe près de Regulus.","Lion"],
+  ["24","21:00","22:00","Antarès à 0,6° N de la Lune","La Lune passe près d'Antarès.","Scorpion"],
+  ["—","🛰️","🛰️","Passages satellites (ISS & Tiangong)","Cliquez pour voir les prochains passages visibles depuis Bizerte.","—"]
 ]},
 "Août": { maghrib:"19:25", icha:"20:40", fajr:"04:30", newMoonDay:12, events:[
   ["06","02:21","03:21","DERNIER QUARTIER","Moitié de la face visible de la Lune éclairée.","Taureau"],
-  ["10","22:38","23:38","Pollux à 3,6° N de la Lune","La Lune passe près de l'étoile Pollux.","Gémeaux"],
-  ["12","17:37","18:37","🌑 NOUVELLE LUNE (limite du jour)","La Lune est en conjonction, en toute fin d'après-midi.","Lion"],
-  ["13","02h","03h","Pluie d'étoiles filantes des Perséides","Une des pluies de météores les plus actives, issue de Swift-Tuttle.","Persée"],
+  ["10","22:38","23:38","Pollux à 3,6° N de la Lune","La Lune passe près de Pollux.","Gémeaux"],
+  ["12","17:37","18:37","🌑 NOUVELLE LUNE (limite du jour)","Conjonction en toute fin d'après-midi.","Lion"],
+  ["13","02h","03h","Pluie d'étoiles filantes des Perséides","Une des pluies les plus actives de l'année.","Persée"],
   ["20","02:46","03:46","PREMIER QUARTIER","Moitié de la face visible de la Lune éclairée.","Scorpion"],
-  ["27","18:47","19:47","Lune au nœud ascendant","La Lune traverse l'écliptique du sud vers le nord.","—"]
+  ["—","🛰️","🛰️","Passages satellites (ISS & Tiangong)","Cliquez pour voir les prochains passages visibles depuis Bizerte.","—"]
 ]},
 "Septembre": { maghrib:"18:50", icha:"20:05", fajr:"05:00", newMoonDay:11, events:[
-  ["06","18:24","19:24","Mars à 3,0° S de la Lune","Rapprochement apparent entre Mars et la Lune.","Vierge"],
-  ["06","20:26","21:26","Lune au périgée (368 255 km)","Point le plus proche de la Terre sur l'orbite lunaire.","—"],
-  ["08","18:13","19:13","Jupiter 0,8° S de la Lune (occultation)","La Lune passe devant Jupiter et le cache temporairement.","Lion"],
-  ["09","19:17","20:17","Lune au nœud descendant","La Lune traverse l'écliptique du nord vers le sud.","—"],
-  ["09","19:36","20:36","Regulus à 0,5° N de la Lune","La Lune passe près de l'étoile Regulus.","Lion"],
-  ["11","03:27","04:27","🌑 NOUVELLE LUNE","La Lune est invisible dans le ciel. Meilleure nuit d'observation du mois.","Vierge"],
-  ["13","20:53","21:53","Spica à 2,4° N de la Lune","La Lune passe près de l'étoile Spica.","Vierge"],
+  ["06","18:24","19:24","Mars à 3,0° S de la Lune","Rapprochement apparent Mars-Lune.","Vierge"],
+  ["08","18:13","19:13","Jupiter 0,8° S de la Lune (occultation)","La Lune passe devant Jupiter.","Lion"],
+  ["09","19:36","20:36","Regulus à 0,5° N de la Lune","La Lune passe près de Regulus.","Lion"],
+  ["11","03:27","04:27","🌑 NOUVELLE LUNE","Meilleure nuit d'observation du mois.","Vierge"],
+  ["13","20:53","21:53","Spica à 2,4° N de la Lune","La Lune passe près de Spica.","Vierge"],
   ["18","20:44","21:44","PREMIER QUARTIER","Moitié de la face visible de la Lune éclairée.","Sagittaire"],
-  ["19","03:00","04:00","Lune à l'apogée (404 217 km)","Point le plus éloigné de la Terre sur l'orbite lunaire.","—"],
-  ["23","00:06","01:06","Équinoxe d'automne","Le Soleil traverse l'équateur céleste, jour et nuit quasi égaux.","Vierge"],
-  ["24","02:40","03:40","Lune au nœud ascendant","La Lune traverse l'écliptique du sud vers le nord.","—"],
-  ["26","00h","01h","Neptune à l'opposition","Neptune au plus proche et au plus brillant de l'année.","Poissons"],
-  ["26","01:49","02:49","Mercure à 0,8° N de Spica","Rapprochement apparent entre Mercure et l'étoile Spica.","Vierge"]
+  ["23","00:06","01:06","Équinoxe d'automne","Jour et nuit quasi égaux.","Vierge"],
+  ["26","00h","01h","Neptune à l'opposition","Neptune au plus proche et au plus brillant.","Poissons"],
+  ["26","01:49","02:49","Mercure à 0,8° N de Spica","Rapprochement apparent Mercure-Spica.","Vierge"],
+  ["—","🛰️","🛰️","Passages satellites (ISS & Tiangong)","Cliquez pour voir les prochains passages visibles depuis Bizerte.","—"]
 ]},
 "Octobre": { maghrib:"18:10", icha:"19:25", fajr:"05:25", newMoonDay:10, events:[
-  ["01","20:41","21:41","Lune au périgée (369 338 km)","Point le plus proche de la Terre sur l'orbite lunaire.","—"],
-  ["07","01:19","02:19","Lune au nœud descendant","La Lune traverse l'écliptique du nord vers le sud.","—"],
-  ["07","02:57","03:57","Regulus à 0,6° N de la Lune","La Lune passe près de l'étoile Regulus.","Lion"],
-  ["10","15:50","16:50","🌑 NOUVELLE LUNE (diurne, hors fenêtre nocturne)","La Lune est en conjonction ; invisible ce jour-là de toute façon (jour).","Balance"],
-  ["12","02:30","03:30","Vénus à 3,1° S de la Lune","Rapprochement apparent entre Vénus et la Lune.","Vierge"],
-  ["12","20:08","21:08","Mercure à 2,1° N de la Lune","Rapprochement apparent entre Mercure et la Lune.","Balance"],
-  ["14","20:25","21:25","Antarès à 0,4° N de la Lune","La Lune passe très près de l'étoile Antarès.","Scorpion"],
-  ["16","22:56","23:56","Lune à l'apogée (404 639 km)","Point le plus éloigné de la Terre sur l'orbite lunaire.","—"],
-  ["21","18h","19h","Pluie d'étoiles filantes des Orionides","Débris de la comète de Halley entrant dans l'atmosphère.","Orion"],
-  ["24","03h","04h","Vénus en conjonction inférieure","Vénus passe entre la Terre et le Soleil, invisible.","Vierge"],
+  ["07","02:57","03:57","Regulus à 0,6° N de la Lune","La Lune passe près de Regulus.","Lion"],
+  ["10","15:50","16:50","🌑 NOUVELLE LUNE (diurne)","Invisible ce jour-là (conjonction en journée).","Balance"],
+  ["12","20:08","21:08","Mercure à 2,1° N de la Lune","Rapprochement apparent Mercure-Lune.","Balance"],
+  ["14","20:25","21:25","Antarès à 0,4° N de la Lune","La Lune passe très près d'Antarès.","Scorpion"],
+  ["21","18h","19h","Pluie d'étoiles filantes des Orionides","Débris de la comète de Halley.","Orion"],
   ["26","04:12","05:12","PLEINE LUNE","Face visible de la Lune entièrement éclairée.","Bélier"],
-  ["28","01:11","02:11","Pléiades à 1,0° S de la Lune","La Lune passe près de l'amas des Pléiades.","Taureau"],
-  ["28","18:01","19:01","Lune au périgée (364 411 km)","Point le plus proche de la Terre sur l'orbite lunaire.","—"],
-  ["31","18:00","19:00","Pollux à 4,0° N de la Lune","La Lune passe près de l'étoile Pollux.","Gémeaux"]
+  ["28","01:11","02:11","Pléiades à 1,0° S de la Lune","La Lune passe près des Pléiades.","Taureau"],
+  ["31","18:00","19:00","Pollux à 4,0° N de la Lune","La Lune passe près de Pollux.","Gémeaux"],
+  ["—","🛰️","🛰️","Passages satellites (ISS & Tiangong)","Cliquez pour voir les prochains passages visibles depuis Bizerte.","—"]
 ]},
 "Novembre": { maghrib:"17:40", icha:"19:00", fajr:"05:55", newMoonDay:9, events:[
   ["01","20:28","21:28","DERNIER QUARTIER","Moitié de la face visible de la Lune éclairée.","Lion"],
-  ["02","23:11","00:11","Jupiter 0,5° N de la Lune (occultation)","La Lune passe devant Jupiter et le cache temporairement.","Lion"],
-  ["03","03:02","04:02","Lune au nœud descendant","La Lune traverse l'écliptique du nord vers le sud.","—"],
-  ["05","19h","20h","Pluie d'étoiles filantes des Taurides Sud","Météores issus de la comète Encke, activité modeste et étalée.","Taureau"],
-  ["09","07:02","08:02","🌑 NOUVELLE LUNE (diurne, hors fenêtre nocturne)","La Lune est en conjonction ; invisible ce jour-là de toute façon (jour).","Scorpion"],
-  ["11","03:58","04:58","Antarès à 0,3° N de la Lune","La Lune passe très près de l'étoile Antarès.","Scorpion"],
+  ["02","23:11","00:11","Jupiter 0,5° N de la Lune (occultation)","La Lune passe devant Jupiter.","Lion"],
+  ["05","19h","20h","Pluie d'étoiles filantes des Taurides Sud","Météores issus de la comète Encke.","Taureau"],
+  ["09","07:02","08:02","🌑 NOUVELLE LUNE (diurne)","Invisible ce jour-là (conjonction en journée).","Scorpion"],
+  ["11","03:58","04:58","Antarès à 0,3° N de la Lune","La Lune passe très près d'Antarès.","Scorpion"],
   ["12","18h","19h","Pluie d'étoiles filantes des Taurides Nord","Météores issus de l'astéroïde 2004 TG10.","Taureau"],
-  ["13","17:50","18:50","Lune à l'apogée (405 619 km)","Point le plus éloigné de la Terre sur l'orbite lunaire.","—"],
-  ["16","04h","05h","Mars à 1,2° N de Jupiter","Rapprochement apparent entre Mars et Jupiter.","Lion"],
-  ["18","00h","01h","Pluie d'étoiles filantes des Léonides","Météores issus de la comète Tempel-Tuttle, parfois spectaculaire.","Lion"],
-  ["20","23h","00h","Mercure à sa plus grande élongation (19,6° O)","Meilleur moment pour observer Mercure le matin.","Balance"],
-  ["25","20:58","21:58","Lune au périgée (359 348 km)","Point le plus proche de la Terre sur l'orbite lunaire.","—"],
-  ["25","23h","00h","Uranus à l'opposition","Uranus au plus proche et au plus brillant de l'année.","Taureau"],
-  ["28","01:27","02:27","Pollux à 4,2° N de la Lune","La Lune passe près de l'étoile Pollux.","Gémeaux"],
-  ["30","03:34","04:34","Lune au nœud descendant","La Lune traverse l'écliptique du nord vers le sud.","—"],
-  ["30","19:32","20:32","Mars à 3,3° N de la Lune","Rapprochement apparent entre Mars et la Lune.","Sagittaire"]
+  ["18","00h","01h","Pluie d'étoiles filantes des Léonides","Météores de la comète Tempel-Tuttle.","Lion"],
+  ["25","23h","00h","Uranus à l'opposition","Uranus au plus proche et au plus brillant.","Taureau"],
+  ["28","01:27","02:27","Pollux à 4,2° N de la Lune","La Lune passe près de Pollux.","Gémeaux"],
+  ["30","19:32","20:32","Mars à 3,3° N de la Lune","Rapprochement apparent Mars-Lune.","Sagittaire"],
+  ["—","🛰️","🛰️","Passages satellites (ISS & Tiangong)","Cliquez pour voir les prochains passages visibles depuis Bizerte.","—"]
 ]},
 "Décembre": { maghrib:"17:30", icha:"18:50", fajr:"06:15", newMoonDay:9, events:[
-  ["04","18:36","19:36","Spica à 2,5° N de la Lune","La Lune passe près de l'étoile Spica.","Vierge"],
-  ["09","00:52","01:52","🌑 NOUVELLE LUNE","La Lune est invisible dans le ciel. Meilleure nuit d'observation du mois.","Sagittaire"],
-  ["21","20:50","21:50","Solstice d'hiver","Jour le plus court et nuit la plus longue de l'année.","Sagittaire"],
-  ["21","22:37","23:37","Pléiades à 1,0° S de la Lune","La Lune passe près de l'amas des Pléiades.","Taureau"],
-  ["22","22h","23h","Pluie d'étoiles filantes des Ursides","Météores issus de la comète 8P/Tuttle, activité modeste et régulière.","Petite Ourse"],
+  ["04","18:36","19:36","Spica à 2,5° N de la Lune","La Lune passe près de Spica.","Vierge"],
+  ["09","00:52","01:52","🌑 NOUVELLE LUNE","Meilleure nuit d'observation du mois.","Sagittaire"],
+  ["21","20:50","21:50","Solstice d'hiver","Jour le plus court, nuit la plus longue.","Sagittaire"],
+  ["21","22:37","23:37","Pléiades à 1,0° S de la Lune","La Lune passe près des Pléiades.","Taureau"],
+  ["22","22h","23h","Pluie d'étoiles filantes des Ursides","Météores de la comète 8P/Tuttle.","Petite Ourse"],
   ["24","01:28","02:28","PLEINE LUNE","Face visible de la Lune entièrement éclairée.","Gémeaux"],
-  ["25","21h","22h","Vénus au périhélie","Vénus au point le plus proche du Soleil.","—"],
-  ["27","17:32","18:32","Jupiter à 1,5° N de la Lune","Rapprochement apparent entre Jupiter et la Lune.","Lion"],
-  ["27","22:44","23:44","Regulus à 1,4° N de la Lune","La Lune passe près de l'étoile Regulus.","Lion"],
-  ["30","18:59","19:59","DERNIER QUARTIER","Moitié de la face visible de la Lune éclairée.","Vierge"]
+  ["27","17:32","18:32","Jupiter à 1,5° N de la Lune","Rapprochement apparent Jupiter-Lune.","Lion"],
+  ["27","22:44","23:44","Regulus à 1,4° N de la Lune","La Lune passe près de Regulus.","Lion"],
+  ["30","18:59","19:59","DERNIER QUARTIER","Moitié de la face visible de la Lune éclairée.","Vierge"],
+  ["—","🛰️","🛰️","Passages satellites (ISS & Tiangong)","Cliquez pour voir les prochains passages visibles depuis Bizerte.","—"]
 ]}
 };
 
 const topStars = [
-["1","Sirius","-1,46","Grand Chien","https://fr.wikipedia.org/wiki/Sirius"],
-["2","Canopus","-0,74","Carène","https://fr.wikipedia.org/wiki/Canopus"],
-["3","Alpha du Centaure","-0,27","Centaure","https://fr.wikipedia.org/wiki/Alpha_du_Centaure"],
-["4","Arcturus","-0,05","Bouvier","https://fr.wikipedia.org/wiki/Arcturus"],
-["5","Véga","0,03","Lyre","https://fr.wikipedia.org/wiki/Véga_(étoile)"],
-["6","Capella","0,08","Cocher","https://fr.wikipedia.org/wiki/Capella"],
-["7","Rigel","0,13","Orion","https://fr.wikipedia.org/wiki/Rigel"],
-["8","Procyon","0,34","Petit Chien","https://fr.wikipedia.org/wiki/Procyon"],
-["9","Achernar","0,46","Éridan","https://fr.wikipedia.org/wiki/Achernar"],
-["10","Bételgeuse","0,42","Orion","https://fr.wikipedia.org/wiki/Bételgeuse"],
-["11","Hadar (Agena)","0,61","Centaure","https://fr.wikipedia.org/wiki/Beta_Centauri"],
-["12","Altaïr","0,76","Aigle","https://fr.wikipedia.org/wiki/Altaïr"],
-["13","Acrux","0,77","Croix du Sud","https://fr.wikipedia.org/wiki/Acrux"],
-["14","Aldébaran","0,85","Taureau","https://fr.wikipedia.org/wiki/Aldébaran"],
-["15","Spica","0,98","Vierge","https://fr.wikipedia.org/wiki/Spica"],
-["16","Antarès","1,06","Scorpion","https://fr.wikipedia.org/wiki/Antar%C3%A8s"],
-["17","Pollux","1,14","Gémeaux","https://fr.wikipedia.org/wiki/Pollux_(%C3%A9toile)"],
-["18","Fomalhaut","1,16","Poisson austral","https://fr.wikipedia.org/wiki/Fomalhaut"],
-["19","Deneb","1,25","Cygne","https://fr.wikipedia.org/wiki/Deneb"],
-["20","Mimosa (Becrux)","1,25","Croix du Sud","https://fr.wikipedia.org/wiki/Beta_Crucis"],
-["21","Régulus","1,35","Lion","https://fr.wikipedia.org/wiki/R%C3%A9gulus_(%C3%A9toile)"],
-["22","Adhara","1,50","Grand Chien","https://fr.wikipedia.org/wiki/Adhara"],
-["23","Castor","1,57","Gémeaux","https://fr.wikipedia.org/wiki/Castor_(%C3%A9toile)"],
-["24","Gacrux","1,63","Croix du Sud","https://fr.wikipedia.org/wiki/Gamma_Crucis"],
-["25","Shaula","1,62","Scorpion","https://fr.wikipedia.org/wiki/Shaula"],
-["26","Bellatrix","1,64","Orion","https://fr.wikipedia.org/wiki/Bellatrix"],
-["27","Elnath","1,65","Taureau","https://fr.wikipedia.org/wiki/Elnath"],
-["28","Miaplacidus","1,67","Carène","https://fr.wikipedia.org/wiki/Miaplacidus"],
-["29","Alnilam","1,69","Orion","https://fr.wikipedia.org/wiki/Alnilam"],
-["30","Alnair","1,73","Grue","https://fr.wikipedia.org/wiki/Alnair"],
-["31","Alnitak","1,79","Orion","https://fr.wikipedia.org/wiki/Alnitak"],
-["32","Regor","1,75","Voiles","https://fr.wikipedia.org/wiki/Gamma_Velorum"],
-["33","Alioth","1,76","Grande Ourse","https://fr.wikipedia.org/wiki/Alioth"],
-["34","Kaus Australis","1,79","Sagittaire","https://fr.wikipedia.org/wiki/Kaus_Australis"],
-["35","Mirfak","1,79","Persée","https://fr.wikipedia.org/wiki/Mirfak"],
-["36","Dubhe","1,79","Grande Ourse","https://fr.wikipedia.org/wiki/Dubhe"],
-["37","Wezen","1,83","Grand Chien","https://fr.wikipedia.org/wiki/Wezen"],
-["38","Alkaid","1,85","Grande Ourse","https://fr.wikipedia.org/wiki/Alkaid"],
-["39","Sargas","1,86","Scorpion","https://fr.wikipedia.org/wiki/Sargas"],
-["40","Avior","1,86","Carène","https://fr.wikipedia.org/wiki/Avior"],
-["41","Menkalinan","1,90","Cocher","https://fr.wikipedia.org/wiki/Menkalinan"],
-["42","Atria","1,91","Triangle austral","https://fr.wikipedia.org/wiki/Atria"],
-["43","Alhena","1,93","Gémeaux","https://fr.wikipedia.org/wiki/Alhena"],
-["44","Peacock","1,94","Paon","https://fr.wikipedia.org/wiki/Peacock_(%C3%A9toile)"],
-["45","Polaris (Étoile polaire)","1,98","Petite Ourse","https://fr.wikipedia.org/wiki/%C3%89toile_polaire"],
-["46","Mirzam","1,98","Grand Chien","https://fr.wikipedia.org/wiki/Mirzam"],
-["47","Alphard","1,99","Hydre","https://fr.wikipedia.org/wiki/Alphard_(%C3%A9toile)"],
-["48","Algieba","2,01","Lion","https://fr.wikipedia.org/wiki/Algieba"],
-["49","Hamal","2,01","Bélier","https://fr.wikipedia.org/wiki/Hamal"],
-["50","Diphda","2,04","Baleine","https://fr.wikipedia.org/wiki/Diphda"]
+["1","Sirius","-1,46","Grand Chien","https://fr.wikipedia.org/wiki/Sirius"],["2","Canopus","-0,74","Carène","https://fr.wikipedia.org/wiki/Canopus"],
+["3","Alpha du Centaure","-0,27","Centaure","https://fr.wikipedia.org/wiki/Alpha_du_Centaure"],["4","Arcturus","-0,05","Bouvier","https://fr.wikipedia.org/wiki/Arcturus"],
+["5","Véga","0,03","Lyre","https://fr.wikipedia.org/wiki/Véga_(étoile)"],["6","Capella","0,08","Cocher","https://fr.wikipedia.org/wiki/Capella"],
+["7","Rigel","0,13","Orion","https://fr.wikipedia.org/wiki/Rigel"],["8","Procyon","0,34","Petit Chien","https://fr.wikipedia.org/wiki/Procyon"],
+["9","Achernar","0,46","Éridan","https://fr.wikipedia.org/wiki/Achernar"],["10","Bételgeuse","0,42","Orion","https://fr.wikipedia.org/wiki/Bételgeuse"],
+["11","Hadar (Agena)","0,61","Centaure","https://fr.wikipedia.org/wiki/Beta_Centauri"],["12","Altaïr","0,76","Aigle","https://fr.wikipedia.org/wiki/Altaïr"],
+["13","Acrux","0,77","Croix du Sud","https://fr.wikipedia.org/wiki/Acrux"],["14","Aldébaran","0,85","Taureau","https://fr.wikipedia.org/wiki/Aldébaran"],
+["15","Spica","0,98","Vierge","https://fr.wikipedia.org/wiki/Spica"],["16","Antarès","1,06","Scorpion","https://fr.wikipedia.org/wiki/Antar%C3%A8s"],
+["17","Pollux","1,14","Gémeaux","https://fr.wikipedia.org/wiki/Pollux_(%C3%A9toile)"],["18","Fomalhaut","1,16","Poisson austral","https://fr.wikipedia.org/wiki/Fomalhaut"],
+["19","Deneb","1,25","Cygne","https://fr.wikipedia.org/wiki/Deneb"],["20","Mimosa (Becrux)","1,25","Croix du Sud","https://fr.wikipedia.org/wiki/Beta_Crucis"],
+["21","Régulus","1,35","Lion","https://fr.wikipedia.org/wiki/R%C3%A9gulus_(%C3%A9toile)"],["22","Adhara","1,50","Grand Chien","https://fr.wikipedia.org/wiki/Adhara"],
+["23","Castor","1,57","Gémeaux","https://fr.wikipedia.org/wiki/Castor_(%C3%A9toile)"],["24","Gacrux","1,63","Croix du Sud","https://fr.wikipedia.org/wiki/Gamma_Crucis"],
+["25","Shaula","1,62","Scorpion","https://fr.wikipedia.org/wiki/Shaula"],["26","Bellatrix","1,64","Orion","https://fr.wikipedia.org/wiki/Bellatrix"],
+["27","Elnath","1,65","Taureau","https://fr.wikipedia.org/wiki/Elnath"],["28","Miaplacidus","1,67","Carène","https://fr.wikipedia.org/wiki/Miaplacidus"],
+["29","Alnilam","1,69","Orion","https://fr.wikipedia.org/wiki/Alnilam"],["30","Alnair","1,73","Grue","https://fr.wikipedia.org/wiki/Alnair"],
+["31","Alnitak","1,79","Orion","https://fr.wikipedia.org/wiki/Alnitak"],["32","Regor","1,75","Voiles","https://fr.wikipedia.org/wiki/Gamma_Velorum"],
+["33","Alioth","1,76","Grande Ourse","https://fr.wikipedia.org/wiki/Alioth"],["34","Kaus Australis","1,79","Sagittaire","https://fr.wikipedia.org/wiki/Kaus_Australis"],
+["35","Mirfak","1,79","Persée","https://fr.wikipedia.org/wiki/Mirfak"],["36","Dubhe","1,79","Grande Ourse","https://fr.wikipedia.org/wiki/Dubhe"],
+["37","Wezen","1,83","Grand Chien","https://fr.wikipedia.org/wiki/Wezen"],["38","Alkaid","1,85","Grande Ourse","https://fr.wikipedia.org/wiki/Alkaid"],
+["39","Sargas","1,86","Scorpion","https://fr.wikipedia.org/wiki/Sargas"],["40","Avior","1,86","Carène","https://fr.wikipedia.org/wiki/Avior"],
+["41","Menkalinan","1,90","Cocher","https://fr.wikipedia.org/wiki/Menkalinan"],["42","Atria","1,91","Triangle austral","https://fr.wikipedia.org/wiki/Atria"],
+["43","Alhena","1,93","Gémeaux","https://fr.wikipedia.org/wiki/Alhena"],["44","Peacock","1,94","Paon","https://fr.wikipedia.org/wiki/Peacock_(%C3%A9toile)"],
+["45","Polaris (Étoile polaire)","1,98","Petite Ourse","https://fr.wikipedia.org/wiki/%C3%89toile_polaire"],["46","Mirzam","1,98","Grand Chien","https://fr.wikipedia.org/wiki/Mirzam"],
+["47","Alphard","1,99","Hydre","https://fr.wikipedia.org/wiki/Alphard_(%C3%A9toile)"],["48","Algieba","2,01","Lion","https://fr.wikipedia.org/wiki/Algieba"],
+["49","Hamal","2,01","Bélier","https://fr.wikipedia.org/wiki/Hamal"],["50","Diphda","2,04","Baleine","https://fr.wikipedia.org/wiki/Diphda"]
 ];
-
 const topGalaxies = [
-["1","Grand Nuage de Magellan (LMC)","0,9","Dorade / Table","Visible à l'œil nu, hémisphère sud uniquement","https://fr.wikipedia.org/wiki/Grand_Nuage_de_Magellan"],
-["2","Petit Nuage de Magellan (SMC)","2,7","Toucan","Visible à l'œil nu, hémisphère sud uniquement","https://fr.wikipedia.org/wiki/Petit_Nuage_de_Magellan"],
-["3","Galaxie d'Andromède (M31)","3,4","Andromède","Facilement visible à l'œil nu sous ciel noir","https://fr.wikipedia.org/wiki/Galaxie_d%27Andromède"],
-["4","Galaxie du Triangle (M33)","5,7","Triangle","Nécessite un ciel très sombre + vision décalée","https://fr.wikipedia.org/wiki/Galaxie_du_Triangle"],
+["1","Grand Nuage de Magellan (LMC)","0,9","Dorade / Table","Œil nu, hémisphère sud","https://fr.wikipedia.org/wiki/Grand_Nuage_de_Magellan"],
+["2","Petit Nuage de Magellan (SMC)","2,7","Toucan","Œil nu, hémisphère sud","https://fr.wikipedia.org/wiki/Petit_Nuage_de_Magellan"],
+["3","Galaxie d'Andromède (M31)","3,4","Andromède","Facile à l'œil nu, ciel noir","https://fr.wikipedia.org/wiki/Galaxie_d%27Andromède"],
+["4","Galaxie du Triangle (M33)","5,7","Triangle","Ciel très sombre + vision décalée","https://fr.wikipedia.org/wiki/Galaxie_du_Triangle"],
 ["5","Centaurus A (NGC 5128)","6,8","Centaure","Hémisphère sud, ciel sombre","https://fr.wikipedia.org/wiki/Centaurus_A"],
-["6","Galaxie de Bode (M81)","6,9","Grande Ourse","Ciel très sombre, jumelles conseillées","https://fr.wikipedia.org/wiki/Galaxie_de_Bode"],
+["6","Galaxie de Bode (M81)","6,9","Grande Ourse","Ciel très sombre, jumelles","https://fr.wikipedia.org/wiki/Galaxie_de_Bode"],
 ["7","M83 (Moulinet austral)","7,5","Hydre","Hémisphère sud, ciel sombre","https://fr.wikipedia.org/wiki/M83_(galaxie)"],
-["8","NGC 253 (Galaxie du Sculpteur)","7,1","Sculpteur","Ciel sombre, jumelles conseillées","https://fr.wikipedia.org/wiki/NGC_253"],
+["8","NGC 253 (Sculpteur)","7,1","Sculpteur","Ciel sombre, jumelles","https://fr.wikipedia.org/wiki/NGC_253"],
 ["9","NGC 55","7,9","Sculpteur","Hémisphère sud, ciel sombre","https://fr.wikipedia.org/wiki/NGC_55"],
-["10","M110","8,1","Andromède","Compagne de M31, jumelles conseillées","https://fr.wikipedia.org/wiki/M110_(galaxie)"],
-["11","M32","8,1","Andromède","Compagne de M31, jumelles conseillées","https://fr.wikipedia.org/wiki/M32_(galaxie)"],
+["10","M110","8,1","Andromède","Compagne de M31, jumelles","https://fr.wikipedia.org/wiki/M110_(galaxie)"],
+["11","M32","8,1","Andromède","Compagne de M31, jumelles","https://fr.wikipedia.org/wiki/M32_(galaxie)"],
 ["12","NGC 300","8,1","Sculpteur","Hémisphère sud, ciel très sombre","https://fr.wikipedia.org/wiki/NGC_300"],
 ["13","M94","8,2","Chiens de Chasse","Jumelles / petit télescope","https://fr.wikipedia.org/wiki/M94_(galaxie)"],
 ["14","NGC 6744","8,3","Paon","Hémisphère sud, ciel sombre","https://fr.wikipedia.org/wiki/NGC_6744"],
-["15","M51 (Galaxie du Tourbillon)","8,4","Chiens de Chasse","Limite œil nu, jumelles conseillées","https://fr.wikipedia.org/wiki/M51_(galaxie)"],
+["15","M51 (Tourbillon)","8,4","Chiens de Chasse","Limite œil nu, jumelles","https://fr.wikipedia.org/wiki/M51_(galaxie)"],
 ["16","M101 (Moulinet)","7,9","Grande Ourse","Limite œil nu, ciel très sombre","https://fr.wikipedia.org/wiki/M101_(galaxie)"],
-["17","NGC 6822 (Galaxie de Barnard)","9,3","Sagittaire","Ciel exceptionnel requis","https://fr.wikipedia.org/wiki/NGC_6822"],
+["17","NGC 6822 (Barnard)","9,3","Sagittaire","Ciel exceptionnel requis","https://fr.wikipedia.org/wiki/NGC_6822"],
 ["18","IC 10","9,2","Cassiopée","Ciel exceptionnel requis","https://fr.wikipedia.org/wiki/IC_10"],
-["19","Maffei 1","9,1","Cassiopée","Très obscurcie par la Voie lactée, difficile","https://fr.wikipedia.org/wiki/Maffei_1"],
-["20","Galaxie naine du Fourneau","9,4","Fourneau","Très faible, ciel exceptionnel requis","https://fr.wikipedia.org/wiki/Galaxie_naine_du_Fourneau"]
+["19","Maffei 1","9,1","Cassiopée","Très obscurcie, difficile","https://fr.wikipedia.org/wiki/Maffei_1"],
+["20","Naine du Fourneau","9,4","Fourneau","Très faible, ciel exceptionnel","https://fr.wikipedia.org/wiki/Galaxie_naine_du_Fourneau"]
 ];
 
 const today = new Date();
@@ -383,6 +375,7 @@ let uid = 0;
 function closestEventIndex(events) {
   let minDiff = Infinity, idx = 0;
   events.forEach((e, i) => {
+    if (e[0] === "—") return;
     const diff = Math.abs(parseInt(e[0],10) - today.getDate());
     if (diff < minDiff) { minDiff = diff; idx = i; }
   });
@@ -392,12 +385,10 @@ function buildGazingWindow(monthIndex, newMoonDay) {
   const nm = new Date(2026, monthIndex, newMoonDay);
   const days = [];
   for (let off = -3; off <= 3; off++) {
-    const d = new Date(nm);
-    d.setDate(d.getDate() + off);
+    const d = new Date(nm); d.setDate(d.getDate() + off);
     const abbr = dayAbbr[d.getDay()];
-    const isWeekend = abbr === 'VEN' || abbr === 'SAM';
-    const isToday = d.toDateString() === today.toDateString();
-    days.push({ date: d.getDate(), month: d.toLocaleDateString('fr-FR',{month:'short'}), abbr, isWeekend, isToday });
+    days.push({ date: d.getDate(), month: d.toLocaleDateString('fr-FR',{month:'short'}), abbr,
+      isWeekend: abbr === 'VEN' || abbr === 'SAM', isToday: d.toDateString() === today.toDateString() });
   }
   return days;
 }
@@ -411,8 +402,8 @@ monthOrder.forEach((month, mi) => {
 
   const btn = document.createElement('button');
   btn.id = 'tab-' + month;
-  btn.className = 'px-3 py-1.5 rounded-md text-xs sm:text-sm border ' + (isCurrent ? 'bg-sky text-night font-bold border-sky' : 'bg-panel text-gray-300 border-border hover:bg-panel2');
-  btn.innerHTML = `${month} <span class="ml-1 rounded-full px-1.5 text-[10px] ${isCurrent ? 'bg-black/20' : 'bg-white/10'}">${m.events.length}</span>`;
+  btn.className = 'flex-shrink-0 px-2 py-1 rounded text-[11px] border ' + (isCurrent ? 'bg-sky text-night font-bold border-sky' : 'bg-panel text-gray-300 border-border hover:bg-panel2');
+  btn.innerHTML = `${month.slice(0,3)} <span class="ml-0.5 rounded-full px-1 text-[9px] ${isCurrent ? 'bg-black/20' : 'bg-white/10'}">${m.events.length}</span>`;
   btn.onclick = () => switchTab(month);
   tabsEl.appendChild(btn);
 
@@ -424,8 +415,7 @@ monthOrder.forEach((month, mi) => {
   const gazingHtml = gazingDays.map(d => `
     <div class="relative flex flex-col items-center justify-center rounded-md py-1.5 px-1 text-[10px] sm:text-xs border ${d.isWeekend ? 'bg-green-900/30 border-green-600 text-green' : 'bg-panel2 border-border text-gray-300'}">
       ${d.isToday ? '<span class="absolute -top-1.5 -right-1.5 w-2.5 h-2.5 rounded-full bg-red-500 dot-pulse"></span>' : ''}
-      <span class="font-bold">${d.abbr}</span>
-      <span class="text-[9px] opacity-80">${d.date} ${d.month}</span>
+      <span class="font-bold">${d.abbr}</span><span class="text-[9px] opacity-80">${d.date} ${d.month}</span>
     </div>`).join('');
 
   const prayerInfo = `
@@ -442,7 +432,9 @@ monthOrder.forEach((month, mi) => {
 
   const cards = m.events.map((e, i) => {
     const isRed = i === closestIdx;
+    const isSat = e[3].includes("Passages satellites");
     const id = 'card-' + (uid++);
+    const detail = isSat ? satelliteDetailHtml() : arabicDetailHtml(e[5]);
     return `
     <div class="flex gap-2 sm:hidden">
       <div class="relative w-4 flex-shrink-0">
@@ -451,39 +443,35 @@ monthOrder.forEach((month, mi) => {
       </div>
       <div class="bg-panel border border-border rounded-lg p-3 flex-1 mb-2 clickable ${isRed ? 'ring-1 ring-red-500/50' : ''}" onclick="toggleDetail('${id}')">
         <div class="flex justify-between items-start mb-1">
-          <span class="text-sky font-bold text-sm">${e[0]} ${month.slice(0,3).toLowerCase()} ${isRed ? '<span class="text-red-400 text-[10px]">● proche</span>' : ''}</span>
-          <span class="text-right">
-            <div class="text-gold font-black text-lg leading-none">${e[2]}</div>
-            <div class="text-gray-500 text-[11px]">(${e[1]} GMT)</div>
-          </span>
+          <span class="text-sky font-bold text-sm">${e[0]==="—"?"":e[0]+" "+month.slice(0,3).toLowerCase()} ${isRed ? '<span class="text-red-400 text-[10px]">● proche</span>' : ''}</span>
+          <span class="text-right"><div class="text-gold font-black text-lg leading-none">${e[2]}</div>${e[1]!=="🛰️"?`<div class="text-gray-500 text-[11px]">(${e[1]} GMT)</div>`:''}</span>
         </div>
         <div class="font-medium text-sm mb-1">${linkify(e[3])}</div>
         <div class="text-gray-400 text-xs mb-1">${e[4]}</div>
-        <div class="text-green text-xs">🌌 ${constelLink(e[5])} <span class="text-gray-500 text-[10px]">(clic pour détail)</span></div>
-        <div id="${id}" class="detail-card">${arabicDetailHtml(e[5])}</div>
+        ${!isSat ? `<div class="text-green text-xs">🌌 ${constelLink(e[5])} <span class="text-gray-500 text-[10px]">(clic pour détail)</span></div>` : `<div class="text-gray-500 text-[10px]">(clic pour les liens)</div>`}
+        <div id="${id}" class="detail-card">${detail}</div>
       </div>
     </div>`;
   }).join('');
 
   const rows = m.events.map((e, i) => {
     const isRed = i === closestIdx;
+    const isSat = e[3].includes("Passages satellites");
     const id = 'row-' + (uid++);
+    const detail = isSat ? satelliteDetailHtml() : arabicDetailHtml(e[5]);
     return `
     <tr class="border-b border-border hover:bg-panel2 clickable ${isRed ? 'bg-red-950/20' : ''}" onclick="toggleDetail('${id}')">
       <td class="relative w-8 p-0">
         <div class="absolute left-1/2 top-0 bottom-0 w-0.5 -translate-x-1/2 timeline-line"></div>
         <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-3 rounded-full border-2 border-night ${isRed ? 'bg-red-500 dot-pulse' : 'bg-sky'}"></div>
       </td>
-      <td class="py-2 px-3 text-sky font-bold whitespace-nowrap">${e[0]} ${month.slice(0,3).toLowerCase()}${isRed ? ' <span class="text-red-400 text-[10px]">● proche</span>' : ''}</td>
-      <td class="py-2 px-3 whitespace-nowrap">
-        <div class="text-gold font-black text-base leading-none">${e[2]}</div>
-        <div class="text-gray-500 text-xs">(${e[1]} GMT)</div>
-      </td>
+      <td class="py-2 px-3 text-sky font-bold whitespace-nowrap">${e[0]==="—"?"":e[0]+" "+month.slice(0,3).toLowerCase()}${isRed ? ' <span class="text-red-400 text-[10px]">● proche</span>' : ''}</td>
+      <td class="py-2 px-3 whitespace-nowrap"><div class="text-gold font-black text-base leading-none">${e[2]}</div>${e[1]!=="🛰️"?`<div class="text-gray-500 text-xs">(${e[1]} GMT)</div>`:''}</td>
       <td class="py-2 px-3">${linkify(e[3])}</td>
       <td class="py-2 px-3 text-gray-400">${e[4]}</td>
-      <td class="py-2 px-3 whitespace-nowrap">${constelLink(e[5])}</td>
+      <td class="py-2 px-3 whitespace-nowrap">${!isSat ? constelLink(e[5]) : ''}</td>
     </tr>
-    <tr class="detail-row" id="${id}"><td colspan="6" class="bg-panel2 px-4 py-2">${arabicDetailHtml(e[5])}</td></tr>`;
+    <tr class="detail-row" id="${id}"><td colspan="6" class="bg-panel2 px-4 py-2">${detail}</td></tr>`;
   }).join('');
 
   panel.innerHTML = `
@@ -502,14 +490,12 @@ monthOrder.forEach((month, mi) => {
   panelsEl.appendChild(panel);
 });
 
-function toggleDetail(id) {
-  document.getElementById(id).classList.toggle('open');
-}
+function toggleDetail(id) { document.getElementById(id).classList.toggle('open'); }
 
 // ---- Ready tab ----
 const readyBtn = document.createElement('button');
 readyBtn.id = 'tab-Ready';
-readyBtn.className = 'px-3 py-1.5 rounded-md text-xs sm:text-sm border bg-panel text-gray-300 border-border hover:bg-panel2';
+readyBtn.className = 'flex-shrink-0 px-2 py-1 rounded text-[11px] border bg-panel text-gray-300 border-border hover:bg-panel2';
 readyBtn.innerHTML = `🎒 Ready`;
 readyBtn.onclick = () => switchTab('Ready');
 tabsEl.appendChild(readyBtn);
@@ -524,70 +510,60 @@ const toolLinks = `
       <div class="text-gold font-bold text-sm mb-1">🗺️ Carte pollution lumineuse</div>
       <div class="text-gray-400 text-xs">Trouver un endroit sombre autour de Bizerte</div>
     </a>
-    <a href="https://www.heavens-above.com/PassSummary.aspx?satid=25544" target="_blank" rel="noopener" class="bg-panel border border-border rounded-lg p-3 hover:bg-panel2">
+    <a href="https://www.heavens-above.com/PassSummary.aspx?satid=25544&lat=37.2744&lng=9.8739&loc=Bizerte&alt=9&tz=CET" target="_blank" rel="noopener" class="bg-panel border border-border rounded-lg p-3 hover:bg-panel2">
       <div class="text-gold font-bold text-sm mb-1">🛰️ Passages ISS (Zarya)</div>
-      <div class="text-gray-400 text-xs">Prochains passages visibles de la Station spatiale</div>
+      <div class="text-gray-400 text-xs">Prochains passages, géolocalisés Bizerte</div>
     </a>
-    <a href="https://www.heavens-above.com/PassSummary.aspx?satid=48274" target="_blank" rel="noopener" class="bg-panel border border-border rounded-lg p-3 hover:bg-panel2">
+    <a href="https://www.heavens-above.com/PassSummary.aspx?satid=48274&lat=37.2744&lng=9.8739&loc=Bizerte&alt=9&tz=CET" target="_blank" rel="noopener" class="bg-panel border border-border rounded-lg p-3 hover:bg-panel2">
       <div class="text-gold font-bold text-sm mb-1">🛰️ Passages Tiangong</div>
-      <div class="text-gray-400 text-xs">Prochains passages visibles de la station chinoise</div>
+      <div class="text-gray-400 text-xs">Prochains passages, géolocalisés Bizerte</div>
     </a>
   </div>`;
 
-const starsRows = topStars.map(s => `
-  <tr class="border-b border-border hover:bg-panel2">
-    <td class="py-1.5 px-3 text-gray-500">${s[0]}</td>
-    <td class="py-1.5 px-3"><a class="wikilink text-sky" href="${s[4]}" target="_blank" rel="noopener">${s[1]}</a></td>
-    <td class="py-1.5 px-3 text-gold font-bold">${s[2]}</td>
-    <td class="py-1.5 px-3 text-gray-400">${s[3]}</td>
-  </tr>`).join('');
-
-const galaxiesRows = topGalaxies.map(g => `
-  <tr class="border-b border-border hover:bg-panel2">
-    <td class="py-1.5 px-3 text-gray-500">${g[0]}</td>
-    <td class="py-1.5 px-3"><a class="wikilink text-green" href="${g[5]}" target="_blank" rel="noopener">${g[1]}</a></td>
-    <td class="py-1.5 px-3 text-gold font-bold">${g[2]}</td>
-    <td class="py-1.5 px-3 text-gray-400">${g[3]}</td>
-    <td class="py-1.5 px-3 text-gray-500 text-xs">${g[4]}</td>
-  </tr>`).join('');
+const starsRows = topStars.map(s => `<tr class="border-b border-border hover:bg-panel2"><td class="py-1.5 px-3 text-gray-500">${s[0]}</td><td class="py-1.5 px-3"><a class="wikilink text-sky" href="${s[4]}" target="_blank" rel="noopener">${s[1]}</a></td><td class="py-1.5 px-3 text-gold font-bold">${s[2]}</td><td class="py-1.5 px-3 text-gray-400">${s[3]}</td></tr>`).join('');
+const galaxiesRows = topGalaxies.map(g => `<tr class="border-b border-border hover:bg-panel2"><td class="py-1.5 px-3 text-gray-500">${g[0]}</td><td class="py-1.5 px-3"><a class="wikilink text-green" href="${g[5]}" target="_blank" rel="noopener">${g[1]}</a></td><td class="py-1.5 px-3 text-gold font-bold">${g[2]}</td><td class="py-1.5 px-3 text-gray-400">${g[3]}</td><td class="py-1.5 px-3 text-gray-500 text-xs">${g[4]}</td></tr>`).join('');
 
 readyPanel.innerHTML = `
   ${toolLinks}
   <div class="text-sky font-bold text-sm mb-2">⭐ Top 50 des étoiles les plus brillantes à l'œil nu</div>
-  <div class="overflow-x-auto rounded-lg border border-border mb-6">
-    <table class="w-full bg-panel text-sm">
-      <thead><tr class="bg-panel2 text-gold text-xs">
-        <th class="py-2 px-3 text-left">#</th><th class="py-2 px-3 text-left">Étoile</th>
-        <th class="py-2 px-3 text-left">Magnitude</th><th class="py-2 px-3 text-left">Constellation</th>
-      </tr></thead>
-      <tbody>${starsRows}</tbody>
-    </table>
-  </div>
+  <div class="overflow-x-auto rounded-lg border border-border mb-6"><table class="w-full bg-panel text-sm">
+    <thead><tr class="bg-panel2 text-gold text-xs"><th class="py-2 px-3 text-left">#</th><th class="py-2 px-3 text-left">Étoile</th><th class="py-2 px-3 text-left">Magnitude</th><th class="py-2 px-3 text-left">Constellation</th></tr></thead>
+    <tbody>${starsRows}</tbody></table></div>
   <div class="text-green font-bold text-sm mb-2">🌌 Top 20 des galaxies les plus brillantes à l'œil nu</div>
-  <div class="overflow-x-auto rounded-lg border border-border">
-    <table class="w-full bg-panel text-sm">
-      <thead><tr class="bg-panel2 text-gold text-xs">
-        <th class="py-2 px-3 text-left">#</th><th class="py-2 px-3 text-left">Galaxie</th>
-        <th class="py-2 px-3 text-left">Magnitude</th><th class="py-2 px-3 text-left">Constellation</th>
-        <th class="py-2 px-3 text-left">Conditions</th>
-      </tr></thead>
-      <tbody>${galaxiesRows}</tbody>
-    </table>
-  </div>
-  <p class="text-gray-500 text-[11px] mt-3">Magnitude apparente : plus le chiffre est bas (voire négatif), plus l'objet est brillant. Œil nu = jusqu'à magnitude ~6 sous un ciel très sombre.</p>
+  <div class="overflow-x-auto rounded-lg border border-border"><table class="w-full bg-panel text-sm">
+    <thead><tr class="bg-panel2 text-gold text-xs"><th class="py-2 px-3 text-left">#</th><th class="py-2 px-3 text-left">Galaxie</th><th class="py-2 px-3 text-left">Magnitude</th><th class="py-2 px-3 text-left">Constellation</th><th class="py-2 px-3 text-left">Conditions</th></tr></thead>
+    <tbody>${galaxiesRows}</tbody></table></div>
+  <p class="text-gray-500 text-[11px] mt-3">Magnitude apparente : plus bas (voire négatif) = plus brillant. Œil nu ≈ jusqu'à magnitude 6 sous ciel très sombre.</p>
 `;
 panelsEl.appendChild(readyPanel);
 
 const allTabs = [...monthOrder, 'Ready'];
+let currentTabIndex = currentMonthIndex;
+
 function switchTab(name) {
+  currentTabIndex = allTabs.indexOf(name);
   allTabs.forEach(m => {
     const isNow = m === name;
     const el = document.getElementById('tab-' + m);
-    el.className = 'px-3 py-1.5 rounded-md text-xs sm:text-sm border ' + (isNow ? 'bg-sky text-night font-bold border-sky' : 'bg-panel text-gray-300 border-border hover:bg-panel2');
-    if (m !== 'Ready') el.innerHTML = `${m} <span class="ml-1 rounded-full px-1.5 text-[10px] ${isNow ? 'bg-black/20' : 'bg-white/10'}">${data[m].events.length}</span>`;
+    el.className = 'flex-shrink-0 px-2 py-1 rounded text-[11px] border ' + (isNow ? 'bg-sky text-night font-bold border-sky' : 'bg-panel text-gray-300 border-border hover:bg-panel2');
+    if (m !== 'Ready') el.innerHTML = `${m.slice(0,3)} <span class="ml-0.5 rounded-full px-1 text-[9px] ${isNow ? 'bg-black/20' : 'bg-white/10'}">${data[m].events.length}</span>`;
     document.getElementById('panel-' + m).classList.toggle('hidden', !isNow);
   });
+  document.getElementById('tab-' + name).scrollIntoView({ behavior:'smooth', inline:'center', block:'nearest' });
 }
+
+document.getElementById('tabPrev').onclick = () => switchTab(allTabs[(currentTabIndex - 1 + allTabs.length) % allTabs.length]);
+document.getElementById('tabNext').onclick = () => switchTab(allTabs[(currentTabIndex + 1) % allTabs.length]);
+
+let touchStartX = 0;
+panelsEl.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].screenX; });
+panelsEl.addEventListener('touchend', e => {
+  const dx = e.changedTouches[0].screenX - touchStartX;
+  if (Math.abs(dx) > 60) {
+    if (dx < 0) switchTab(allTabs[(currentTabIndex + 1) % allTabs.length]);
+    else switchTab(allTabs[(currentTabIndex - 1 + allTabs.length) % allTabs.length]);
+  }
+});
 </script>
 
 </body>
