@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="fr" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portail Maritime : Marseille - Bizerte & Permis</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        darkbg: '#0f172a',
+                        cardbg: '#1e293b',
+                    }
+                }
+            }
+        }
+    </script>
+    <script>
+        function switchPage(pageId) {
+            document.querySelectorAll('.page-section').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.menu-btn').forEach(el => {
+                el.className = "menu-btn px-4 py-2 rounded-xl font-medium text-sm text-slate-300 hover:bg-slate-800 hover:text-white transition-all";
+            });
+            document.getElementById(pageId).classList.remove('hidden');
+            document.getElementById('nav-' + pageId).className = "menu-btn px-4 py-2 rounded-xl font-semibold text-sm bg-blue-600 text-white shadow-lg transition-all";
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(el => {
+                el.className = "tab-btn px-4 py-2 rounded-xl font-semibold text-sm bg-slate-800 text-slate-300 hover:bg-slate-700 transition-all";
+            });
+            document.getElementById(tabId).classList.remove('hidden');
+            document.getElementById('btn-' + tabId).className = "tab-btn px-4 py-2 rounded-xl font-semibold text-sm bg-blue-600 text-white shadow-lg transition-all";
+        }
+
+        function switchBoatTab(boatId) {
+            document.querySelectorAll('.boat-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.boat-tab-btn').forEach(el => {
+                el.className = "boat-tab-btn px-4 py-2 rounded-xl font-semibold text-sm bg-slate-800 text-slate-300 hover:bg-slate-700 transition-all";
+            });
+            document.getElementById(boatId).classList.remove('hidden');
+            document.getElementById('btn-' + boatId).className = "boat-tab-btn px-4 py-2 rounded-xl font-semibold text-sm bg-emerald-600 text-white shadow-lg transition-all";
+        }
+
+        function switchPropulsion(mode) {
+            const sailEl = document.getElementById('cost-sail');
+            const motorEl = document.getElementById('cost-motor');
+            const btnSail = document.getElementById('btn-sail-prop');
+            const btnMotor = document.getElementById('btn-motor-prop');
+            const descEl = document.getElementById('prop-desc');
+
+            if (mode === 'sail') {
+                sailEl.classList.remove('hidden');
+                motorEl.classList.add('hidden');
+                btnSail.className = "px-3 py-1.5 rounded-lg text-xs font-semibold bg-blue-600 text-white shadow transition-all";
+                btnMotor.className = "px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700 transition-all";
+                descEl.innerText = "Estimations basées sur un grand voilier ou catamaran capable d'accueillir 12 personnes.";
+            } else {
+                sailEl.classList.add('hidden');
+                motorEl.classList.remove('hidden');
+                btnMotor.className = "px-3 py-1.5 rounded-lg text-xs font-semibold bg-blue-600 text-white shadow transition-all";
+                btnSail.className = "px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700 transition-all";
+                descEl.innerText = "Estimations basées sur une vedette à moteur ou un yacht de grande capacité.";
+            }
+        }
+
+        function toggleQcm(id) {
+            const content = document.getElementById('qcm-' + id);
+            const icon = document.getElementById('icon-' + id);
+            if (content.classList.contains('hidden')) {
+                content.classList.remove('hidden');
+                icon.style.transform = 'rotate(180deg)';
+            } else {
+                content.classList.add('hidden');
+                icon.style.transform = 'rotate(0deg)';
+            }
+        }
+    </script>
+</head>
+<body class="bg-darkbg text-slate-100 min-h-screen font-sans antialiased selection:bg-blue-500 selection:text-white">
+
+    <div class="max-w-5xl mx-auto px-4 py-8">
+        <!-- Menu Principal de Navigation -->
+        <nav class="flex flex-wrap items-center justify-between bg-slate-900/90 backdrop-blur border border-slate-800 rounded-2xl p-4 mb-10 shadow-2xl">
+            <div class="flex items-center space-x-3 mb-2 sm:mb-0">
+                <span class="w-3 h-3 rounded-full bg-blue-500 animate-pulse"></span>
+                <span class="font-extrabold text-white text-base tracking-wider">MARITIME TN-FR</span>
+            </div>
+            <div class="flex flex-wrap gap-2">
+                <button id="nav-page-convoyage" onclick="switchPage('page-convoyage')" class="menu-btn px-4 py-2 rounded-xl font-semibold text-sm bg-blue-600 text-white shadow-lg transition-all">Convoyage Marseille-Bizerte</button>
+                <button id="nav-page-bateau" onclick="switchPage('page-bateau')" class="menu-btn px-4 py-2 rounded-xl font-medium text-sm text-slate-300 hover:bg-slate-800 hover:text-white transition-all">Le Bateau</button>
+                <button id="nav-page-qcm" onclick="switchPage('page-qcm')" class="menu-btn px-4 py-2 rounded-xl font-medium text-sm text-slate-300 hover:bg-slate-800 hover:text-white transition-all">QCM & Permis Nautiques</button>
+            </div>
+        </nav>
+
+        <!-- PAGE 1 : CONVOYAGE MARSEILLE - BIZERTE -->
+        <div id="page-convoyage" class="page-section space-y-8">
+            <header class="text-center mb-8">
+                <span class="inline-block bg-blue-500/10 text-blue-400 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider mb-3 border border-blue-500/20">Dossier Complet : Marseille ➔ Bizerte</span>
+                <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-white mb-3">Location, Skipper et Logistique (12 Personnes)</h1>
+                <p class="text-slate-400 max-w-2xl mx-auto text-sm sm:text-base">Navigation hauturière en Méditerranée : options de capitaines, coûts de location du navire, budgets détaillés et formalités douanières.</p>
+            </header>
+
+            <!-- Sous-onglets de convoyage -->
+            <div class="flex flex-wrap justify-center gap-2 mb-6 bg-slate-900/80 p-2 rounded-2xl border border-slate-800 max-w-2xl mx-auto">
+                <button id="btn-tab-skipper" onclick="switchTab('tab-skipper')" class="tab-btn px-4 py-2 rounded-xl font-semibold text-sm bg-blue-600 text-white shadow-lg transition-all">1. Capitaine & Équipage</button>
+                <button id="btn-tab-location" onclick="switchTab('tab-location')" class="tab-btn px-4 py-2 rounded-xl font-semibold text-sm bg-slate-800 text-slate-300 hover:bg-slate-700 transition-all">2. Location Bateau</button>
+                <button id="btn-tab-budget" onclick="switchTab('tab-budget')" class="tab-btn px-4 py-2 rounded-xl font-semibold text-sm bg-slate-800 text-slate-300 hover:bg-slate-700 transition-all">3. Budgets & Trajet</button>
+                <button id="btn-tab-douane" onclick="switchTab('tab-douane')" class="tab-btn px-4 py-2 rounded-xl font-semibold text-sm bg-slate-800 text-slate-300 hover:bg-slate-700 transition-all">4. Douanes Bizerte</button>
+            </div>
+
+            <!-- Contenu des onglets de convoyage -->
+            <main>
+                <!-- ONGLET 1 : SKIPPER -->
+                <div id="tab-skipper" class="tab-content space-y-6">
+                    <div class="bg-cardbg border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-xl">
+                        <h2 class="text-xl font-bold text-white mb-4 flex items-center">
+                            <span class="w-3 h-3 rounded-full bg-blue-500 mr-2"></span> Un capitaine peut-il vous amener ? Combien cela coûte ?
+                        </h2>
+                        <p class="text-slate-300 text-sm leading-relaxed mb-6">
+                            **Oui, absolument.** Pour une traversée hauturière de cette envergure (surtout avec 12 personnes à bord), faire appel à un skipper professionnel diplômé (Capitaine 200 ou équivalent) est fortement recommandé, voire obligatoire si aucun passager ne possède le brevet hauturier requis.
+                        </p>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="bg-slate-900/60 border border-slate-800/80 rounded-xl p-5">
+                                <span class="text-xs font-medium text-blue-400 uppercase tracking-wider">Tarif du Skipper (Professionnel)</span>
+                                <p class="text-2xl font-bold text-white mt-1">300 € à 450 € / jour</p>
+                                <p class="text-xs text-slate-400 mt-2">Pour une traversée estimée à 4 à 6 jours (Marseille - Sardaigne/Sicile - Bizerte), comptez entre **1 500 € et 2 700 €** de forfait pour le skipper, hors nourris et logés à bord.</p>
+                            </div>
+                            <div class="bg-slate-900/60 border border-slate-800/80 rounded-xl p-5">
+                                <span class="text-xs font-medium text-blue-400 uppercase tracking-wider">Règle des quarts (12 personnes)</span>
+                                <p class="text-2xl font-bold text-white mt-1">1 ou 2 Skippers ?</p>
+                                <p class="text-xs text-slate-400 mt-2">Pour un groupe de 12 personnes, un second marin ou un co-skipper est souvent requis pour organiser les rotations de veille de nuit permanentes sur le Canal de Sicile.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ONGLET 2 : LOCATION -->
+                <div id="tab-location" class="tab-content space-y-6 hidden">
+                    <div class="bg-cardbg border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-xl">
+                        <h2 class="text-xl font-bold text-white mb-4 flex items-center">
+                            <span class="w-3 h-3 rounded-full bg-emerald-500 mr-2"></span> Coût de location du bateau (Capacité 12 personnes)
+                        </h2>
+                        <p class="text-slate-300 text-sm leading-relaxed mb-6">
+                            Louer un voilier monocoque, un grand catamaran ou un yacht capable d'accueillir légalement et confortablement **12 personnes** en cabine pour une croisière de transfert vers la Tunisie représente un budget conséquent :
+                        </p>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="bg-slate-900/60 border border-slate-800/80 rounded-xl p-5">
+                                <span class="text-xs font-medium text-emerald-400 uppercase tracking-wider">Grand Voilier / Catamaran</span>
+                                <p class="text-2xl font-bold text-white mt-1">4 000 € – 8 000 €</p>
+                                <p class="text-xs text-slate-400 mt-2">Prix de location à la semaine pour une grande unité homologuée 12 passagers en haute mer.</p>
+                            </div>
+                            <div class="bg-slate-900/60 border border-slate-800/80 rounded-xl p-5">
+                                <span class="text-xs font-medium text-emerald-400 uppercase tracking-wider">Caution / Dépôt de garantie</span>
+                                <p class="text-2xl font-bold text-white mt-1">3 000 € – 6 000 €</p>
+                                <p class="text-xs text-slate-400 mt-2">Empreinte bancaire bloquée par le loueur professionnel au départ de Marseille.</p>
+                            </div>
+                            <div class="bg-slate-900/60 border border-slate-800/80 rounded-xl p-5">
+                                <span class="text-xs font-medium text-emerald-400 uppercase tracking-wider">Frais d'abandon (One-Way)</span>
+                                <p class="text-2xl font-bold text-white mt-1">Sur devis spécifique</p>
+                                <p class="text-xs text-slate-400 mt-2">Rares sont les loueurs acceptant de laisser leur flotte en Tunisie sans frais de convoyage retour vers la France.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ONGLET 3 : BUDGETS & TRAJET -->
+                <div id="tab-budget" class="tab-content space-y-6 hidden">
+                    <div class="bg-cardbg border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-xl">
+                        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+                            <div>
+                                <h2 class="text-xl font-bold text-white">Simulation Globale : Voile vs Moteur</h2>
+                                <p id="prop-desc" class="text-xs text-slate-400 mt-1">Estimations basées sur un grand voilier ou catamaran capable d'accueillir 12 personnes.</p>
+                            </div>
+                            <div class="flex bg-slate-900 p-1 rounded-xl border border-slate-800">
+                                <button id="btn-sail-prop" onclick="switchPropulsion('sail')" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-blue-600 text-white shadow transition-all">Voilier</button>
+                                <button id="btn-motor-prop" onclick="switchPropulsion('motor')" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700 transition-all">Moteur</button>
+                            </div>
+                        </div>
+
+                        <!-- Coûts Voilier -->
+                        <div id="cost-sail" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="bg-slate-900/60 border border-slate-800/80 rounded-xl p-5">
+                                <span class="text-xs font-medium text-blue-400 uppercase tracking-wider">Carburant Auxiliaire</span>
+                                <p class="text-2xl font-bold text-white mt-1">400 € – 800 €</p>
+                                <p class="text-xs text-slate-400 mt-2">Manœuvres et calmes plats.</p>
+                            </div>
+                            <div class="bg-slate-900/60 border border-slate-800/80 rounded-xl p-5">
+                                <span class="text-xs font-medium text-blue-400 uppercase tracking-wider">Avitaillement (12 pers.)</span>
+                                <p class="text-2xl font-bold text-white mt-1">1 500 € – 2 500 €</p>
+                                <p class="text-xs text-slate-400 mt-2">Nourriture et eau douce.</p>
+                            </div>
+                            <div class="bg-slate-900/60 border border-slate-800/80 rounded-xl p-5">
+                                <span class="text-xs font-medium text-blue-400 uppercase tracking-wider">Ports & Taxes</span>
+                                <p class="text-2xl font-bold text-white mt-1">600 € – 1 200 €</p>
+                                <p class="text-xs text-slate-400 mt-2">Escales (Cagliari/Trapani) + Bizerte.</p>
+                            </div>
+                        </div>
+
+                        <!-- Coûts Moteur -->
+                        <div id="cost-motor" class="grid grid-cols-1 md:grid-cols-3 gap-4 hidden">
+                            <div class="bg-slate-900/60 border border-slate-800/80 rounded-xl p-5">
+                                <span class="text-xs font-medium text-amber-400 uppercase tracking-wider">Carburant Continu</span>
+                                <p class="text-2xl font-bold text-white mt-1">4 500 € – 9 000 €</p>
+                                <p class="text-xs text-slate-400 mt-2">Forte consommation sur ~460 milles.</p>
+                            </div>
+                            <div class="bg-slate-900/60 border border-slate-800/80 rounded-xl p-5">
+                                <span class="text-xs font-medium text-amber-400 uppercase tracking-wider">Avitaillement (12 pers.)</span>
+                                <p class="text-2xl font-bold text-white mt-1">1 500 € – 2 500 €</p>
+                                <p class="text-xs text-slate-400 mt-2">Provisions pour l'équipage.</p>
+                            </div>
+                            <div class="bg-slate-900/60 border border-slate-800/80 rounded-xl p-5">
+                                <span class="text-xs font-medium text-amber-400 uppercase tracking-wider">Ports & Taxes</span>
+                                <p class="text-2xl font-bold text-white mt-1">800 € – 1 500 €</p>
+                                <p class="text-xs text-slate-400 mt-2">Frais majorés pour grande unité.</p>
+                            </div>
+                        </div>
+
+                        <div class="mt-8 border-t border-slate-800 pt-6">
+                            <h3 class="font-bold text-white mb-3">Rappel du Trajet Théorique Exact</h3>
+                            <ul class="space-y-2 text-sm text-slate-300">
+                                <li>📍 **Départ :** Port de Marseille (Vieux-Port ou Pointe Rouge) ➔ **Sardaigne** (Cagliari) ➔ **Sicile** (Trapani) ➔ **Arrivée :** **Port de Bizerte** (Marina de Bizerte).</li>
+                                <li>⏱️ **Durée totale :** 4 à 7 jours selon la météo et les escales.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ONGLET 4 : DOUANES BIZERTE -->
+                <div id="tab-douane" class="tab-content space-y-6 hidden">
+                    <div class="bg-cardbg border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-xl">
+                        <h2 class="text-xl font-bold text-white mb-4 flex items-center">
+                            <span class="w-3 h-3 rounded-full bg-purple-500 mr-2"></span> Formalités Douanières et de Police à Bizerte
+                        </h2>
+                        <p class="text-slate-300 text-sm leading-relaxed mb-6">
+                            Dès l'amarrage au quai désigné de la **Marina de Bizerte** ou du port de commerce, l'accès à terre est strictement interdit avant le passage des autorités officielles.
+                        </p>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="bg-slate-900/60 border border-slate-800/80 rounded-xl p-5 space-y-2">
+                                <h3 class="font-bold text-white">1. Contrôle des 12 Passeports (PAF)</h3>
+                                <p class="text-slate-300 text-sm">La Police aux Frontières examine les passeports de l'ensemble des 12 passagers et valide le **rôle d'équipage** officiel visé au départ de France.</p>
+                            </div>
+                            <div class="bg-slate-900/60 border border-slate-800/80 rounded-xl p-5 space-y-2">
+                                <h3 class="font-bold text-white">2. Apurement de la Douane (Bateau)</h3>
+                                <p class="text-slate-300 text-sm">Établissement du certificat d'<strong>Admission Temporaire</strong> (si le bateau est en séjour touristique) ou dépôt des formalités de dédouanement définitif si le propriétaire y est éligible.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <!-- PAGE : LE BATEAU -->
+        <div id="page-bateau" class="page-section space-y-8 hidden">
+            <header class="text-center mb-8">
+                <span class="inline-block bg-emerald-500/10 text-emerald-400 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider mb-3 border border-emerald-500/20">Sélection de Navires (Capacité 12 Personnes)</span>
+                <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-white mb-3">Types de Bateaux, Avantages, Inconvénients & Tarifs</h1>
+                <p class="text-slate-400 max-w-2xl mx-auto text-sm sm:text-base">Analyse comparative pour une traversée hauturière Marseille-Bizerte avec 12 passagers à bord.</p>
+            </header>
+
+            <!-- Synthèse rapide : Moins cher & Meilleur rapport qualité/prix -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-3xl mx-auto mb-8">
+                <div class="bg-emerald-950/40 border border-emerald-500/30 rounded-2xl p-5 shadow-lg">
+                    <span class="text-xs font-semibold text-emerald-400 uppercase tracking-wider">Option la Moins Chère</span>
+                    <h3 class="text-lg font-bold text-white mt-1">Le Grand Voilier Monocoque</h3>
+                    <p class="text-xs text-slate-300 mt-2">Coût de location et carburant minimal, mais exige de tasser 12 personnes dans les cabines et carrés transformables, avec un confort plus rustique en mer.</p>
+                </div>
+                <div class="bg-blue-950/40 border border-blue-500/30 rounded-2xl p-5 shadow-lg">
+                    <span class="text-xs font-semibold text-blue-400 uppercase tracking-wider">Meilleur Rapport Qualité / Prix</span>
+                    <h3 class="text-lg font-bold text-white mt-1">Le Grand Catamaran de Croisière</h3>
+                    <p class="text-xs text-slate-300 mt-2">Espace de vie exceptionnel, stabilité parfaite pour limiter le mal de mer de 12 passagers pendant la traversée, et autonomie remarquable sous voile.</p>
+                </div>
+            </div>
+
+            <!-- Sous-onglets types de bateaux -->
+            <div class="flex flex-wrap justify-center gap-2 mb-6 bg-slate-900/80 p-2 rounded-2xl border border-slate-800 max-w-2xl mx-auto">
+                <button id="btn-boat-mono" onclick="switchBoatTab('boat-mono')" class="boat-tab-btn px-4 py-2 rounded-xl font-semibold text-sm bg-emerald-600 text-white shadow-lg transition-all">1. Voilier Monocoque</button>
+                <button id="btn-boat-cata" onclick="switchBoatTab('boat-cata')" class="boat-tab-btn px-4 py-2 rounded-xl font-semibold text-sm bg-slate-800 text-slate-300 hover:bg-slate-700 transition-all">2. Catamaran</button>
+                <button id="btn-boat-yacht" onclick="switchBoatTab('boat-yacht')" class="boat-tab-btn px-4 py-2 rounded-xl font-semibold text-sm bg-slate-800 text-slate-300 hover:bg-slate-700 transition-all">3. Vedette / Yacht Moteur</button>
+            </div>
+
+            <main class="max-w-3xl mx-auto">
+                <!-- VOILIER MONOCOQUE -->
+                <div id="boat-mono" class="boat-content space-y-6">
+                    <div class="bg-cardbg border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-xl space-y-6">
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-slate-800 pb-4">
+                            <h2 class="text-xl font-bold text-white">Grand Voilier Monocoque (50 à 55 pieds)</h2>
+                            <span class="bg-emerald-500/10 text-emerald-400 px-3 py-1 rounded-full text-xs font-semibold border border-emerald-500/20">Location Semaine : 3 500 € – 6 000 €</span>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-800">
+                                <h4 class="font-bold text-emerald-400 mb-2">Avantages</h4>
+                                <ul class="list-disc list-inside text-xs text-slate-300 space-y-1.5">
+                                    <li>Le plus économique du marché pour une grande unité.</li>
+                                    <li>Comportement marin d'exception en haute mer et au près.</li>
+                                    <li>Frais de port d'escale modérés par rapport au multicoque.</li>
+                                </ul>
+                            </div>
+                            <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-800">
+                                <h4 class="font-bold text-amber-400 mb-2">Inconvénients</h4>
+                                <ul class="list-disc list-inside text-xs text-slate-300 space-y-1.5">
+                                    <li>Gîte prononcée en navigation (inconfort pour les non-initiés).</li>
+                                    <li>Espace intérieur restreint pour loger confortablement 12 personnes.</li>
+                                    <li>Cadence de croisière plus lente si le vent faiblit.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CATAMARAN -->
+                <div id="boat-cata" class="boat-content space-y-6 hidden">
+                    <div class="bg-cardbg border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-xl space-y-6">
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-slate-800 pb-4">
+                            <h2 class="text-xl font-bold text-white">Grand Catamaran de Croisière (45 à 52 pieds)</h2>
+                            <span class="bg-blue-500/10 text-blue-400 px-3 py-1 rounded-full text-xs font-semibold border border-blue-500/20">Location Semaine : 7 000 € – 13 000 €</span>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-800">
+                                <h4 class="font-bold text-emerald-400 mb-2">Avantages</h4>
+                                <ul class="list-disc list-inside text-xs text-slate-300 space-y-1.5">
+                                    <li>Espace de vie gigantesque (carré panoramique, vaste cockpit) parfait pour 12 personnes.</li>
+                                    <li>Absence de gîte : confort et stabilité anti-mal de mer accrus.</li>
+                                    <li>Multiples cabines indépendantes et sanitaires privatifs.</li>
+                                </ul>
+                            </div>
+                            <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-800">
+                                <h4 class="font-bold text-amber-400 mb-2">Inconvénients</h4>
+                                <ul class="list-disc list-inside text-xs text-slate-300 space-y-1.5">
+                                    <li>Tarifs de location et de caution nettement plus élevés.</li>
+                                    <li>Frais de port majorés de 50 % à 100 % dans les marinas (encombrement).</li>
+                                    <li>Moins incisif au près serré face au vent de face.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- YACHT / VEDETTE -->
+                <div id="boat-yacht" class="boat-content space-y-6 hidden">
+                    <div class="bg-cardbg border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-xl space-y-6">
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-slate-800 pb-4">
+                            <h2 class="text-xl font-bold text-white">Vedette à Moteur / Yacht (50+ pieds)</h2>
+                            <span class="bg-purple-500/10 text-purple-400 px-3 py-1 rounded-full text-xs font-semibold border border-purple-500/20">Location Semaine : 10 000 € – 25 000 €+</span>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-800">
+                                <h4 class="font-bold text-emerald-400 mb-2">Avantages</h4>
+                                <ul class="list-disc list-inside text-xs text-slate-300 space-y-1.5">
+                                    <li>Vitesse de déplacement élevée : traversée Marseille-Bizerte pliée en 30 à 36 heures.</li>
+                                    <li>Luxe hôtelier haut de gamme pour l'ensemble des passagers.</li>
+                                    <li>Indépendance totale vis-à-vis des conditions de vent.</li>
+                                </ul>
+                            </div>
+                            <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-800">
+                                <h4 class="font-bold text-amber-400 mb-2">Inconvénients</h4>
+                                <ul class="list-disc list-inside text-xs text-slate-300 space-y-1.5">
+                                    <li>Budget carburant astronomique (plusieurs milliers d'euros de gazole).</li>
+                                    <li>Vulnérabilité importante en cas de mer forte (slamming, tangage).</li>
+                                    <li>Disponibilité et conditions d'assurance très strictes.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <!-- PAGE 2 : QCM & PERMIS NAUTIQUES -->
+        <div id="page-qcm" class="page-section space-y-8 hidden">
+            <header class="text-center mb-8">
+                <span class="inline-block bg-emerald-500/10 text-emerald-400 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider mb-3 border border-emerald-500/20">Foire Aux Questions & Réglementation</span>
+                <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-white mb-3">Permis Côtiers, Hauturiers & Exigences Légales</h1>
+                <p class="text-slate-400 max-w-2xl mx-auto text-sm sm:text-base">Tout savoir sur les coûts, la durée d'apprentissage, le renouvellement des brevets, la reconnaissance en Tunisie et l'éligibilité CPF.</p>
+            </header>
+
+            <div class="space-y-4 max-w-3xl mx-auto">
+                <!-- Question 1 -->
+                <div class="bg-cardbg border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
+                    <button onclick="toggleQcm(1)" class="w-full flex items-center justify-between p-6 text-left font-bold text-white hover:bg-slate-800/50 transition-all">
+                        <span class="flex items-center space-x-3">
+                            <span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span>
+                            <span>Coût et durée d'apprentissage : Permis Côtier et Extension Hauturière</span>
+                        </span>
+                        <svg id="icon-1" class="w-5 h-5 text-slate-400 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <div id="qcm-1" class="hidden px-6 pb-6 text-sm text-slate-300 space-y-4 border-t border-slate-800/80 pt-4">
+                        <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-800">
+                            <h4 class="font-bold text-white mb-1">Permis Option Côtière (Navigation jusqu'à 6 milles d'un abri)</h4>
+                            <p class="text-slate-400"><strong>Durée :</strong> 5 heures de cours théoriques minimum + 2 heures de pratique à la barre. Formation étalée sur un week-end.</p>
+                            <p class="text-slate-400 mt-1"><strong>Coût :</strong> Entre 350 € et 500 € (hors timbre fiscal de délivrance de 78 €).</p>
+                        </div>
+                        <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-800">
+                            <h4 class="font-bold text-white mb-1">Extension Hauturière (Sans limitation de distance - Requis pour traverser)</h4>
+                            <p class="text-slate-400"><strong>Durée :</strong> Environ 15 à 20 heures de formation théorique (calculs de marées, cartes, radionavigation, météo) sanctionnées par un examen écrit de 1h30.</p>
+                            <p class="text-slate-400 mt-1"><strong>Coût :</strong> Entre 300 € et 500 € de formation (nécessite le permis côtier préalable).</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Question 2 -->
+                <div class="bg-cardbg border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
+                    <button onclick="toggleQcm(2)" class="w-full flex items-center justify-between p-6 text-left font-bold text-white hover:bg-slate-800/50 transition-all">
+                        <span class="flex items-center space-x-3">
+                            <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
+                            <span>Quand renouveler son permis bateau, comment et combien ?</span>
+                        </span>
+                        <svg id="icon-2" class="w-5 h-5 text-slate-400 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <div id="qcm-2" class="hidden px-6 pb-6 text-sm text-slate-300 space-y-3 border-t border-slate-800/80 pt-4">
+                        <p><strong>Validité :</strong> En France, le permis de plaisance est <strong>permanent et ne périt jamais</strong>. Il n'y a aucune date de validité obligatoire liée au temps pour les cartes obtenues après 2008.</p>
+                        <p><strong>Cas de modification (Comment & Combien) :</strong> Un renouvellement (fabrication d'une nouvelle carte plastique) n'est nécessaire qu'en cas de **perte, vol, détérioration ou changement d'état civil**. La démarche s'effectue auprès de la DDTM ou en ligne via les téléprocédures, moyennant un timbre fiscal de <strong>78 €</strong>.</p>
+                    </div>
+                </div>
+
+                <!-- Question 3 -->
+                <div class="bg-cardbg border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
+                    <button onclick="toggleQcm(3)" class="w-full flex items-center justify-between p-6 text-left font-bold text-white hover:bg-slate-800/50 transition-all">
+                        <span class="flex items-center space-x-3">
+                            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                            <span>Ces permis sont-ils acceptés en Tunisie ? Comment les transformer ?</span>
+                        </span>
+                        <svg id="icon-3" class="w-5 h-5 text-slate-400 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <div id="qcm-3" class="hidden px-6 pb-6 text-sm text-slate-300 space-y-4 border-t border-slate-800/80 pt-4">
+                        <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-800">
+                            <h4 class="font-bold text-white mb-1">Acceptation en Tunisie</h4>
+                            <p class="text-slate-400">Le permis plaisance français est globalement accepté et respecté pour la conduite des navires sous pavillon français ou en escale. De plus, la législation tunisienne n'impose pas de permis obligatoire pour la navigation de loisir privée non-professionnelle.</p>
+                        </div>
+                        <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-800">
+                            <h4 class="font-bold text-white mb-1">Transformation en permis tunisien</h4>
+                            <p class="text-slate-400">Il n'existe pas de procédure de conversion sèche d'un brevet de plaisance français en permis tunisien, les autorités locales s'appuyant sur les brevets internationaux (type normes ISSA ou STCW) pour le commerce. Présenter votre titre français en règle suffit amplement pour la plaisance.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Question 4 -->
+                <div class="bg-cardbg border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
+                    <button onclick="toggleQcm(4)" class="w-full flex items-center justify-between p-6 text-left font-bold text-white hover:bg-slate-800/50 transition-all">
+                        <span class="flex items-center space-x-3">
+                            <span class="w-2.5 h-2.5 rounded-full bg-purple-500"></span>
+                            <span>Formation finançable par CPF ?</span>
+                        </span>
+                        <svg id="icon-4" class="w-5 h-5 text-slate-400 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <div id="qcm-4" class="hidden px-6 pb-6 text-sm text-slate-300 space-y-3 border-t border-slate-800/80 pt-4">
+                        <p><strong>Non.</strong> Les permis plaisance de loisir (options côtière ou extension hauturière) ne sont <strong>pas éligibles</strong> au Compte Personnel de Formation (CPF).</p>
+                        <p class="text-slate-400">Le CPF ne finance que des cursus professionnalisants et certifiants inscrits au RNCP/RS liés aux métiers de la mer (marins professionnels, capitaines marchands).</p>
+                    </div>
+                </div>
+
+                <!-- Question 5 -->
+                <div class="bg-cardbg border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
+                    <button onclick="toggleQcm(5)" class="w-full flex items-center justify-between p-6 text-left font-bold text-white hover:bg-slate-800/50 transition-all">
+                        <span class="flex items-center space-x-3">
+                            <span class="w-2.5 h-2.5 rounded-full bg-cyan-500"></span>
+                            <span>Exigences légales de la France et de la Tunisie pour une telle traversée</span>
+                        </span>
+                        <svg id="icon-5" class="w-5 h-5 text-slate-400 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <div id="qcm-5" class="hidden px-6 pb-6 text-sm text-slate-300 space-y-4 border-t border-slate-800/80 pt-4">
+                        <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-800">
+                            <h4 class="font-bold text-white mb-1">Côté France (Sortie des eaux territoriales)</h4>
+                            <ul class="list-disc list-inside space-y-1 text-slate-400">
+                                <li>Matériel de sécurité hauturier complet à bord (radeau de survie, balise EPIRB, gilets conformes).</li>
+                                <lI>Acte de francisation et pavillon français en règle.</lI>
+                                <li>Rôle d'équipage nominatif listant les 12 personnes à bord, signé.</li>
+                            </ul>
+                        </div>
+                        <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-800">
+                            <h4 class="font-bold text-white mb-1">Côté Tunisie (Arrivée à Bizerte)</h4>
+                            <ul class="list-disc list-inside space-y-1 text-slate-400">
+                                <li>Obligation absolue de s'amarrer dans un port d'entrée désigné (Marina de Bizerte) sans débarquer quiconque avant l'inspection douanière et sanitaire.</li>
+                                <li>Présentation des 12 passeports valides pour le contrôle de la police aux frontières (PAF).</li>
+                                <li>Régularisation du statut douanier du navire (Admission Temporaire).</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="text-center mt-16 text-xs text-slate-500">
+            <p>Guide interactif maritime - Liaison Marseille / Bizerte et réglementation des permis plaisance.</p>
+        </footer>
+    </div>
+
+</body>
+</html>
