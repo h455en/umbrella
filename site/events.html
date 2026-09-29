@@ -3,17 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sky Gazing — Bizerte 2026</title>
+<title>Sky Gazing 2026</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&family=Noto+Naskh+Arabic:wght@400;700&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
 <script>
-  tailwind.config = {
-    theme: { extend: {
-      fontFamily: { sans: ['Roboto', 'sans-serif'] },
-      colors: { night:'#0b0f2b', panel:'#151a3d', panel2:'#1e2452', border:'#2a2f5a', gold:'#ffd166', sky:'#6ec6ff', green:'#9be89b' }
-    } }
-  }
+  tailwind.config = { theme: { extend: {
+    fontFamily: { sans: ['Roboto', 'sans-serif'] },
+    colors: { night:'#0b0f2b', panel:'#151a3d', panel2:'#1e2452', border:'#2a2f5a', gold:'#ffd166', sky:'#6ec6ff', green:'#9be89b' }
+  } } }
 </script>
 <style>
   body { font-family: 'Roboto', sans-serif; }
@@ -24,27 +22,30 @@
   @keyframes pulse { 0%{box-shadow:0 0 0 0 rgba(239,68,68,.6)} 70%{box-shadow:0 0 0 6px rgba(239,68,68,0)} 100%{box-shadow:0 0 0 0 rgba(239,68,68,0)} }
   .arabic { font-family: 'Noto Naskh Arabic', serif; direction: rtl; }
   .clickable { cursor: pointer; }
-  .detail-row { display: none; }
-  .detail-row.open { display: table-row; }
-  .detail-card { display: none; }
-  .detail-card.open { display: block; }
+  .detail-row { display: none; } .detail-row.open { display: table-row; }
+  .detail-card { display: none; } .detail-card.open { display: block; }
   .scrollbar-hide::-webkit-scrollbar { display: none; }
   .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+  .footer-links-panel { max-height:0; overflow:hidden; transition: max-height .35s ease; }
+  .footer-links-panel.open { max-height: 500px; }
+  .footer-chevron { transition: transform .3s ease; display:inline-block; }
+  .footer-chevron.open { transform: rotate(180deg); }
 </style>
 </head>
-<body class="bg-night text-gray-100">
+<body class="bg-night text-gray-100 flex flex-col min-h-screen">
 
 <header class="py-1.5 px-2 bg-panel border-b border-border sticky top-0 z-10 overflow-x-auto whitespace-nowrap scrollbar-hide">
   <div class="flex items-center justify-center gap-1.5 text-[10px] sm:text-xs">
     <span class="text-gold font-black text-sm">🌌 Sky Gazing</span>
     <span class="text-gray-600">·</span>
-    <span class="text-gray-400">Bizerte, Tunisie</span>
+    <button id="locBizerte" class="px-2 py-0.5 rounded text-[10px] font-bold">🇹🇳 Bizerte</button>
+    <button id="locParis" class="px-2 py-0.5 rounded text-[10px] font-bold">🇫🇷 Paris</button>
     <span class="text-gray-600">·</span>
     <span id="clock" class="text-sky font-medium"></span>
   </div>
 </header>
 
-<main class="max-w-4xl mx-auto px-3 sm:px-6 py-5">
+<main class="max-w-4xl mx-auto px-3 sm:px-6 py-5 flex-1 w-full">
   <div class="flex items-center gap-1 mb-4">
     <button id="tabPrev" class="flex-shrink-0 w-7 h-7 rounded-md bg-panel border border-border text-sky text-sm hover:bg-panel2">‹</button>
     <div id="tabs" class="flex gap-1 overflow-x-auto flex-1 scrollbar-hide"></div>
@@ -54,11 +55,51 @@
   <p class="text-center text-gray-600 text-[10px] mt-2 sm:hidden">👈 glissez pour changer de mois 👉</p>
 </main>
 
-<footer class="py-1.5 px-3 bg-panel border-t border-border text-center text-[10px] sm:text-xs text-gray-500">
-  Source : astropixels.com — Année 2026
+<footer class="bg-panel border-t border-border">
+  <div id="footerLinksPanel" class="footer-links-panel px-4">
+    <div class="py-3 grid gap-2 sm:grid-cols-2">
+      <a href="https://djlorenz.github.io/astronomy/lp/overlay/dark.html" target="_blank" rel="noopener" class="bg-panel2 border border-border rounded-md p-2 hover:bg-border">
+        <div class="text-gold text-xs font-bold">🗺️ Carte pollution lumineuse</div>
+        <div class="text-gray-500 text-[10px]">djlorenz.github.io</div>
+      </a>
+      <a href="https://www.nasa.gov" target="_blank" rel="noopener" class="bg-panel2 border border-border rounded-md p-2 hover:bg-border">
+        <div class="text-gold text-xs font-bold">🚀 NASA</div>
+        <div class="text-gray-500 text-[10px]">nasa.gov</div>
+      </a>
+      <a href="https://eclipse.gsfc.nasa.gov" target="_blank" rel="noopener" class="bg-panel2 border border-border rounded-md p-2 hover:bg-border">
+        <div class="text-gold text-xs font-bold">🌘 NASA Eclipse</div>
+        <div class="text-gray-500 text-[10px]">eclipse.gsfc.nasa.gov</div>
+      </a>
+      <a href="https://astropixels.com" target="_blank" rel="noopener" class="bg-panel2 border border-border rounded-md p-2 hover:bg-border">
+        <div class="text-gold text-xs font-bold">📷 Astropixels</div>
+        <div class="text-gray-500 text-[10px]">astropixels.com</div>
+      </a>
+      <a href="https://www.heavens-above.com" target="_blank" rel="noopener" class="bg-panel2 border border-border rounded-md p-2 hover:bg-border">
+        <div class="text-gold text-xs font-bold">🛰️ Heavens-Above</div>
+        <div class="text-gray-500 text-[10px]">heavens-above.com</div>
+      </a>
+      <a href="https://in-the-sky.org" target="_blank" rel="noopener" class="bg-panel2 border border-border rounded-md p-2 hover:bg-border">
+        <div class="text-gold text-xs font-bold">🔭 In-The-Sky.org</div>
+        <div class="text-gray-500 text-[10px]">in-the-sky.org</div>
+      </a>
+      <a href="https://stellarium-web.org" target="_blank" rel="noopener" class="bg-panel2 border border-border rounded-md p-2 hover:bg-border">
+        <div class="text-gold text-xs font-bold">🪐 Stellarium Web</div>
+        <div class="text-gray-500 text-[10px]">stellarium-web.org</div>
+      </a>
+      <a href="https://www.timeanddate.com/astronomy/" target="_blank" rel="noopener" class="bg-panel2 border border-border rounded-md p-2 hover:bg-border">
+        <div class="text-gold text-xs font-bold">🌍 TimeAndDate Astronomie</div>
+        <div class="text-gray-500 text-[10px]">timeanddate.com</div>
+      </a>
+    </div>
+  </div>
+  <button id="footerToggle" class="w-full py-1.5 text-center text-[10px] sm:text-xs text-gray-400 hover:text-gold flex items-center justify-center gap-1">
+    <span class="footer-chevron">▲</span> Liens utiles
+  </button>
+  <div class="text-center text-[10px] sm:text-xs text-gray-500 pb-1.5">Source : astropixels.com — Année 2026</div>
 </footer>
 
 <script>
+// ============ CLOCK ============
 function updateClock() {
   const now = new Date();
   const dateStr = now.toLocaleDateString('fr-FR', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' });
@@ -68,6 +109,39 @@ function updateClock() {
 updateClock();
 setInterval(updateClock, 1000);
 
+// ============ FOOTER TOGGLE ============
+document.getElementById('footerToggle').onclick = () => {
+  document.getElementById('footerLinksPanel').classList.toggle('open');
+  document.querySelector('.footer-chevron').classList.toggle('open');
+};
+
+// ============ LOCATION SWITCH ============
+const locationTZ = { Bizerte: 'Africa/Tunis', Paris: 'Europe/Paris' };
+const locationCoords = { Bizerte: {lat:37.2744, lng:9.8739}, Paris: {lat:48.8566, lng:2.3522} };
+let currentLocation = 'Bizerte';
+
+function setLocationButtons() {
+  document.getElementById('locBizerte').className = 'px-2 py-0.5 rounded text-[10px] font-bold ' + (currentLocation==='Bizerte' ? 'bg-sky text-night' : 'bg-panel2 text-gray-400');
+  document.getElementById('locParis').className = 'px-2 py-0.5 rounded text-[10px] font-bold ' + (currentLocation==='Paris' ? 'bg-sky text-night' : 'bg-panel2 text-gray-400');
+}
+document.getElementById('locBizerte').onclick = () => { currentLocation='Bizerte'; setLocationButtons(); renderCalendar(); };
+document.getElementById('locParis').onclick = () => { currentLocation='Paris'; setLocationButtons(); renderCalendar(); };
+
+function getLocalTime(monthIndex, day, gmtStr) {
+  if (day === "—" || gmtStr === "🛰️") return "🛰️";
+  let hour, minute = 0, hourOnly = false;
+  if (gmtStr.endsWith('h')) { hour = parseInt(gmtStr); hourOnly = true; }
+  else { const p = gmtStr.split(':'); hour = parseInt(p[0]); minute = parseInt(p[1]); }
+  const d = new Date(Date.UTC(2026, monthIndex, parseInt(day,10), hour, minute));
+  const fmt = new Intl.DateTimeFormat('fr-FR', { hour:'2-digit', minute:'2-digit', hour12:false, timeZone: locationTZ[currentLocation] });
+  const parts = fmt.formatToParts(d);
+  const h = parts.find(p=>p.type==='hour').value;
+  const m = parts.find(p=>p.type==='minute').value;
+  if (hourOnly && m === '00') return `${h}h`;
+  return `${h}:${m}`;
+}
+
+// ============ LINKS ============
 const links = {
   "Antarès": "https://fr.wikipedia.org/wiki/Antar%C3%A8s", "Spica": "https://fr.wikipedia.org/wiki/Spica",
   "Regulus": "https://fr.wikipedia.org/wiki/Regulus", "Pollux": "https://fr.wikipedia.org/wiki/Pollux_(%C3%A9toile)",
@@ -90,10 +164,15 @@ const constelLinks = {
   "Balance":"https://fr.wikipedia.org/wiki/Balance_(constellation)","Bélier":"https://fr.wikipedia.org/wiki/Bélier_(constellation)",
   "Lyre":"https://fr.wikipedia.org/wiki/Lyre_(constellation)","Sagittaire":"https://fr.wikipedia.org/wiki/Sagittaire_(constellation)",
   "Persée":"https://fr.wikipedia.org/wiki/Persée_(constellation)","Orion":"https://fr.wikipedia.org/wiki/Orion_(constellation)",
-  "Petite Ourse":"https://fr.wikipedia.org/wiki/Petite_Ourse"
+  "Petite Ourse":"https://fr.wikipedia.org/wiki/Petite_Ourse","Grande Ourse":"https://fr.wikipedia.org/wiki/Grande_Ourse",
+  "Cocher":"https://fr.wikipedia.org/wiki/Cocher_(constellation)","Grand Chien":"https://fr.wikipedia.org/wiki/Grand_Chien",
+  "Petit Chien":"https://fr.wikipedia.org/wiki/Petit_Chien","Aigle":"https://fr.wikipedia.org/wiki/Aigle_(constellation)",
+  "Cygne":"https://fr.wikipedia.org/wiki/Cygne_(constellation)","Pégase":"https://fr.wikipedia.org/wiki/Pégase_(constellation)",
+  "Andromède":"https://fr.wikipedia.org/wiki/Andromède_(constellation)","Cassiopée":"https://fr.wikipedia.org/wiki/Cassiopée_(constellation)",
+  "Baleine":"https://fr.wikipedia.org/wiki/Baleine_(constellation)","Chiens de Chasse":"https://fr.wikipedia.org/wiki/Chiens_de_Chasse"
 };
 
-// Constellations : nom arabe + étoiles principales en arabe + schéma
+// Constellations : nom arabe + étoiles principales + schéma
 const constelArabic = {
   "Bouvier": { ar:"العَوَّاء", stars:[["Arcturus","السماك الرامح","As-Simak Ar-Ramih"],["Izar","عِزار","Izar"],["Muphrid","المفرد الرامح","Al-Mufrid Ar-Ramih"],["Nekkar","النَّكَّار","An-Nakkar"]],
     shape:{points:[[50,85],[62,55],[45,20],[28,32],[47,60]], lines:[[0,4],[4,1],[1,2],[2,3],[3,0]]} },
@@ -152,7 +231,9 @@ const constelArabic = {
   "Sculpteur": { ar:"النَّحّات", stars:[] },
   "Fourneau": { ar:"الفُرن", stars:[] },
   "Cassiopée": { ar:"ذات الكُرسي", stars:[] },
-  "Chiens de Chasse": { ar:"كِلاب الصَّيد", stars:[] }
+  "Chiens de Chasse": { ar:"كِلاب الصَّيد", stars:[] },
+  "Pégase": { ar:"الفَرس الأعظم", stars:[] },
+  "Triangle": { ar:"المُثلَّث", stars:[] }
 };
 
 function linkify(text) {
@@ -160,9 +241,7 @@ function linkify(text) {
   for (const term in links) out = out.replace(new RegExp(term,"g"), `<a class="wikilink text-sky" href="${links[term]}" target="_blank" rel="noopener">${term}</a>`);
   return out;
 }
-function constelArName(name) {
-  return constelArabic[name] ? constelArabic[name].ar : '';
-}
+function constelArName(name) { return constelArabic[name] ? constelArabic[name].ar : ''; }
 function constelLink(name) {
   if (name === "—" || !constelLinks[name]) return name;
   const ar = constelArName(name);
@@ -194,18 +273,18 @@ function arabicDetailHtml(constellation) {
     </div>`;
 }
 function satelliteDetailHtml() {
-  const lat = 37.2744, lng = 9.8739;
-  const issUrl = `https://www.heavens-above.com/PassSummary.aspx?satid=25544&lat=${lat}&lng=${lng}&loc=Bizerte&alt=9&tz=CET`;
-  const tgUrl = `https://www.heavens-above.com/PassSummary.aspx?satid=48274&lat=${lat}&lng=${lng}&loc=Bizerte&alt=9&tz=CET`;
+  const c = locationCoords[currentLocation];
+  const issUrl = `https://www.heavens-above.com/PassSummary.aspx?satid=25544&lat=${c.lat}&lng=${c.lng}&loc=${currentLocation}&alt=9`;
+  const tgUrl = `https://www.heavens-above.com/PassSummary.aspx?satid=48274&lat=${c.lat}&lng=${c.lng}&loc=${currentLocation}&alt=9`;
   return `
     <div class="mt-2 pt-2 border-t border-border">
-      <div class="text-gray-400 text-xs mb-2">Les passages visibles changent chaque jour selon l'orbite. Cliquez pour voir les prochains passages en direct, déjà calculés pour Bizerte :</div>
+      <div class="text-gray-400 text-xs mb-2">Les passages visibles changent chaque jour selon l'orbite. Cliquez pour voir les prochains passages en direct, déjà calculés pour ${currentLocation} :</div>
       <a href="${issUrl}" target="_blank" rel="noopener" class="block bg-panel2 border border-border rounded-md p-2 mb-2 hover:bg-border" onclick="event.stopPropagation()">
-        <div class="text-sky font-bold text-sm">🛰️ ISS (Zarya) — passages à Bizerte</div>
+        <div class="text-sky font-bold text-sm">🛰️ ISS (Zarya) — passages à ${currentLocation}</div>
         <div class="text-gray-500 text-[10px]">heavens-above.com</div>
       </a>
       <a href="${tgUrl}" target="_blank" rel="noopener" class="block bg-panel2 border border-border rounded-md p-2 hover:bg-border" onclick="event.stopPropagation()">
-        <div class="text-sky font-bold text-sm">🛰️ Tiangong — passages à Bizerte</div>
+        <div class="text-sky font-bold text-sm">🛰️ Tiangong — passages à ${currentLocation}</div>
         <div class="text-gray-500 text-[10px]">heavens-above.com</div>
       </a>
     </div>`;
@@ -215,136 +294,135 @@ const monthOrder = ["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","
 
 const data = {
 "Janvier": { events:[
-  ["01","21:43","22:43","Lune au périgée (360 348 km)","Point le plus proche de la Terre sur l'orbite lunaire.","—"],
-  ["03","17h","18h","Terre au périhélie (0,98330 UA)","La Terre est au point le plus proche du Soleil sur son orbite.","—"],
-  ["03","22h","23h","Pluie d'étoiles filantes des Quadrantides","Pic d'activité d'une pluie de météores intense mais brève.","Bouvier"],
-  ["03","22:01","23:01","Jupiter à 3,7° S de la Lune","Rapprochement apparent entre Jupiter et la Lune.","Cancer"],
-  ["04","03:28","04:28","Pollux à 3,0° N de la Lune","La Lune passe près de l'étoile Pollux.","Gémeaux"],
-  ["10","23:50","00:50","Spica à 1,6° N de la Lune","La Lune passe près de l'étoile Spica.","Vierge"],
-  ["13","20:48","21:48","Lune à l'apogée (405 437 km)","Point le plus éloigné de la Terre sur l'orbite lunaire.","—"],
-  ["14","19:28","20:28","Antarès à 0,6° N de la Lune","La Lune passe près de l'étoile Antarès.","Scorpion"],
-  ["18","19:52","20:52","🌑 NOUVELLE LUNE","La Lune est invisible. Meilleure nuit d'observation du mois.","Capricorne"],
-  ["22","00:03","01:03","Lune au nœud ascendant","La Lune traverse l'écliptique du sud vers le nord.","—"],
-  ["26","04:47","05:47","PREMIER QUARTIER","Moitié de la face visible de la Lune éclairée.","Taureau"],
-  ["27","21:07","22:07","Pléiades à 1,1° S de la Lune","La Lune passe près de l'amas des Pléiades.","Taureau"],
-  ["31","02:31","03:31","Jupiter à 3,8° S de la Lune","Rapprochement apparent entre Jupiter et la Lune.","Cancer"],
-  ["—","🛰️","🛰️","Passages satellites (ISS & Tiangong)","Cliquez pour voir les prochains passages visibles depuis Bizerte.","—"]
+  ["01","21:43","Lune au périgée (360 348 km)","Point le plus proche de la Terre sur l'orbite lunaire.","—"],
+  ["03","17h","Terre au périhélie (0,98330 UA)","La Terre est au point le plus proche du Soleil sur son orbite.","—"],
+  ["03","22h","Pluie d'étoiles filantes des Quadrantides","Pic d'activité d'une pluie de météores intense mais brève.","Bouvier"],
+  ["03","22:01","Jupiter à 3,7° S de la Lune","Rapprochement apparent entre Jupiter et la Lune.","Cancer"],
+  ["04","03:28","Pollux à 3,0° N de la Lune","La Lune passe près de l'étoile Pollux.","Gémeaux"],
+  ["10","23:50","Spica à 1,6° N de la Lune","La Lune passe près de l'étoile Spica.","Vierge"],
+  ["13","20:48","Lune à l'apogée (405 437 km)","Point le plus éloigné de la Terre sur l'orbite lunaire.","—"],
+  ["14","19:28","Antarès à 0,6° N de la Lune","La Lune passe près de l'étoile Antarès.","Scorpion"],
+  ["18","19:52","🌑 NOUVELLE LUNE","La Lune est invisible. Meilleure nuit d'observation du mois.","Capricorne"],
+  ["22","00:03","Lune au nœud ascendant","La Lune traverse l'écliptique du sud vers le nord.","—"],
+  ["26","04:47","PREMIER QUARTIER","Moitié de la face visible de la Lune éclairée.","Taureau"],
+  ["27","21:07","Pléiades à 1,1° S de la Lune","La Lune passe près de l'amas des Pléiades.","Taureau"],
+  ["31","02:31","Jupiter à 3,8° S de la Lune","Rapprochement apparent entre Jupiter et la Lune.","Cancer"],
+  ["—","🛰️","Passages satellites (ISS & Tiangong)","Cliquez pour voir les prochains passages visibles.","—"]
 ]},
 "Février": { events:[
-  ["01","22:09","23:09","PLEINE LUNE","Face visible de la Lune entièrement éclairée.","Cancer"],
-  ["03","02:48","03:48","Regulus à 0,4° S de la Lune","La Lune passe près de l'étoile Regulus.","Lion"],
-  ["11","03:19","04:19","Antarès à 0,7° N de la Lune","La Lune passe près de l'étoile Antarès.","Scorpion"],
-  ["17","12:01","13:01","🌑 NOUVELLE LUNE (diurne)","Invisible ce jour-là (conjonction en journée).","Verseau"],
-  ["18","23:03","00:03","Mercure 0,1° N de la Lune (occultation)","La Lune passe devant Mercure.","Verseau"],
-  ["19","23:54","00:54","Saturne à 4,6° S de la Lune","Rapprochement apparent Saturne-Lune.","Poissons"],
-  ["24","02:43","03:43","Pléiades à 1,2° S de la Lune","La Lune passe près des Pléiades.","Taureau"],
-  ["27","21:34","22:34","Pollux à 3,0° N de la Lune","La Lune passe près de Pollux.","Gémeaux"],
-  ["—","🛰️","🛰️","Passages satellites (ISS & Tiangong)","Cliquez pour voir les prochains passages visibles depuis Bizerte.","—"]
+  ["01","22:09","PLEINE LUNE","Face visible de la Lune entièrement éclairée.","Cancer"],
+  ["03","02:48","Regulus à 0,4° S de la Lune","La Lune passe près de l'étoile Regulus.","Lion"],
+  ["11","03:19","Antarès à 0,7° N de la Lune","La Lune passe près de l'étoile Antarès.","Scorpion"],
+  ["17","12:01","🌑 NOUVELLE LUNE (diurne)","Invisible ce jour-là (conjonction en journée).","Verseau"],
+  ["18","23:03","Mercure 0,1° N de la Lune (occultation)","La Lune passe devant Mercure.","Verseau"],
+  ["19","23:54","Saturne à 4,6° S de la Lune","Rapprochement apparent Saturne-Lune.","Poissons"],
+  ["24","02:43","Pléiades à 1,2° S de la Lune","La Lune passe près des Pléiades.","Taureau"],
+  ["27","21:34","Pollux à 3,0° N de la Lune","La Lune passe près de Pollux.","Gémeaux"],
+  ["—","🛰️","Passages satellites (ISS & Tiangong)","Cliquez pour voir les prochains passages visibles.","—"]
 ]},
 "Mars": { events:[
-  ["06","17:24","18:24","Spica à 1,8° N de la Lune","La Lune passe près de Spica.","Vierge"],
-  ["17","21:51","22:51","Mars à 1,5° S de la Lune","Rapprochement apparent Mars-Lune.","Poissons"],
-  ["19","01:23","02:23","🌑 NOUVELLE LUNE","Meilleure nuit d'observation du mois.","Poissons"],
-  ["25","19:18","20:18","PREMIER QUARTIER","Moitié de la face visible de la Lune éclairée.","Gémeaux"],
-  ["27","03:18","04:18","Pollux à 3,0° N de la Lune","La Lune passe près de Pollux.","Gémeaux"],
-  ["29","19:00","20:00","Regulus à 0,4° S de la Lune","La Lune passe près de Regulus.","Lion"],
-  ["—","🛰️","🛰️","Passages satellites (ISS & Tiangong)","Cliquez pour voir les prochains passages visibles depuis Bizerte.","—"]
+  ["06","17:24","Spica à 1,8° N de la Lune","La Lune passe près de Spica.","Vierge"],
+  ["17","21:51","Mars à 1,5° S de la Lune","Rapprochement apparent Mars-Lune.","Poissons"],
+  ["19","01:23","🌑 NOUVELLE LUNE","Meilleure nuit d'observation du mois.","Poissons"],
+  ["25","19:18","PREMIER QUARTIER","Moitié de la face visible de la Lune éclairée.","Gémeaux"],
+  ["27","03:18","Pollux à 3,0° N de la Lune","La Lune passe près de Pollux.","Gémeaux"],
+  ["29","19:00","Regulus à 0,4° S de la Lune","La Lune passe près de Regulus.","Lion"],
+  ["—","🛰️","Passages satellites (ISS & Tiangong)","Cliquez pour voir les prochains passages visibles.","—"]
 ]},
 "Avril": { events:[
-  ["02","02:12","03:12","PLEINE LUNE","Face visible de la Lune entièrement éclairée.","Balance"],
-  ["03","01:32","02:32","Spica à 1,8° N de la Lune","La Lune passe près de Spica.","Vierge"],
-  ["06","19:21","20:21","Antarès à 0,6° N de la Lune","La Lune passe près d'Antarès.","Scorpion"],
-  ["16","00:45","01:45","Mars à 3,7° S de la Lune","Rapprochement apparent Mars-Lune.","Bélier"],
-  ["17","11:52","12:52","🌑 NOUVELLE LUNE (diurne)","Invisible ce jour-là (conjonction en journée).","Poissons"],
-  ["22","19h","20h","Pluie d'étoiles filantes des Lyrides","Débris de la comète Thatcher.","Lyre"],
-  ["22","22:06","23:06","Jupiter à 3,6° S de la Lune","Rapprochement apparent Jupiter-Lune.","Cancer"],
-  ["24","02:32","03:32","PREMIER QUARTIER","Moitié de la face visible de la Lune éclairée.","Gémeaux"],
-  ["26","00:37","01:37","Regulus à 0,2° S de la Lune","La Lune passe très près de Regulus.","Lion"],
-  ["—","🛰️","🛰️","Passages satellites (ISS & Tiangong)","Cliquez pour voir les prochains passages visibles depuis Bizerte.","—"]
+  ["02","02:12","PLEINE LUNE","Face visible de la Lune entièrement éclairée.","Balance"],
+  ["03","01:32","Spica à 1,8° N de la Lune","La Lune passe près de Spica.","Vierge"],
+  ["06","19:21","Antarès à 0,6° N de la Lune","La Lune passe près d'Antarès.","Scorpion"],
+  ["16","00:45","Mars à 3,7° S de la Lune","Rapprochement apparent Mars-Lune.","Bélier"],
+  ["17","11:52","🌑 NOUVELLE LUNE (diurne)","Invisible ce jour-là (conjonction en journée).","Poissons"],
+  ["22","19h","Pluie d'étoiles filantes des Lyrides","Débris de la comète Thatcher.","Lyre"],
+  ["22","22:06","Jupiter à 3,6° S de la Lune","Rapprochement apparent Jupiter-Lune.","Cancer"],
+  ["24","02:32","PREMIER QUARTIER","Moitié de la face visible de la Lune éclairée.","Gémeaux"],
+  ["26","00:37","Regulus à 0,2° S de la Lune","La Lune passe très près de Regulus.","Lion"],
+  ["—","🛰️","Passages satellites (ISS & Tiangong)","Cliquez pour voir les prochains passages visibles.","—"]
 ]},
 "Mai": { events:[
-  ["04","02:20","03:20","Antarès à 0,5° N de la Lune","La Lune passe près d'Antarès.","Scorpion"],
-  ["09","21:10","22:10","DERNIER QUARTIER","Moitié de la face visible de la Lune éclairée.","Verseau"],
-  ["16","20:01","21:01","🌑 NOUVELLE LUNE","Meilleure nuit d'observation du mois.","Taureau"],
-  ["19","01:50","02:50","Vénus à 2,9° S de la Lune","Rapprochement apparent Vénus-Lune.","Taureau"],
-  ["—","🛰️","🛰️","Passages satellites (ISS & Tiangong)","Cliquez pour voir les prochains passages visibles depuis Bizerte.","—"]
+  ["04","02:20","Antarès à 0,5° N de la Lune","La Lune passe près d'Antarès.","Scorpion"],
+  ["09","21:10","DERNIER QUARTIER","Moitié de la face visible de la Lune éclairée.","Verseau"],
+  ["16","20:01","🌑 NOUVELLE LUNE","Meilleure nuit d'observation du mois.","Taureau"],
+  ["19","01:50","Vénus à 2,9° S de la Lune","Rapprochement apparent Vénus-Lune.","Taureau"],
+  ["—","🛰️","Passages satellites (ISS & Tiangong)","Cliquez pour voir les prochains passages visibles.","—"]
 ]},
 "Juin": { events:[
-  ["09","20h","21h","Vénus à 1,6° N de Jupiter","Rapprochement apparent Vénus-Jupiter.","Gémeaux"],
-  ["15","02:54","03:54","🌑 NOUVELLE LUNE","Meilleure nuit d'observation du mois.","Gémeaux"],
-  ["17","20:21","21:21","Vénus à 0,3° S de la Lune (occultation)","La Lune passe devant Vénus.","Gémeaux"],
-  ["21","21:55","22:55","PREMIER QUARTIER","Moitié de la face visible de la Lune éclairée.","Vierge"],
-  ["23","20:11","21:11","Spica à 2,2° N de la Lune","La Lune passe près de Spica.","Vierge"],
-  ["29","23:57","00:57","PLEINE LUNE","Face visible de la Lune entièrement éclairée.","Sagittaire"],
-  ["—","🛰️","🛰️","Passages satellites (ISS & Tiangong)","Cliquez pour voir les prochains passages visibles depuis Bizerte.","—"]
+  ["09","20h","Vénus à 1,6° N de Jupiter","Rapprochement apparent Vénus-Jupiter.","Gémeaux"],
+  ["15","02:54","🌑 NOUVELLE LUNE","Meilleure nuit d'observation du mois.","Gémeaux"],
+  ["17","20:21","Vénus à 0,3° S de la Lune (occultation)","La Lune passe devant Vénus.","Gémeaux"],
+  ["21","21:55","PREMIER QUARTIER","Moitié de la face visible de la Lune éclairée.","Vierge"],
+  ["23","20:11","Spica à 2,2° N de la Lune","La Lune passe près de Spica.","Vierge"],
+  ["29","23:57","PLEINE LUNE","Face visible de la Lune entièrement éclairée.","Sagittaire"],
+  ["—","🛰️","Passages satellites (ISS & Tiangong)","Cliquez pour voir les prochains passages visibles.","—"]
 ]},
 "Juillet": { events:[
-  ["07","19:29","20:29","DERNIER QUARTIER","Moitié de la face visible de la Lune éclairée.","Bélier"],
-  ["10","22:54","23:54","Pléiades à 1,1° S de la Lune","La Lune passe près des Pléiades.","Taureau"],
-  ["14","09:43","10:43","🌑 NOUVELLE LUNE (diurne)","Invisible ce jour-là (conjonction en journée).","Cancer"],
-  ["17","00:07","01:07","Regulus à 0,5° N de la Lune","La Lune passe près de Regulus.","Lion"],
-  ["24","21:00","22:00","Antarès à 0,6° N de la Lune","La Lune passe près d'Antarès.","Scorpion"],
-  ["—","🛰️","🛰️","Passages satellites (ISS & Tiangong)","Cliquez pour voir les prochains passages visibles depuis Bizerte.","—"]
+  ["07","19:29","DERNIER QUARTIER","Moitié de la face visible de la Lune éclairée.","Bélier"],
+  ["10","22:54","Pléiades à 1,1° S de la Lune","La Lune passe près des Pléiades.","Taureau"],
+  ["14","09:43","🌑 NOUVELLE LUNE (diurne)","Invisible ce jour-là (conjonction en journée).","Cancer"],
+  ["17","00:07","Regulus à 0,5° N de la Lune","La Lune passe près de Regulus.","Lion"],
+  ["24","21:00","Antarès à 0,6° N de la Lune","La Lune passe près d'Antarès.","Scorpion"],
+  ["—","🛰️","Passages satellites (ISS & Tiangong)","Cliquez pour voir les prochains passages visibles.","—"]
 ]},
 "Août": { events:[
-  ["06","02:21","03:21","DERNIER QUARTIER","Moitié de la face visible de la Lune éclairée.","Taureau"],
-  ["10","22:38","23:38","Pollux à 3,6° N de la Lune","La Lune passe près de Pollux.","Gémeaux"],
-  ["12","17:37","18:37","🌑 NOUVELLE LUNE (limite du jour)","Conjonction en toute fin d'après-midi.","Lion"],
-  ["13","02h","03h","Pluie d'étoiles filantes des Perséides","Une des pluies les plus actives de l'année.","Persée"],
-  ["20","02:46","03:46","PREMIER QUARTIER","Moitié de la face visible de la Lune éclairée.","Scorpion"],
-  ["—","🛰️","🛰️","Passages satellites (ISS & Tiangong)","Cliquez pour voir les prochains passages visibles depuis Bizerte.","—"]
+  ["06","02:21","DERNIER QUARTIER","Moitié de la face visible de la Lune éclairée.","Taureau"],
+  ["10","22:38","Pollux à 3,6° N de la Lune","La Lune passe près de Pollux.","Gémeaux"],
+  ["12","17:37","🌑 NOUVELLE LUNE (limite du jour)","Conjonction en toute fin d'après-midi.","Lion"],
+  ["13","02h","Pluie d'étoiles filantes des Perséides","Une des pluies les plus actives de l'année.","Persée"],
+  ["20","02:46","PREMIER QUARTIER","Moitié de la face visible de la Lune éclairée.","Scorpion"],
+  ["—","🛰️","Passages satellites (ISS & Tiangong)","Cliquez pour voir les prochains passages visibles.","—"]
 ]},
 "Septembre": { events:[
-  ["06","18:24","19:24","Mars à 3,0° S de la Lune","Rapprochement apparent Mars-Lune.","Vierge"],
-  ["08","18:13","19:13","Jupiter 0,8° S de la Lune (occultation)","La Lune passe devant Jupiter.","Lion"],
-  ["09","19:36","20:36","Regulus à 0,5° N de la Lune","La Lune passe près de Regulus.","Lion"],
-  ["11","03:27","04:27","🌑 NOUVELLE LUNE","Meilleure nuit d'observation du mois.","Vierge"],
-  ["13","20:53","21:53","Spica à 2,4° N de la Lune","La Lune passe près de Spica.","Vierge"],
-  ["18","20:44","21:44","PREMIER QUARTIER","Moitié de la face visible de la Lune éclairée.","Sagittaire"],
-  ["23","00:06","01:06","Équinoxe d'automne","Jour et nuit quasi égaux.","Vierge"],
-  ["26","00h","01h","Neptune à l'opposition","Neptune au plus proche et au plus brillant.","Poissons"],
-  ["26","01:49","02:49","Mercure à 0,8° N de Spica","Rapprochement apparent Mercure-Spica.","Vierge"],
-  ["—","🛰️","🛰️","Passages satellites (ISS & Tiangong)","Cliquez pour voir les prochains passages visibles depuis Bizerte.","—"]
+  ["06","18:24","Mars à 3,0° S de la Lune","Rapprochement apparent Mars-Lune.","Vierge"],
+  ["08","18:13","Jupiter 0,8° S de la Lune (occultation)","La Lune passe devant Jupiter.","Lion"],
+  ["09","19:36","Regulus à 0,5° N de la Lune","La Lune passe près de Regulus.","Lion"],
+  ["11","03:27","🌑 NOUVELLE LUNE","Meilleure nuit d'observation du mois.","Vierge"],
+  ["13","20:53","Spica à 2,4° N de la Lune","La Lune passe près de Spica.","Vierge"],
+  ["18","20:44","PREMIER QUARTIER","Moitié de la face visible de la Lune éclairée.","Sagittaire"],
+  ["23","00:06","Équinoxe d'automne","Jour et nuit quasi égaux.","Vierge"],
+  ["26","00h","Neptune à l'opposition","Neptune au plus proche et au plus brillant.","Poissons"],
+  ["26","01:49","Mercure à 0,8° N de Spica","Rapprochement apparent Mercure-Spica.","Vierge"],
+  ["—","🛰️","Passages satellites (ISS & Tiangong)","Cliquez pour voir les prochains passages visibles.","—"]
 ]},
 "Octobre": { events:[
-  ["07","02:57","03:57","Regulus à 0,6° N de la Lune","La Lune passe près de Regulus.","Lion"],
-  ["10","15:50","16:50","🌑 NOUVELLE LUNE (diurne)","Invisible ce jour-là (conjonction en journée).","Balance"],
-  ["12","20:08","21:08","Mercure à 2,1° N de la Lune","Rapprochement apparent Mercure-Lune.","Balance"],
-  ["14","20:25","21:25","Antarès à 0,4° N de la Lune","La Lune passe très près d'Antarès.","Scorpion"],
-  ["21","18h","19h","Pluie d'étoiles filantes des Orionides","Débris de la comète de Halley.","Orion"],
-  ["26","04:12","05:12","PLEINE LUNE","Face visible de la Lune entièrement éclairée.","Bélier"],
-  ["28","01:11","02:11","Pléiades à 1,0° S de la Lune","La Lune passe près des Pléiades.","Taureau"],
-  ["31","18:00","19:00","Pollux à 4,0° N de la Lune","La Lune passe près de Pollux.","Gémeaux"],
-  ["—","🛰️","🛰️","Passages satellites (ISS & Tiangong)","Cliquez pour voir les prochains passages visibles depuis Bizerte.","—"]
+  ["07","02:57","Regulus à 0,6° N de la Lune","La Lune passe près de Regulus.","Lion"],
+  ["10","15:50","🌑 NOUVELLE LUNE (diurne)","Invisible ce jour-là (conjonction en journée).","Balance"],
+  ["12","20:08","Mercure à 2,1° N de la Lune","Rapprochement apparent Mercure-Lune.","Balance"],
+  ["14","20:25","Antarès à 0,4° N de la Lune","La Lune passe très près d'Antarès.","Scorpion"],
+  ["21","18h","Pluie d'étoiles filantes des Orionides","Débris de la comète de Halley.","Orion"],
+  ["26","04:12","PLEINE LUNE","Face visible de la Lune entièrement éclairée.","Bélier"],
+  ["28","01:11","Pléiades à 1,0° S de la Lune","La Lune passe près des Pléiades.","Taureau"],
+  ["31","18:00","Pollux à 4,0° N de la Lune","La Lune passe près de Pollux.","Gémeaux"],
+  ["—","🛰️","Passages satellites (ISS & Tiangong)","Cliquez pour voir les prochains passages visibles.","—"]
 ]},
 "Novembre": { events:[
-  ["01","20:28","21:28","DERNIER QUARTIER","Moitié de la face visible de la Lune éclairée.","Lion"],
-  ["02","23:11","00:11","Jupiter 0,5° N de la Lune (occultation)","La Lune passe devant Jupiter.","Lion"],
-  ["05","19h","20h","Pluie d'étoiles filantes des Taurides Sud","Météores issus de la comète Encke.","Taureau"],
-  ["09","07:02","08:02","🌑 NOUVELLE LUNE (diurne)","Invisible ce jour-là (conjonction en journée).","Scorpion"],
-  ["11","03:58","04:58","Antarès à 0,3° N de la Lune","La Lune passe très près d'Antarès.","Scorpion"],
-  ["12","18h","19h","Pluie d'étoiles filantes des Taurides Nord","Météores issus de l'astéroïde 2004 TG10.","Taureau"],
-  ["18","00h","01h","Pluie d'étoiles filantes des Léonides","Météores de la comète Tempel-Tuttle.","Lion"],
-  ["25","23h","00h","Uranus à l'opposition","Uranus au plus proche et au plus brillant.","Taureau"],
-  ["28","01:27","02:27","Pollux à 4,2° N de la Lune","La Lune passe près de Pollux.","Gémeaux"],
-  ["30","19:32","20:32","Mars à 3,3° N de la Lune","Rapprochement apparent Mars-Lune.","Sagittaire"],
-  ["—","🛰️","🛰️","Passages satellites (ISS & Tiangong)","Cliquez pour voir les prochains passages visibles depuis Bizerte.","—"]
+  ["01","20:28","DERNIER QUARTIER","Moitié de la face visible de la Lune éclairée.","Lion"],
+  ["02","23:11","Jupiter 0,5° N de la Lune (occultation)","La Lune passe devant Jupiter.","Lion"],
+  ["05","19h","Pluie d'étoiles filantes des Taurides Sud","Météores issus de la comète Encke.","Taureau"],
+  ["09","07:02","🌑 NOUVELLE LUNE (diurne)","Invisible ce jour-là (conjonction en journée).","Scorpion"],
+  ["11","03:58","Antarès à 0,3° N de la Lune","La Lune passe très près d'Antarès.","Scorpion"],
+  ["12","18h","Pluie d'étoiles filantes des Taurides Nord","Météores issus de l'astéroïde 2004 TG10.","Taureau"],
+  ["18","00h","Pluie d'étoiles filantes des Léonides","Météores de la comète Tempel-Tuttle.","Lion"],
+  ["25","23h","Uranus à l'opposition","Uranus au plus proche et au plus brillant.","Taureau"],
+  ["28","01:27","Pollux à 4,2° N de la Lune","La Lune passe près de Pollux.","Gémeaux"],
+  ["30","19:32","Mars à 3,3° N de la Lune","Rapprochement apparent Mars-Lune.","Sagittaire"],
+  ["—","🛰️","Passages satellites (ISS & Tiangong)","Cliquez pour voir les prochains passages visibles.","—"]
 ]},
 "Décembre": { events:[
-  ["04","18:36","19:36","Spica à 2,5° N de la Lune","La Lune passe près de Spica.","Vierge"],
-  ["09","00:52","01:52","🌑 NOUVELLE LUNE","Meilleure nuit d'observation du mois.","Sagittaire"],
-  ["21","20:50","21:50","Solstice d'hiver","Jour le plus court, nuit la plus longue.","Sagittaire"],
-  ["21","22:37","23:37","Pléiades à 1,0° S de la Lune","La Lune passe près des Pléiades.","Taureau"],
-  ["22","22h","23h","Pluie d'étoiles filantes des Ursides","Météores de la comète 8P/Tuttle.","Petite Ourse"],
-  ["24","01:28","02:28","PLEINE LUNE","Face visible de la Lune entièrement éclairée.","Gémeaux"],
-  ["27","17:32","18:32","Jupiter à 1,5° N de la Lune","Rapprochement apparent Jupiter-Lune.","Lion"],
-  ["27","22:44","23:44","Regulus à 1,4° N de la Lune","La Lune passe près de Regulus.","Lion"],
-  ["30","18:59","19:59","DERNIER QUARTIER","Moitié de la face visible de la Lune éclairée.","Vierge"],
-  ["—","🛰️","🛰️","Passages satellites (ISS & Tiangong)","Cliquez pour voir les prochains passages visibles depuis Bizerte.","—"]
+  ["04","18:36","Spica à 2,5° N de la Lune","La Lune passe près de Spica.","Vierge"],
+  ["09","00:52","🌑 NOUVELLE LUNE","Meilleure nuit d'observation du mois.","Sagittaire"],
+  ["21","20:50","Solstice d'hiver","Jour le plus court, nuit la plus longue.","Sagittaire"],
+  ["21","22:37","Pléiades à 1,0° S de la Lune","La Lune passe près des Pléiades.","Taureau"],
+  ["22","22h","Pluie d'étoiles filantes des Ursides","Météores de la comète 8P/Tuttle.","Petite Ourse"],
+  ["24","01:28","PLEINE LUNE","Face visible de la Lune entièrement éclairée.","Gémeaux"],
+  ["27","17:32","Jupiter à 1,5° N de la Lune","Rapprochement apparent Jupiter-Lune.","Lion"],
+  ["27","22:44","Regulus à 1,4° N de la Lune","La Lune passe près de Regulus.","Lion"],
+  ["30","18:59","DERNIER QUARTIER","Moitié de la face visible de la Lune éclairée.","Vierge"],
+  ["—","🛰️","Passages satellites (ISS & Tiangong)","Cliquez pour voir les prochains passages visibles.","—"]
 ]}
 };
 
-// [rang, nom, magnitude, constellation FR, url, nom arabe étoile, translittération]
 const topStars = [
 ["1","Sirius","-1,46","Grand Chien","https://fr.wikipedia.org/wiki/Sirius","الشِّعرى اليَمانِيّة","Ash-Shi'ra Al-Yamaniyya"],
 ["2","Canopus","-0,74","Carène","https://fr.wikipedia.org/wiki/Canopus","سُهَيل","Suhail"],
@@ -398,7 +476,6 @@ const topStars = [
 ["50","Diphda","2,04","Baleine","https://fr.wikipedia.org/wiki/Diphda","الضِّفدَع","Ad-Difda'"]
 ];
 
-// [rang, nom, magnitude, constellation FR, conditions, url, nom arabe galaxie]
 const topGalaxies = [
 ["1","Grand Nuage de Magellan (LMC)","0,9","Dorade / Table","Œil nu, hémisphère sud","https://fr.wikipedia.org/wiki/Grand_Nuage_de_Magellan","سحابة ماجلان الكبرى"],
 ["2","Petit Nuage de Magellan (SMC)","2,7","Toucan","Œil nu, hémisphère sud","https://fr.wikipedia.org/wiki/Petit_Nuage_de_Magellan","سحابة ماجلان الصغرى"],
@@ -422,10 +499,50 @@ const topGalaxies = [
 ["20","Naine du Fourneau","9,4","Fourneau","Très faible, ciel exceptionnel","https://fr.wikipedia.org/wiki/Galaxie_naine_du_Fourneau","قزمة الفرن"]
 ];
 
+const manazilAlQamar = [
+["1","الشَّرَطَان","Ash-Sharatan","Les deux signes / cornes","Bélier"],
+["2","البُطَين","Al-Butayn","Le petit ventre","Bélier"],
+["3","الثُّرَيّا","Ath-Thurayya","Les Pléiades","Taureau"],
+["4","الدَّبَران","Ad-Dabaran","Le suiveur (des Pléiades)","Taureau"],
+["5","الهَقْعَة","Al-Haq'ah","La marque blanche (tête du cheval)","Orion"],
+["6","الهَنْعَة","Al-Han'ah","La marque courbée","Gémeaux"],
+["7","الذِّراع","Adh-Dhira'","Le bras (avant-patte du lion)","Gémeaux"],
+["8","النَّثْرَة","An-Nathrah","L'éternuement (museau du lion)","Cancer"],
+["9","الطَّرْف","At-Tarf","Le regard (œil du lion)","Lion"],
+["10","الجَبْهَة","Al-Jabhah","Le front (du lion)","Lion"],
+["11","الزُّبْرَة","Az-Zubrah","La crinière (du lion)","Lion"],
+["12","الصَّرْفَة","As-Sarfah","Le changement (fin de la chaleur)","Lion"],
+["13","العَوَّاء","Al-'Awwa'","L'aboyeuse","Vierge"],
+["14","السِّماك الأَعْزَل","As-Simak Al-A'zal","L'élevé désarmé (Spica)","Vierge"],
+["15","الغَفْر","Al-Ghafr","La couverture / le pardon","Vierge"],
+["16","الزُّبانَى","Az-Zubana","Les pinces (de la Balance)","Balance"],
+["17","الإكْلِيل","Al-Iklil","La couronne","Scorpion"],
+["18","القَلْب","Al-Qalb","Le cœur (Antarès)","Scorpion"],
+["19","الشَّوْلَة","Ash-Shawlah","Le dard levé (queue du scorpion)","Scorpion"],
+["20","النَّعائِم","An-Na'a'im","Les autruches","Sagittaire"],
+["21","البَلْدَة","Al-Baldah","La contrée (région vide)","Sagittaire"],
+["22","سَعْد الذَّابِح","Sa'd Adh-Dhabih","La chance de l'égorgeur","Capricorne"],
+["23","سَعْد بُلَع","Sa'd Bula'","La chance de l'avaleur","Verseau"],
+["24","سَعْد السُّعُود","Sa'd As-Su'ud","La chance des chances","Verseau"],
+["25","سَعْد الأَخْبِيَة","Sa'd Al-Akhbiyah","La chance des tentes","Verseau"],
+["26","الفَرْغ المُقَدَّم","Al-Fargh Al-Muqaddam","Le déversoir avant","Pégase"],
+["27","الفَرْغ المُؤَخَّر","Al-Fargh Al-Mu'akhkhar","Le déversoir arrière","Pégase"],
+["28","بَطْن الحُوت","Batn Al-Hut","Le ventre du poisson","Poissons"]
+];
+
+const seasonConstellations = {
+  "Hiver": ["Orion","Taureau","Gémeaux","Cocher","Grand Chien","Petit Chien"],
+  "Printemps": ["Lion","Vierge","Bouvier","Grande Ourse","Cancer"],
+  "Été": ["Scorpion","Sagittaire","Lyre","Aigle","Cygne"],
+  "Automne": ["Pégase","Andromède","Cassiopée","Persée","Poissons","Bélier","Verseau","Baleine"]
+};
+
 const today = new Date();
 const currentMonthIndex = today.getMonth();
 const currentMonthName = monthOrder[currentMonthIndex];
 let uid = 0;
+let currentTabIndex = currentMonthIndex;
+let allTabs = [...monthOrder, 'Navigation', 'Ready'];
 
 function closestEventIndex(events) {
   let minDiff = Infinity, idx = 0;
@@ -437,175 +554,317 @@ function closestEventIndex(events) {
   return idx;
 }
 
-const tabsEl = document.getElementById('tabs');
-const panelsEl = document.getElementById('panels');
-
-monthOrder.forEach((month, mi) => {
-  const m = data[month];
-  const isCurrent = month === currentMonthName;
-
-  const btn = document.createElement('button');
-  btn.id = 'tab-' + month;
-  btn.className = 'flex-shrink-0 px-2 py-1 rounded text-[11px] border ' + (isCurrent ? 'bg-sky text-night font-bold border-sky' : 'bg-panel text-gray-300 border-border hover:bg-panel2');
-  btn.innerHTML = `${month.slice(0,3)} <span class="ml-0.5 rounded-full px-1 text-[9px] ${isCurrent ? 'bg-black/20' : 'bg-white/10'}">${m.events.length}</span>`;
-  btn.onclick = () => switchTab(month);
-  tabsEl.appendChild(btn);
-
-  const panel = document.createElement('div');
-  panel.id = 'panel-' + month;
-  panel.className = 'month-panel' + (isCurrent ? '' : ' hidden');
-
-  const closestIdx = (isCurrent) ? closestEventIndex(m.events) : -1;
-
-  const cards = m.events.map((e, i) => {
-    const isRed = i === closestIdx;
-    const isSat = e[3].includes("Passages satellites");
-    const id = 'card-' + (uid++);
-    const detail = isSat ? satelliteDetailHtml() : arabicDetailHtml(e[5]);
-    return `
-    <div class="flex gap-2 sm:hidden">
-      <div class="relative w-4 flex-shrink-0">
-        <div class="absolute left-1/2 top-0 bottom-0 w-0.5 -translate-x-1/2 timeline-line"></div>
-        <div class="absolute left-1/2 top-4 -translate-x-1/2 -translate-y-1/2 w-3 h-3 rounded-full border-2 border-night ${isRed ? 'bg-red-500 dot-pulse' : 'bg-sky'}"></div>
-      </div>
-      <div class="bg-panel border border-border rounded-lg p-3 flex-1 mb-2 clickable ${isRed ? 'ring-1 ring-red-500/50' : ''}" onclick="toggleDetail('${id}')">
-        <div class="flex justify-between items-start mb-1">
-          <span class="text-sky font-bold text-sm">${e[0]==="—"?"":e[0]+" "+month.slice(0,3).toLowerCase()} ${isRed ? '<span class="text-red-400 text-[10px]">● proche</span>' : ''}</span>
-          <span class="text-right"><div class="text-gold font-black text-lg leading-none">${e[2]}</div>${e[1]!=="🛰️"?`<div class="text-gray-500 text-[11px]">(${e[1]} GMT)</div>`:''}</span>
-        </div>
-        <div class="font-medium text-sm mb-1">${linkify(e[3])}</div>
-        <div class="text-gray-400 text-xs mb-1">${e[4]}</div>
-        ${!isSat ? `<div class="text-green text-xs">🌌 ${constelLink(e[5])} <span class="text-gray-500 text-[10px]">(clic pour détail)</span></div>` : `<div class="text-gray-500 text-[10px]">(clic pour les liens)</div>`}
-        <div id="${id}" class="detail-card">${detail}</div>
-      </div>
-    </div>`;
-  }).join('');
-
-  const rows = m.events.map((e, i) => {
-    const isRed = i === closestIdx;
-    const isSat = e[3].includes("Passages satellites");
-    const id = 'row-' + (uid++);
-    const detail = isSat ? satelliteDetailHtml() : arabicDetailHtml(e[5]);
-    return `
-    <tr class="border-b border-border hover:bg-panel2 clickable ${isRed ? 'bg-red-950/20' : ''}" onclick="toggleDetail('${id}')">
-      <td class="relative w-8 p-0">
-        <div class="absolute left-1/2 top-0 bottom-0 w-0.5 -translate-x-1/2 timeline-line"></div>
-        <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-3 rounded-full border-2 border-night ${isRed ? 'bg-red-500 dot-pulse' : 'bg-sky'}"></div>
-      </td>
-      <td class="py-2 px-3 text-sky font-bold whitespace-nowrap">${e[0]==="—"?"":e[0]+" "+month.slice(0,3).toLowerCase()}${isRed ? ' <span class="text-red-400 text-[10px]">● proche</span>' : ''}</td>
-      <td class="py-2 px-3 whitespace-nowrap"><div class="text-gold font-black text-base leading-none">${e[2]}</div>${e[1]!=="🛰️"?`<div class="text-gray-500 text-xs">(${e[1]} GMT)</div>`:''}</td>
-      <td class="py-2 px-3">${linkify(e[3])}</td>
-      <td class="py-2 px-3 text-gray-400">${e[4]}</td>
-      <td class="py-2 px-3 whitespace-nowrap">${!isSat ? constelLink(e[5]) : ''}</td>
-    </tr>
-    <tr class="detail-row" id="${id}"><td colspan="6" class="bg-panel2 px-4 py-2">${detail}</td></tr>`;
-  }).join('');
-
-  panel.innerHTML = `
-    <div class="flex flex-col sm:hidden">${cards}</div>
-    <div class="hidden sm:block overflow-x-auto rounded-lg border border-border">
-      <table class="w-full bg-panel text-sm">
-        <thead><tr class="bg-panel2 text-gold text-xs">
-          <th class="py-2 px-3 w-8"></th><th class="py-2 px-3 text-left">Date</th>
-          <th class="py-2 px-3 text-left">Heure locale (GMT)</th><th class="py-2 px-3 text-left">Événement</th>
-          <th class="py-2 px-3 text-left">Explication</th><th class="py-2 px-3 text-left">Constellation</th>
-        </tr></thead>
-        <tbody>${rows}</tbody>
-      </table>
-    </div>`;
-  panelsEl.appendChild(panel);
-});
-
 function toggleDetail(id) { document.getElementById(id).classList.toggle('open'); }
 
-// ---- Ready tab ----
-const readyBtn = document.createElement('button');
-readyBtn.id = 'tab-Ready';
-readyBtn.className = 'flex-shrink-0 px-2 py-1 rounded text-[11px] border bg-panel text-gray-300 border-border hover:bg-panel2';
-readyBtn.innerHTML = `🎒 Ready`;
-readyBtn.onclick = () => switchTab('Ready');
-tabsEl.appendChild(readyBtn);
+// ============ MAIN RENDER (calendar months) — rebuilt on location switch ============
+function renderCalendar() {
+  const tabsEl = document.getElementById('tabs');
+  const panelsEl = document.getElementById('panels');
+  const activeTabName = allTabs[currentTabIndex] || currentMonthName;
+  tabsEl.innerHTML = '';
+  panelsEl.innerHTML = '';
+  uid = 0;
 
-const readyPanel = document.createElement('div');
-readyPanel.id = 'panel-Ready';
-readyPanel.className = 'month-panel hidden';
+  monthOrder.forEach((month, mi) => {
+    const m = data[month];
+    const isCurrent = month === activeTabName;
 
-const toolLinks = `
-  <div class="grid gap-2 mb-6 sm:grid-cols-3">
-    <a href="https://djlorenz.github.io/astronomy/lp/overlay/dark.html" target="_blank" rel="noopener" class="bg-panel border border-border rounded-lg p-3 hover:bg-panel2">
-      <div class="text-gold font-bold text-sm mb-1">🗺️ Carte pollution lumineuse</div>
-      <div class="text-gray-400 text-xs">Trouver un endroit sombre autour de Bizerte</div>
-    </a>
-    <a href="https://www.heavens-above.com/PassSummary.aspx?satid=25544&lat=37.2744&lng=9.8739&loc=Bizerte&alt=9&tz=CET" target="_blank" rel="noopener" class="bg-panel border border-border rounded-lg p-3 hover:bg-panel2">
-      <div class="text-gold font-bold text-sm mb-1">🛰️ Passages ISS (Zarya)</div>
-      <div class="text-gray-400 text-xs">Prochains passages, géolocalisés Bizerte</div>
-    </a>
-    <a href="https://www.heavens-above.com/PassSummary.aspx?satid=48274&lat=37.2744&lng=9.8739&loc=Bizerte&alt=9&tz=CET" target="_blank" rel="noopener" class="bg-panel border border-border rounded-lg p-3 hover:bg-panel2">
-      <div class="text-gold font-bold text-sm mb-1">🛰️ Passages Tiangong</div>
-      <div class="text-gray-400 text-xs">Prochains passages, géolocalisés Bizerte</div>
-    </a>
-  </div>`;
+    const btn = document.createElement('button');
+    btn.id = 'tab-' + month;
+    btn.className = 'flex-shrink-0 px-2 py-1 rounded text-[11px] border ' + (isCurrent ? 'bg-sky text-night font-bold border-sky' : 'bg-panel text-gray-300 border-border hover:bg-panel2');
+    btn.innerHTML = `${month.slice(0,3)} <span class="ml-0.5 rounded-full px-1 text-[9px] ${isCurrent ? 'bg-black/20' : 'bg-white/10'}">${m.events.length}</span>`;
+    btn.onclick = () => switchTab(month);
+    tabsEl.appendChild(btn);
 
-const starsRows = topStars.map(s => `
-  <tr class="border-b border-border hover:bg-panel2">
-    <td class="py-1.5 px-3 text-gray-500">${s[0]}</td>
-    <td class="py-1.5 px-3"><a class="wikilink text-sky" href="${s[4]}" target="_blank" rel="noopener">${s[1]}</a></td>
-    <td class="py-1.5 px-3 arabic text-gold text-sm">${s[5]}</td>
-    <td class="py-1.5 px-3 text-gold font-bold">${s[2]}</td>
-    <td class="py-1.5 px-3 text-gray-400">${s[3]} <span class="arabic text-gray-500 text-xs">(${constelArName(s[3])})</span></td>
-  </tr>`).join('');
+    const panel = document.createElement('div');
+    panel.id = 'panel-' + month;
+    panel.className = 'month-panel' + (isCurrent ? '' : ' hidden');
 
-const galaxiesRows = topGalaxies.map(g => `
-  <tr class="border-b border-border hover:bg-panel2">
-    <td class="py-1.5 px-3 text-gray-500">${g[0]}</td>
-    <td class="py-1.5 px-3"><a class="wikilink text-green" href="${g[5]}" target="_blank" rel="noopener">${g[1]}</a></td>
-    <td class="py-1.5 px-3 arabic text-gold text-sm">${g[6]}</td>
-    <td class="py-1.5 px-3 text-gold font-bold">${g[2]}</td>
-    <td class="py-1.5 px-3 text-gray-400">${g[3]} <span class="arabic text-gray-500 text-xs">(${constelArName(g[3])})</span></td>
-    <td class="py-1.5 px-3 text-gray-500 text-xs">${g[4]}</td>
-  </tr>`).join('');
+    const closestIdx = (month === currentMonthName) ? closestEventIndex(m.events) : -1;
 
-readyPanel.innerHTML = `
-  ${toolLinks}
-  <div class="text-sky font-bold text-sm mb-2">⭐ Top 50 des étoiles les plus brillantes à l'œil nu</div>
-  <div class="overflow-x-auto rounded-lg border border-border mb-6"><table class="w-full bg-panel text-sm">
-    <thead><tr class="bg-panel2 text-gold text-xs"><th class="py-2 px-3 text-left">#</th><th class="py-2 px-3 text-left">Étoile</th><th class="py-2 px-3 text-left">اسم عربي</th><th class="py-2 px-3 text-left">Magnitude</th><th class="py-2 px-3 text-left">Constellation</th></tr></thead>
-    <tbody>${starsRows}</tbody></table></div>
-  <div class="text-green font-bold text-sm mb-2">🌌 Top 20 des galaxies les plus brillantes à l'œil nu</div>
-  <div class="overflow-x-auto rounded-lg border border-border"><table class="w-full bg-panel text-sm">
-    <thead><tr class="bg-panel2 text-gold text-xs"><th class="py-2 px-3 text-left">#</th><th class="py-2 px-3 text-left">Galaxie</th><th class="py-2 px-3 text-left">اسم عربي</th><th class="py-2 px-3 text-left">Magnitude</th><th class="py-2 px-3 text-left">Constellation</th><th class="py-2 px-3 text-left">Conditions</th></tr></thead>
-    <tbody>${galaxiesRows}</tbody></table></div>
-  <p class="text-gray-500 text-[11px] mt-3">Magnitude apparente : plus bas (voire négatif) = plus brillant. Œil nu ≈ jusqu'à magnitude 6 sous ciel très sombre. Certains noms arabes sont des translittérations modernes (objets sans nom traditionnel).</p>
-`;
-panelsEl.appendChild(readyPanel);
+    const cards = m.events.map((e, i) => {
+      const isRed = i === closestIdx;
+      const isSat = e[2].includes("Passages satellites");
+      const id = 'card-' + (uid++);
+      const detail = isSat ? satelliteDetailHtml() : arabicDetailHtml(e[4]);
+      const localT = getLocalTime(mi, e[0], e[1]);
+      return `
+      <div class="flex gap-2 sm:hidden">
+        <div class="relative w-4 flex-shrink-0">
+          <div class="absolute left-1/2 top-0 bottom-0 w-0.5 -translate-x-1/2 timeline-line"></div>
+          <div class="absolute left-1/2 top-4 -translate-x-1/2 -translate-y-1/2 w-3 h-3 rounded-full border-2 border-night ${isRed ? 'bg-red-500 dot-pulse' : 'bg-sky'}"></div>
+        </div>
+        <div class="bg-panel border border-border rounded-lg p-3 flex-1 mb-2 clickable ${isRed ? 'ring-1 ring-red-500/50' : ''}" onclick="toggleDetail('${id}')">
+          <div class="flex justify-between items-start mb-1">
+            <span class="text-sky font-bold text-sm">${e[0]==="—"?"":e[0]+" "+month.slice(0,3).toLowerCase()} ${isRed ? '<span class="text-red-400 text-[10px]">● proche</span>' : ''}</span>
+            <span class="text-right"><div class="text-gold font-black text-lg leading-none">${localT}</div>${e[1]!=="🛰️"?`<div class="text-gray-500 text-[11px]">(${e[1]} GMT)</div>`:''}</span>
+          </div>
+          <div class="font-medium text-sm mb-1">${linkify(e[2])}</div>
+          <div class="text-gray-400 text-xs mb-1">${e[3]}</div>
+          ${!isSat ? `<div class="text-green text-xs">🌌 ${constelLink(e[4])} <span class="text-gray-500 text-[10px]">(clic pour détail)</span></div>` : `<div class="text-gray-500 text-[10px]">(clic pour les liens)</div>`}
+          <div id="${id}" class="detail-card">${detail}</div>
+        </div>
+      </div>`;
+    }).join('');
 
-const allTabs = [...monthOrder, 'Ready'];
-let currentTabIndex = currentMonthIndex;
+    const rows = m.events.map((e, i) => {
+      const isRed = i === closestIdx;
+      const isSat = e[2].includes("Passages satellites");
+      const id = 'row-' + (uid++);
+      const detail = isSat ? satelliteDetailHtml() : arabicDetailHtml(e[4]);
+      const localT = getLocalTime(mi, e[0], e[1]);
+      return `
+      <tr class="border-b border-border hover:bg-panel2 clickable ${isRed ? 'bg-red-950/20' : ''}" onclick="toggleDetail('${id}')">
+        <td class="relative w-8 p-0">
+          <div class="absolute left-1/2 top-0 bottom-0 w-0.5 -translate-x-1/2 timeline-line"></div>
+          <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-3 rounded-full border-2 border-night ${isRed ? 'bg-red-500 dot-pulse' : 'bg-sky'}"></div>
+        </td>
+        <td class="py-2 px-3 text-sky font-bold whitespace-nowrap">${e[0]==="—"?"":e[0]+" "+month.slice(0,3).toLowerCase()}${isRed ? ' <span class="text-red-400 text-[10px]">● proche</span>' : ''}</td>
+        <td class="py-2 px-3 whitespace-nowrap"><div class="text-gold font-black text-base leading-none">${localT}</div>${e[1]!=="🛰️"?`<div class="text-gray-500 text-xs">(${e[1]} GMT)</div>`:''}</td>
+        <td class="py-2 px-3">${linkify(e[2])}</td>
+        <td class="py-2 px-3 text-gray-400">${e[3]}</td>
+        <td class="py-2 px-3 whitespace-nowrap">${!isSat ? constelLink(e[4]) : ''}</td>
+      </tr>
+      <tr class="detail-row" id="${id}"><td colspan="6" class="bg-panel2 px-4 py-2">${detail}</td></tr>`;
+    }).join('');
+
+    panel.innerHTML = `
+      <div class="flex flex-col sm:hidden">${cards}</div>
+      <div class="hidden sm:block overflow-x-auto rounded-lg border border-border">
+        <table class="w-full bg-panel text-sm">
+          <thead><tr class="bg-panel2 text-gold text-xs">
+            <th class="py-2 px-3 w-8"></th><th class="py-2 px-3 text-left">Date</th>
+            <th class="py-2 px-3 text-left">Heure locale (GMT)</th><th class="py-2 px-3 text-left">Événement</th>
+            <th class="py-2 px-3 text-left">Explication</th><th class="py-2 px-3 text-left">Constellation</th>
+          </tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>`;
+    panelsEl.appendChild(panel);
+  });
+
+  // Navigation tab button
+  const navBtn = document.createElement('button');
+  navBtn.id = 'tab-Navigation';
+  navBtn.className = 'flex-shrink-0 px-2 py-1 rounded text-[11px] border ' + (activeTabName==='Navigation' ? 'bg-sky text-night font-bold border-sky' : 'bg-panel text-gray-300 border-border hover:bg-panel2');
+  navBtn.innerHTML = `🧭 Navigation`;
+  navBtn.onclick = () => switchTab('Navigation');
+  tabsEl.appendChild(navBtn);
+  const navPanel = buildNavigationPanel();
+  navPanel.classList.toggle('hidden', activeTabName !== 'Navigation');
+  panelsEl.appendChild(navPanel);
+
+  // Ready tab button
+  const readyBtn = document.createElement('button');
+  readyBtn.id = 'tab-Ready';
+  readyBtn.className = 'flex-shrink-0 px-2 py-1 rounded text-[11px] border ' + (activeTabName==='Ready' ? 'bg-sky text-night font-bold border-sky' : 'bg-panel text-gray-300 border-border hover:bg-panel2');
+  readyBtn.innerHTML = `🎒 Ready`;
+  readyBtn.onclick = () => switchTab('Ready');
+  tabsEl.appendChild(readyBtn);
+  const readyPanel = buildReadyPanel();
+  readyPanel.classList.toggle('hidden', activeTabName !== 'Ready');
+  panelsEl.appendChild(readyPanel);
+
+  document.getElementById('panel-' + activeTabName)?.classList.remove('hidden');
+  const activeBtn = document.getElementById('tab-' + activeTabName);
+  if (activeBtn) setTimeout(() => activeBtn.scrollIntoView({ behavior:'auto', inline:'center', block:'nearest' }), 0);
+}
+
+// ============ NAVIGATION TAB ============
+function buildNavigationPanel() {
+  const panel = document.createElement('div');
+  panel.id = 'panel-Navigation';
+  panel.className = 'month-panel';
+  panel.innerHTML = `
+    <p class="text-gray-400 text-xs mb-4">Techniques classiques d'orientation nocturne par les étoiles, issues des manuels de navigation d'urgence (survie, marine, randonnée).</p>
+
+    <div class="space-y-3 mb-6">
+      <div class="bg-panel border border-border rounded-lg p-3">
+        <div class="text-gold font-bold text-sm mb-1">🌟 Trouver le Nord avec la Petite Ourse</div>
+        <div class="text-gray-300 text-xs">Repérez la Grande Ourse (7 étoiles brillantes). Prolongez la ligne formée par les deux étoiles de son "bord" (Dubhe → Merak) d'environ 5 fois leur distance : vous tombez sur Polaris, l'étoile du Nord, quasi immobile toute la nuit. Elle indique le Nord vrai à moins de 1° près.</div>
+      </div>
+      <div class="bg-panel border border-border rounded-lg p-3">
+        <div class="text-gold font-bold text-sm mb-1">📏 Estimer sa latitude avec Polaris</div>
+        <div class="text-gray-300 text-xs">La hauteur angulaire de Polaris au-dessus de l'horizon (en degrés) correspond approximativement à votre latitude. Mesurez-la avec le poing tendu à bout de bras (un poing ≈ 10°) ou une main ouverte (≈ 20°).</div>
+      </div>
+      <div class="bg-panel border border-border rounded-lg p-3">
+        <div class="text-gold font-bold text-sm mb-1">🪄 La méthode du bâton et de l'ombre (de jour)</div>
+        <div class="text-gray-300 text-xs">Plantez un bâton vertical. Marquez l'extrémité de son ombre. Attendez 15-20 minutes, marquez à nouveau. La ligne reliant les deux marques indique l'axe Est-Ouest (1ère marque = Ouest, 2ème = Est dans l'hémisphère nord).</div>
+      </div>
+      <div class="bg-panel border border-border rounded-lg p-3">
+        <div class="text-gold font-bold text-sm mb-1">⌚ Utiliser une montre analogique comme boussole</div>
+        <div class="text-gray-300 text-xs">Pointez la petite aiguille (heures) vers le Soleil. La bissectrice entre cette aiguille et le repère "12h" indique le Sud (hémisphère nord). En heure d'été, utilisez le repère "1h" à la place de "12h".</div>
+      </div>
+      <div class="bg-panel border border-border rounded-lg p-3">
+        <div class="text-gold font-bold text-sm mb-1">🎯 Orion pointe vers l'Est et l'Ouest</div>
+        <div class="text-gray-300 text-xs">La Ceinture d'Orion (3 étoiles alignées) se lève presque exactement à l'Est et se couche presque exactement à l'Ouest, quel que soit le moment de l'année — un repère fiable en début et fin de nuit.</div>
+      </div>
+      <div class="bg-panel border border-border rounded-lg p-3">
+        <div class="text-gold font-bold text-sm mb-1">🕐 Estimer l'heure la nuit</div>
+        <div class="text-gray-300 text-xs">Les étoiles tournent autour de Polaris à raison d'environ 15° par heure (comme une horloge à l'envers). En observant la position d'une étoile repère au fil du temps, on peut estimer combien d'heures se sont écoulées.</div>
+      </div>
+      <div class="bg-panel border border-border rounded-lg p-3">
+        <div class="text-gold font-bold text-sm mb-1">🌙 La Lune comme repère approximatif</div>
+        <div class="text-gray-300 text-xs">Un croissant de Lune : une ligne imaginaire reliant les deux pointes du croissant, prolongée jusqu'à l'horizon, donne une direction approximativement Sud (hémisphère nord). Peu précis mais utile en dépannage.</div>
+      </div>
+    </div>
+
+    <div class="text-sky font-bold text-sm mb-2">📚 Meilleures ressources</div>
+    <div class="grid gap-2 sm:grid-cols-2">
+      <a href="https://www.starpath.com/emergnavbook/" target="_blank" rel="noopener" class="bg-panel border border-border rounded-lg p-3 hover:bg-panel2">
+        <div class="text-gold font-bold text-sm">📘 Emergency Navigation — David Burch</div>
+        <div class="text-gray-400 text-xs">Référence classique de navigation de secours sans instruments.</div>
+      </a>
+      <a href="https://archive.org/details/FM21-76" target="_blank" rel="noopener" class="bg-panel border border-border rounded-lg p-3 hover:bg-panel2">
+        <div class="text-gold font-bold text-sm">📗 US Army Survival Manual FM 21-76</div>
+        <div class="text-gray-400 text-xs">Manuel militaire, chapitre navigation et orientation céleste.</div>
+      </a>
+      <a href="https://in-the-sky.org" target="_blank" rel="noopener" class="bg-panel border border-border rounded-lg p-3 hover:bg-panel2">
+        <div class="text-gold font-bold text-sm">🔭 In-The-Sky.org</div>
+        <div class="text-gray-400 text-xs">Position en direct des étoiles et planètes pour s'entraîner.</div>
+      </a>
+      <a href="https://stellarium-web.org" target="_blank" rel="noopener" class="bg-panel border border-border rounded-lg p-3 hover:bg-panel2">
+        <div class="text-gold font-bold text-sm">🪐 Stellarium Web</div>
+        <div class="text-gray-400 text-xs">Planétarium interactif gratuit pour repérer les constellations.</div>
+      </a>
+    </div>
+  `;
+  return panel;
+}
+
+// ============ READY TAB ============
+function buildReadyPanel() {
+  const panel = document.createElement('div');
+  panel.id = 'panel-Ready';
+  panel.className = 'month-panel';
+
+  const c = locationCoords[currentLocation];
+  const toolLinks = `
+    <div class="grid gap-2 mb-6 sm:grid-cols-3">
+      <a href="https://djlorenz.github.io/astronomy/lp/overlay/dark.html" target="_blank" rel="noopener" class="bg-panel border border-border rounded-lg p-3 hover:bg-panel2">
+        <div class="text-gold font-bold text-sm mb-1">🗺️ Carte pollution lumineuse</div>
+        <div class="text-gray-400 text-xs">Trouver un endroit sombre</div>
+      </a>
+      <a href="https://www.heavens-above.com/PassSummary.aspx?satid=25544&lat=${c.lat}&lng=${c.lng}&loc=${currentLocation}&alt=9" target="_blank" rel="noopener" class="bg-panel border border-border rounded-lg p-3 hover:bg-panel2">
+        <div class="text-gold font-bold text-sm mb-1">🛰️ Passages ISS (Zarya)</div>
+        <div class="text-gray-400 text-xs">Géolocalisés ${currentLocation}</div>
+      </a>
+      <a href="https://www.heavens-above.com/PassSummary.aspx?satid=48274&lat=${c.lat}&lng=${c.lng}&loc=${currentLocation}&alt=9" target="_blank" rel="noopener" class="bg-panel border border-border rounded-lg p-3 hover:bg-panel2">
+        <div class="text-gold font-bold text-sm mb-1">🛰️ Passages Tiangong</div>
+        <div class="text-gray-400 text-xs">Géolocalisés ${currentLocation}</div>
+      </a>
+    </div>`;
+
+  const starsRows = topStars.map(s => `
+    <tr class="border-b border-border hover:bg-panel2">
+      <td class="py-1.5 px-3 text-gray-500">${s[0]}</td>
+      <td class="py-1.5 px-3"><a class="wikilink text-sky" href="${s[4]}" target="_blank" rel="noopener">${s[1]}</a></td>
+      <td class="py-1.5 px-3 arabic text-gold text-sm">${s[5]}</td>
+      <td class="py-1.5 px-3 text-gold font-bold">${s[2]}</td>
+      <td class="py-1.5 px-3 text-gray-400">${s[3]} <span class="arabic text-gray-500 text-xs">(${constelArName(s[3])})</span></td>
+    </tr>`).join('');
+
+  const galaxiesRows = topGalaxies.map(g => `
+    <tr class="border-b border-border hover:bg-panel2">
+      <td class="py-1.5 px-3 text-gray-500">${g[0]}</td>
+      <td class="py-1.5 px-3"><a class="wikilink text-green" href="${g[5]}" target="_blank" rel="noopener">${g[1]}</a></td>
+      <td class="py-1.5 px-3 arabic text-gold text-sm">${g[6]}</td>
+      <td class="py-1.5 px-3 text-gold font-bold">${g[2]}</td>
+      <td class="py-1.5 px-3 text-gray-400">${g[3]} <span class="arabic text-gray-500 text-xs">(${constelArName(g[3])})</span></td>
+      <td class="py-1.5 px-3 text-gray-500 text-xs">${g[4]}</td>
+    </tr>`).join('');
+
+  const manazilRows = manazilAlQamar.map(z => `
+    <tr class="border-b border-border hover:bg-panel2">
+      <td class="py-1.5 px-3 text-gray-500">${z[0]}</td>
+      <td class="py-1.5 px-3 arabic text-gold text-base">${z[1]}</td>
+      <td class="py-1.5 px-3 text-sky italic text-xs">${z[2]}</td>
+      <td class="py-1.5 px-3 text-gray-300">${z[3]}</td>
+      <td class="py-1.5 px-3 text-gray-400">${z[4]} <span class="arabic text-gray-500 text-xs">(${constelArName(z[4])})</span></td>
+    </tr>`).join('');
+
+  const seasonNow = ['Hiver','Hiver','Printemps','Printemps','Printemps','Été','Été','Été','Automne','Automne','Automne','Hiver'][currentMonthIndex];
+
+  panel.innerHTML = `
+    ${toolLinks}
+    <div class="text-sky font-bold text-sm mb-2">⭐ Top 50 des étoiles les plus brillantes à l'œil nu</div>
+    <div class="overflow-x-auto rounded-lg border border-border mb-6"><table class="w-full bg-panel text-sm">
+      <thead><tr class="bg-panel2 text-gold text-xs"><th class="py-2 px-3 text-left">#</th><th class="py-2 px-3 text-left">Étoile</th><th class="py-2 px-3 text-left">اسم عربي</th><th class="py-2 px-3 text-left">Magnitude</th><th class="py-2 px-3 text-left">Constellation</th></tr></thead>
+      <tbody>${starsRows}</tbody></table></div>
+
+    <div class="text-green font-bold text-sm mb-2">🌌 Top 20 des galaxies les plus brillantes à l'œil nu</div>
+    <div class="overflow-x-auto rounded-lg border border-border mb-6"><table class="w-full bg-panel text-sm">
+      <thead><tr class="bg-panel2 text-gold text-xs"><th class="py-2 px-3 text-left">#</th><th class="py-2 px-3 text-left">Galaxie</th><th class="py-2 px-3 text-left">اسم عربي</th><th class="py-2 px-3 text-left">Magnitude</th><th class="py-2 px-3 text-left">Constellation</th><th class="py-2 px-3 text-left">Conditions</th></tr></thead>
+      <tbody>${galaxiesRows}</tbody></table></div>
+
+    <div class="text-gold font-bold text-sm mb-2">🍂 Constellations par saison</div>
+    <div class="flex gap-1.5 mb-3" id="seasonBtns"></div>
+    <div id="seasonList" class="grid gap-2 sm:grid-cols-2 mb-6"></div>
+
+    <div class="text-gold font-bold text-sm mb-2">🌙 Manazil al-Qamar — منازل القمر (les 28 stations lunaires)</div>
+    <p class="text-gray-500 text-xs mb-2">Système traditionnel arabe divisant le zodiaque en 28 stations que la Lune traverse successivement en environ 27,3 jours.</p>
+    <div class="overflow-x-auto rounded-lg border border-border mb-6"><table class="w-full bg-panel text-sm">
+      <thead><tr class="bg-panel2 text-gold text-xs">
+        <th class="py-2 px-3 text-left">#</th><th class="py-2 px-3 text-left">اسم عربي</th>
+        <th class="py-2 px-3 text-left">Translittération</th><th class="py-2 px-3 text-left">Signification</th>
+        <th class="py-2 px-3 text-left">Constellation</th>
+      </tr></thead>
+      <tbody>${manazilRows}</tbody></table></div>
+
+    <p class="text-gray-500 text-[11px] mt-3">Magnitude apparente : plus bas (voire négatif) = plus brillant. Œil nu ≈ jusqu'à magnitude 6 sous ciel très sombre.</p>
+  `;
+
+  // Season filter logic
+  setTimeout(() => {
+    const seasonBtns = panel.querySelector('#seasonBtns');
+    const seasonList = panel.querySelector('#seasonList');
+    let activeSeason = seasonNow;
+    function renderSeason() {
+      seasonBtns.innerHTML = Object.keys(seasonConstellations).map(s => `
+        <button data-season="${s}" class="px-2.5 py-1 rounded text-xs border ${s===activeSeason ? 'bg-sky text-night font-bold border-sky' : 'bg-panel2 text-gray-400 border-border hover:bg-border'}">${s}</button>
+      `).join('');
+      seasonList.innerHTML = seasonConstellations[activeSeason].map(c => `
+        <div class="bg-panel border border-border rounded-lg p-2.5 flex justify-between items-center">
+          <span>${constelLinks[c] ? `<a class="wikilink text-sky text-sm" href="${constelLinks[c]}" target="_blank" rel="noopener">${c}</a>` : `<span class="text-sm">${c}</span>`}</span>
+          <span class="arabic text-gold text-sm">${constelArName(c)}</span>
+        </div>`).join('');
+      seasonBtns.querySelectorAll('button').forEach(b => b.onclick = () => { activeSeason = b.dataset.season; renderSeason(); });
+    }
+    renderSeason();
+  }, 0);
+
+  return panel;
+}
 
 function switchTab(name) {
   currentTabIndex = allTabs.indexOf(name);
-  allTabs.forEach(m => {
-    const isNow = m === name;
-    const el = document.getElementById('tab-' + m);
+  allTabs.forEach(n => {
+    const el = document.getElementById('tab-' + n);
+    if (!el) return;
+    const isNow = n === name;
     el.className = 'flex-shrink-0 px-2 py-1 rounded text-[11px] border ' + (isNow ? 'bg-sky text-night font-bold border-sky' : 'bg-panel text-gray-300 border-border hover:bg-panel2');
-    if (m !== 'Ready') el.innerHTML = `${m.slice(0,3)} <span class="ml-0.5 rounded-full px-1 text-[9px] ${isNow ? 'bg-black/20' : 'bg-white/10'}">${data[m].events.length}</span>`;
-    document.getElementById('panel-' + m).classList.toggle('hidden', !isNow);
+    if (monthOrder.includes(n)) el.innerHTML = `${n.slice(0,3)} <span class="ml-0.5 rounded-full px-1 text-[9px] ${isNow ? 'bg-black/20' : 'bg-white/10'}">${data[n].events.length}</span>`;
+    document.getElementById('panel-' + n)?.classList.toggle('hidden', !isNow);
   });
-  document.getElementById('tab-' + name).scrollIntoView({ behavior:'smooth', inline:'center', block:'nearest' });
+  document.getElementById('tab-' + name)?.scrollIntoView({ behavior:'smooth', inline:'center', block:'nearest' });
 }
 
 document.getElementById('tabPrev').onclick = () => switchTab(allTabs[(currentTabIndex - 1 + allTabs.length) % allTabs.length]);
 document.getElementById('tabNext').onclick = () => switchTab(allTabs[(currentTabIndex + 1) % allTabs.length]);
 
 let touchStartX = 0;
-panelsEl.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].screenX; });
-panelsEl.addEventListener('touchend', e => {
+document.getElementById('panels').addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].screenX; });
+document.getElementById('panels').addEventListener('touchend', e => {
   const dx = e.changedTouches[0].screenX - touchStartX;
   if (Math.abs(dx) > 60) {
     if (dx < 0) switchTab(allTabs[(currentTabIndex + 1) % allTabs.length]);
     else switchTab(allTabs[(currentTabIndex - 1 + allTabs.length) % allTabs.length]);
   }
 });
+
+// ============ INIT ============
+setLocationButtons();
+renderCalendar();
 </script>
 
 </body>
