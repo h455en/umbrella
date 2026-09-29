@@ -1,498 +1,1956 @@
 <!DOCTYPE html>
-<html lang="fr" class="dark">
+<html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portail Maritime : Marseille - Bizerte & Permis</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        darkbg: '#0f172a',
-                        cardbg: '#1e293b',
-                    }
-                }
-            }
-        }
-    </script>
-    <script>
-        function switchPage(pageId) {
-            document.querySelectorAll('.page-section').forEach(el => el.classList.add('hidden'));
-            document.querySelectorAll('.menu-btn').forEach(el => {
-                el.className = "menu-btn px-4 py-2 rounded-xl font-medium text-sm text-slate-300 hover:bg-slate-800 hover:text-white transition-all";
-            });
-            document.getElementById(pageId).classList.remove('hidden');
-            document.getElementById('nav-' + pageId).className = "menu-btn px-4 py-2 rounded-xl font-semibold text-sm bg-blue-600 text-white shadow-lg transition-all";
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sailor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #0b4f6c;
+    --primary-light: #e8f4f8;
+    --accent: #ff9f1c;
+    --bg: #0e1620;
+    --card: #16212e;
+    --border: #253244;
+    --text: #e6edf3;
+    --text-light: #8b9bb0;
+    --menu-width: 300px;
+    --header-h: 42px;
+    --footer-h: 44px;
+    --shadow: 0 4px 20px rgba(0,0,0,0.35);
+  }
 
-        function switchTab(tabId) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-            document.querySelectorAll('.tab-btn').forEach(el => {
-                el.className = "tab-btn px-4 py-2 rounded-xl font-semibold text-sm bg-slate-800 text-slate-300 hover:bg-slate-700 transition-all";
-            });
-            document.getElementById(tabId).classList.remove('hidden');
-            document.getElementById('btn-' + tabId).className = "tab-btn px-4 py-2 rounded-xl font-semibold text-sm bg-blue-600 text-white shadow-lg transition-all";
-        }
+  html.light {
+    --bg: #f7f9fb;
+    --card: #ffffff;
+    --border: #e2e8ee;
+    --text: #1e2a33;
+    --text-light: #6b7a86;
+    --primary-light: #e8f4f8;
+    --shadow: 0 4px 20px rgba(11,79,108,0.08);
+  }
 
-        function switchBoatTab(boatId) {
-            document.querySelectorAll('.boat-content').forEach(el => el.classList.add('hidden'));
-            document.querySelectorAll('.boat-tab-btn').forEach(el => {
-                el.className = "boat-tab-btn px-4 py-2 rounded-xl font-semibold text-sm bg-slate-800 text-slate-300 hover:bg-slate-700 transition-all";
-            });
-            document.getElementById(boatId).classList.remove('hidden');
-            document.getElementById('btn-' + boatId).className = "boat-tab-btn px-4 py-2 rounded-xl font-semibold text-sm bg-emerald-600 text-white shadow-lg transition-all";
-        }
+  * { box-sizing: border-box; }
 
-        function switchPropulsion(mode) {
-            const sailEl = document.getElementById('cost-sail');
-            const motorEl = document.getElementById('cost-motor');
-            const btnSail = document.getElementById('btn-sail-prop');
-            const btnMotor = document.getElementById('btn-motor-prop');
-            const descEl = document.getElementById('prop-desc');
+  html, body { height: 100%; }
 
-            if (mode === 'sail') {
-                sailEl.classList.remove('hidden');
-                motorEl.classList.add('hidden');
-                btnSail.className = "px-3 py-1.5 rounded-lg text-xs font-semibold bg-blue-600 text-white shadow transition-all";
-                btnMotor.className = "px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700 transition-all";
-                descEl.innerText = "Estimations basées sur un grand voilier ou catamaran capable d'accueillir 12 personnes.";
-            } else {
-                sailEl.classList.add('hidden');
-                motorEl.classList.remove('hidden');
-                btnMotor.className = "px-3 py-1.5 rounded-lg text-xs font-semibold bg-blue-600 text-white shadow transition-all";
-                btnSail.className = "px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700 transition-all";
-                descEl.innerText = "Estimations basées sur une vedette à moteur ou un yacht de grande capacité.";
-            }
-        }
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    transition: background 0.3s, color 0.3s;
+  }
 
-        function toggleQcm(id) {
-            const content = document.getElementById('qcm-' + id);
-            const icon = document.getElementById('icon-' + id);
-            if (content.classList.contains('hidden')) {
-                content.classList.remove('hidden');
-                icon.style.transform = 'rotate(180deg)';
-            } else {
-                content.classList.add('hidden');
-                icon.style.transform = 'rotate(0deg)';
-            }
-        }
-    </script>
+  /* ============================================================
+     HEADER ULTRA-FIN
+     ============================================================ */
+  header {
+    height: var(--header-h);
+    background: linear-gradient(135deg, var(--primary), #14738f);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 12px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 300;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.25);
+  }
+
+  header .brand {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  header .brand span { font-size: 1rem; }
+
+  header .header-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.75rem;
+    opacity: 0.9;
+  }
+
+  .menu-toggle {
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.25);
+    color: white;
+    font-size: 1rem;
+    padding: 4px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    line-height: 1;
+    transition: background 0.2s;
+  }
+
+  .menu-toggle:hover { background: rgba(255,255,255,0.25); }
+
+  /* ============================================================
+     LAYOUT PLEIN ÉCRAN
+     ============================================================ */
+  .layout {
+    position: fixed;
+    top: var(--header-h);
+    left: 0;
+    right: 0;
+    bottom: var(--footer-h);
+    display: flex;
+    overflow: hidden;
+  }
+
+  /* ============================================================
+     MENU LATÉRAL AVEC CHAPITRES
+     ============================================================ */
+  .side-menu {
+    width: 0;
+    overflow: hidden;
+    background: var(--card);
+    border-right: 1px solid var(--border);
+    transition: width 0.3s ease;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .side-menu.open {
+    width: var(--menu-width);
+    overflow-y: auto;
+    padding: 16px 14px;
+  }
+
+  .side-menu h3 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.75rem;
+    color: var(--primary);
+    margin: 0 0 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    opacity: 0.9;
+  }
+
+  html:not(.light) .side-menu h3 { color: #6fb7d4; }
+
+  .side-menu .menu-tabs {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin-bottom: 18px;
+  }
+
+  .side-menu .menu-tab {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 11px;
+    border-radius: 8px;
+    background: var(--primary-light);
+    color: var(--primary);
+    font-weight: 500;
+    font-size: 0.82rem;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: all 0.2s;
+  }
+
+  html:not(.light) .side-menu .menu-tab {
+    background: #1d2b3a;
+    color: #b8c9d9;
+  }
+
+  html:not(.light) .side-menu .menu-tab:hover { background: #253546; }
+
+  .side-menu .menu-tab:hover { background: #d8ecf3; }
+
+  .side-menu .menu-tab.active {
+    background: var(--primary);
+    color: white;
+  }
+
+  .side-menu .menu-tab .pastille {
+    background: white;
+    color: var(--primary);
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+    font-size: 0.68rem;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .side-menu .menu-tab.active .pastille {
+    background: var(--accent);
+    color: white;
+  }
+
+  .menu-course-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .menu-course-list li {
+    padding: 7px 10px;
+    font-size: 0.78rem;
+    color: var(--text-light);
+    border-left: 2px solid transparent;
+    cursor: pointer;
+    transition: all 0.15s;
+    border-radius: 0 6px 6px 0;
+    line-height: 1.3;
+    display: flex;
+    gap: 7px;
+    align-items: flex-start;
+  }
+
+  .menu-course-list li .num {
+    font-weight: 700;
+    color: var(--primary);
+    flex-shrink: 0;
+    min-width: 18px;
+  }
+
+  html:not(.light) .menu-course-list li .num { color: #6fb7d4; }
+
+  .menu-course-list li:hover {
+    background: var(--primary-light);
+    color: var(--primary);
+  }
+
+  html:not(.light) .menu-course-list li:hover { background: #1d2b3a; color: #b8c9d9; }
+
+  .menu-course-list li.active {
+    border-left-color: var(--accent);
+    background: var(--primary-light);
+    color: var(--primary);
+    font-weight: 600;
+  }
+
+  html:not(.light) .menu-course-list li.active {
+    background: #1d2b3a;
+    color: #6fb7d4;
+  }
+
+  /* ============================================================
+     CONTENU PLEIN ÉCRAN
+     ============================================================ */
+  .main-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 22px 26px;
+    background: var(--bg);
+  }
+
+  .chapter-view {
+    max-width: 1000px;
+    margin: 0 auto;
+    animation: fadeIn 0.25s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .chapter-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 18px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 14px;
+  }
+
+  .chapter-title {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 1.35rem;
+    color: var(--primary);
+    margin: 0;
+  }
+
+  html:not(.light) .chapter-title { color: #6fb7d4; }
+
+  .chapter-badges { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+
+  .badge {
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 999px;
+  }
+
+  .badge-duree { background: #fff3e0; color: #b7691a; }
+  .badge-num { background: var(--primary-light); color: var(--primary); }
+
+  html:not(.light) .badge-num { background: #1d2b3a; color: #6fb7d4; }
+
+  .btn-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--primary);
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.82rem;
+    padding: 9px 16px;
+    border-radius: 10px;
+    transition: background 0.2s ease;
+    white-space: nowrap;
+  }
+
+  .btn-link:hover { background: #0d5f80; }
+
+  /* --- SECTIONS PLIABLES --- */
+  details {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin-bottom: 10px;
+    overflow: hidden;
+    background: var(--card);
+  }
+
+  summary {
+    cursor: pointer;
+    list-style: none;
+    padding: 12px 16px;
+    font-weight: 600;
+    font-size: 0.92rem;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: transparent;
+  }
+
+  summary::-webkit-details-marker { display: none; }
+
+  summary::after {
+    content: "▾";
+    color: var(--primary);
+    transition: transform 0.2s ease;
+    font-size: 0.8rem;
+  }
+
+  html:not(.light) summary::after { color: #6fb7d4; }
+
+  details[open] summary::after { transform: rotate(180deg); }
+
+  details[open] summary { border-bottom: 1px solid var(--border); }
+
+  .section-body { padding: 14px 20px; }
+
+  .section-body ul { margin: 0; padding-left: 20px; }
+  .section-body li { margin-bottom: 6px; font-size: 0.9rem; color: var(--text); }
+  .section-body ul ul { margin-top: 6px; padding-left: 18px; }
+  .section-body ul ul li { color: var(--text-light); font-size: 0.86rem; }
+
+  /* ============================================================
+     GLOSSAIRE
+     ============================================================ */
+  .glossary-toolbar {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  .glossary-search-toggle {
+    background: var(--card);
+    border: 1.5px solid var(--border);
+    color: var(--text);
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    width: 100%;
+    text-align: left;
+    transition: 0.15s;
+  }
+
+  .glossary-search-toggle:hover { border-color: var(--primary); }
+
+  .glossary-search-box { display: none; }
+  .glossary-search-box.visible { display: block; }
+
+  .glossary-search-box input {
+    width: 100%;
+    padding: 10px 18px;
+    font-size: 0.85rem;
+    border: 1.5px solid var(--primary);
+    border-radius: 20px;
+    outline: none;
+    background: var(--card);
+    color: var(--text);
+    font-family: inherit;
+  }
+
+  .glossary-filters {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .glossary-filter-btn {
+    background: var(--card);
+    border: 1.5px solid var(--border);
+    color: var(--text);
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    flex: 1 1 auto;
+    min-width: 60px;
+    text-align: center;
+    transition: 0.15s;
+  }
+
+  .glossary-filter-btn:hover { border-color: var(--primary); }
+  .glossary-filter-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+  .glossary-filter-btn.voile.active { background: #11658b; border-color: #11658b; }
+  .glossary-filter-btn.moteur.active { background: #b14b1c; border-color: #b14b1c; }
+  .glossary-filter-btn.navigation.active { background: #2f3e9e; border-color: #2f3e9e; }
+
+  .glossary-count {
+    display: inline-block;
+    background: var(--primary-light);
+    color: var(--primary);
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 20px;
+    margin-bottom: 12px;
+  }
+
+  html:not(.light) .glossary-count { background: #1d2b3a; color: #6fb7d4; }
+
+  .term-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .term-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 14px;
+    cursor: pointer;
+    transition: 0.15s;
+  }
+
+  .term-card:hover {
+    border-color: var(--primary);
+    box-shadow: var(--shadow);
+  }
+
+  .term-card.expanded {
+    border-color: var(--primary);
+    box-shadow: var(--shadow);
+  }
+
+  .term-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .term-fr-main {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--primary);
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  html:not(.light) .term-fr-main { color: #6fb7d4; }
+
+  .term-fr-main a {
+    color: inherit;
+    text-decoration: none;
+    border-bottom: 1px dotted var(--text-light);
+  }
+
+  .term-fr-main a:hover { color: var(--accent); }
+
+  .category {
+    display: inline-block;
+    background: var(--primary-light);
+    color: var(--primary);
+    font-size: 0.6rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 20px;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  html:not(.light) .category { background: #1d2b3a; color: #6fb7d4; }
+  .category.voile { background: #d9ecfa; color: #11658b; }
+  .category.moteur { background: #ffe6d5; color: #b14b1c; }
+  .category.navigation { background: #e0e7ff; color: #2f3e9e; }
+
+  .expand-icon {
+    font-size: 0.75rem;
+    color: var(--text-light);
+    transition: transform 0.2s;
+    margin-left: auto;
+    flex-shrink: 0;
+  }
+
+  .term-card.expanded .expand-icon {
+    transform: rotate(180deg);
+    color: var(--primary);
+  }
+
+  .term-details {
+    display: none;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px dashed var(--border);
+    font-size: 0.82rem;
+    color: var(--text);
+  }
+
+  .term-card.expanded .term-details {
+    display: block;
+    animation: fadeIn 0.2s ease;
+  }
+
+  .detail-row { margin-bottom: 8px; line-height: 1.45; }
+  .detail-row:last-child { margin-bottom: 0; }
+
+  .detail-label {
+    font-weight: 700;
+    color: var(--primary);
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    display: block;
+    margin-bottom: 2px;
+  }
+
+  html:not(.light) .detail-label { color: #6fb7d4; }
+
+  .detail-text { color: var(--text); font-size: 0.82rem; }
+
+  .detail-example {
+    background: var(--primary-light);
+    border-left: 2px solid var(--primary);
+    padding: 6px 10px;
+    border-radius: 4px;
+    font-style: italic;
+    color: var(--text);
+    font-size: 0.8rem;
+    margin-top: 4px;
+  }
+
+  html:not(.light) .detail-example { background: #1d2b3a; }
+
+  .translations {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px dashed var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .trans-row {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    font-size: 0.82rem;
+  }
+
+  .trans-lang {
+    font-weight: 700;
+    color: var(--primary);
+    font-size: 0.65rem;
+    background: var(--primary-light);
+    padding: 2px 8px;
+    border-radius: 8px;
+    flex-shrink: 0;
+    min-width: 30px;
+    text-align: center;
+  }
+
+  html:not(.light) .trans-lang { background: #1d2b3a; color: #6fb7d4; }
+
+  .trans-en { color: var(--text); font-weight: 500; }
+
+  .trans-ar {
+    color: var(--text);
+    font-weight: 500;
+    direction: rtl;
+    font-size: 0.9rem;
+  }
+
+  .glossary-empty {
+    padding: 20px;
+    text-align: center;
+    color: var(--text-light);
+    font-size: 0.85rem;
+    display: none;
+    background: var(--card);
+    border-radius: 10px;
+    border: 1px solid var(--border);
+  }
+
+  /* ============================================================
+     FOOTER RÉTRACTABLE (bas → haut)
+     ============================================================ */
+  .footer-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: var(--footer-h);
+    background: var(--card);
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 14px;
+    z-index: 250;
+    font-size: 0.72rem;
+    color: var(--text-light);
+    box-shadow: 0 -1px 6px rgba(0,0,0,0.15);
+  }
+
+  .footer-bar .footer-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .footer-bar .theme-toggle {
+    background: var(--primary-light);
+    color: var(--primary);
+    border: 1px solid transparent;
+    padding: 5px 12px;
+    border-radius: 999px;
+    font-family: inherit;
+    font-size: 0.72rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s;
+  }
+
+  .footer-bar .theme-toggle:hover { background: #d8ecf3; }
+
+  html:not(.light) .footer-bar .theme-toggle {
+    background: #1d2b3a;
+    color: #b8c9d9;
+  }
+
+  html:not(.light) .footer-bar .theme-toggle:hover { background: #253546; }
+
+  .footer-bar .expand-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-light);
+    width: 30px;
+    height: 26px;
+    border-radius: 6px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    transition: all 0.2s;
+  }
+
+  .footer-bar .expand-btn:hover {
+    background: var(--primary-light);
+    color: var(--primary);
+  }
+
+  html:not(.light) .footer-bar .expand-btn:hover {
+    background: #1d2b3a;
+    color: #6fb7d4;
+  }
+
+  /* --- Panneau footer déplié (du bas vers le haut) --- */
+  .footer-panel {
+    position: fixed;
+    bottom: var(--footer-h);
+    left: 0;
+    right: 0;
+    background: var(--card);
+    border-top: 1px solid var(--border);
+    padding: 0 20px;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.35s ease, padding 0.35s ease;
+    z-index: 249;
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.2);
+  }
+
+  .footer-panel.open {
+    max-height: 320px;
+    padding: 18px 20px;
+    overflow-y: auto;
+  }
+
+  .footer-panel h4 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.8rem;
+    color: var(--primary);
+    margin: 0 0 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  html:not(.light) .footer-panel h4 { color: #6fb7d4; }
+
+  .footer-panel .settings-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.82rem;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .footer-panel .settings-row:last-child { border-bottom: none; }
+
+  .footer-panel .settings-label {
+    font-weight: 500;
+    color: var(--text);
+  }
+
+  .footer-panel .settings-desc {
+    font-size: 0.72rem;
+    color: var(--text-light);
+    margin-top: 2px;
+  }
+
+  .switch {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+    flex-shrink: 0;
+  }
+
+  .switch input { opacity: 0; width: 0; height: 0; }
+
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: #444;
+    transition: 0.3s;
+    border-radius: 24px;
+  }
+
+  .slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: 0.3s;
+    border-radius: 50%;
+  }
+
+  input:checked + .slider { background-color: var(--accent); }
+  input:checked + .slider:before { transform: translateX(20px); }
+
+  .footer-credits {
+    font-size: 0.7rem;
+    color: var(--text-light);
+    padding-top: 12px;
+    line-height: 1.5;
+  }
+
+  /* ============================================================
+     RESPONSIVE
+     ============================================================ */
+  @media (max-width: 700px) {
+    .side-menu.open { width: 260px; }
+    .main-content { padding: 16px; }
+    .chapter-title { font-size: 1.1rem; }
+    .footer-bar { font-size: 0.68rem; padding: 0 10px; }
+    .footer-bar .theme-toggle { padding: 4px 9px; font-size: 0.68rem; }
+  }
+</style>
 </head>
-<body class="bg-darkbg text-slate-100 min-h-screen font-sans antialiased selection:bg-blue-500 selection:text-white">
+<body>
 
-    <div class="max-w-5xl mx-auto px-4 py-8">
-        <!-- Menu Principal de Navigation -->
-        <nav class="flex flex-wrap items-center justify-between bg-slate-900/90 backdrop-blur border border-slate-800 rounded-2xl p-4 mb-10 shadow-2xl">
-            <div class="flex items-center space-x-3 mb-2 sm:mb-0">
-                <span class="w-3 h-3 rounded-full bg-blue-500 animate-pulse"></span>
-                <span class="font-extrabold text-white text-base tracking-wider">MARITIME TN-FR</span>
-            </div>
-            <div class="flex flex-wrap gap-2">
-                <button id="nav-page-convoyage" onclick="switchPage('page-convoyage')" class="menu-btn px-4 py-2 rounded-xl font-semibold text-sm bg-blue-600 text-white shadow-lg transition-all">Convoyage Marseille-Bizerte</button>
-                <button id="nav-page-bateau" onclick="switchPage('page-bateau')" class="menu-btn px-4 py-2 rounded-xl font-medium text-sm text-slate-300 hover:bg-slate-800 hover:text-white transition-all">Le Bateau</button>
-                <button id="nav-page-qcm" onclick="switchPage('page-qcm')" class="menu-btn px-4 py-2 rounded-xl font-medium text-sm text-slate-300 hover:bg-slate-800 hover:text-white transition-all">QCM & Permis Nautiques</button>
-            </div>
-        </nav>
+<!-- ============================================================
+     HEADER ULTRA-FIN
+     ============================================================ -->
+<header>
+  <div class="brand"><span>⚓</span> Sailor</div>
+  <div class="header-right">
+    <button class="menu-toggle" id="menuToggle" aria-label="Menu">☰</button>
+  </div>
+</header>
 
-        <!-- PAGE 1 : CONVOYAGE MARSEILLE - BIZERTE -->
-        <div id="page-convoyage" class="page-section space-y-8">
-            <header class="text-center mb-8">
-                <span class="inline-block bg-blue-500/10 text-blue-400 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider mb-3 border border-blue-500/20">Dossier Complet : Marseille ➔ Bizerte</span>
-                <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-white mb-3">Location, Skipper et Logistique (12 Personnes)</h1>
-                <p class="text-slate-400 max-w-2xl mx-auto text-sm sm:text-base">Navigation hauturière en Méditerranée : options de capitaines, coûts de location du navire, budgets détaillés et formalités douanières.</p>
-            </header>
-
-            <!-- Sous-onglets de convoyage -->
-            <div class="flex flex-wrap justify-center gap-2 mb-6 bg-slate-900/80 p-2 rounded-2xl border border-slate-800 max-w-2xl mx-auto">
-                <button id="btn-tab-skipper" onclick="switchTab('tab-skipper')" class="tab-btn px-4 py-2 rounded-xl font-semibold text-sm bg-blue-600 text-white shadow-lg transition-all">1. Capitaine & Équipage</button>
-                <button id="btn-tab-location" onclick="switchTab('tab-location')" class="tab-btn px-4 py-2 rounded-xl font-semibold text-sm bg-slate-800 text-slate-300 hover:bg-slate-700 transition-all">2. Location Bateau</button>
-                <button id="btn-tab-budget" onclick="switchTab('tab-budget')" class="tab-btn px-4 py-2 rounded-xl font-semibold text-sm bg-slate-800 text-slate-300 hover:bg-slate-700 transition-all">3. Budgets & Trajet</button>
-                <button id="btn-tab-douane" onclick="switchTab('tab-douane')" class="tab-btn px-4 py-2 rounded-xl font-semibold text-sm bg-slate-800 text-slate-300 hover:bg-slate-700 transition-all">4. Douanes Bizerte</button>
-            </div>
-
-            <!-- Contenu des onglets de convoyage -->
-            <main>
-                <!-- ONGLET 1 : SKIPPER -->
-                <div id="tab-skipper" class="tab-content space-y-6">
-                    <div class="bg-cardbg border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-xl">
-                        <h2 class="text-xl font-bold text-white mb-4 flex items-center">
-                            <span class="w-3 h-3 rounded-full bg-blue-500 mr-2"></span> Un capitaine peut-il vous amener ? Combien cela coûte ?
-                        </h2>
-                        <p class="text-slate-300 text-sm leading-relaxed mb-6">
-                            **Oui, absolument.** Pour une traversée hauturière de cette envergure (surtout avec 12 personnes à bord), faire appel à un skipper professionnel diplômé (Capitaine 200 ou équivalent) est fortement recommandé, voire obligatoire si aucun passager ne possède le brevet hauturier requis.
-                        </p>
-                        
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div class="bg-slate-900/60 border border-slate-800/80 rounded-xl p-5">
-                                <span class="text-xs font-medium text-blue-400 uppercase tracking-wider">Tarif du Skipper (Professionnel)</span>
-                                <p class="text-2xl font-bold text-white mt-1">300 € à 450 € / jour</p>
-                                <p class="text-xs text-slate-400 mt-2">Pour une traversée estimée à 4 à 6 jours (Marseille - Sardaigne/Sicile - Bizerte), comptez entre **1 500 € et 2 700 €** de forfait pour le skipper, hors nourris et logés à bord.</p>
-                            </div>
-                            <div class="bg-slate-900/60 border border-slate-800/80 rounded-xl p-5">
-                                <span class="text-xs font-medium text-blue-400 uppercase tracking-wider">Règle des quarts (12 personnes)</span>
-                                <p class="text-2xl font-bold text-white mt-1">1 ou 2 Skippers ?</p>
-                                <p class="text-xs text-slate-400 mt-2">Pour un groupe de 12 personnes, un second marin ou un co-skipper est souvent requis pour organiser les rotations de veille de nuit permanentes sur le Canal de Sicile.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- ONGLET 2 : LOCATION -->
-                <div id="tab-location" class="tab-content space-y-6 hidden">
-                    <div class="bg-cardbg border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-xl">
-                        <h2 class="text-xl font-bold text-white mb-4 flex items-center">
-                            <span class="w-3 h-3 rounded-full bg-emerald-500 mr-2"></span> Coût de location du bateau (Capacité 12 personnes)
-                        </h2>
-                        <p class="text-slate-300 text-sm leading-relaxed mb-6">
-                            Louer un voilier monocoque, un grand catamaran ou un yacht capable d'accueillir légalement et confortablement **12 personnes** en cabine pour une croisière de transfert vers la Tunisie représente un budget conséquent :
-                        </p>
-                        
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <div class="bg-slate-900/60 border border-slate-800/80 rounded-xl p-5">
-                                <span class="text-xs font-medium text-emerald-400 uppercase tracking-wider">Grand Voilier / Catamaran</span>
-                                <p class="text-2xl font-bold text-white mt-1">4 000 € – 8 000 €</p>
-                                <p class="text-xs text-slate-400 mt-2">Prix de location à la semaine pour une grande unité homologuée 12 passagers en haute mer.</p>
-                            </div>
-                            <div class="bg-slate-900/60 border border-slate-800/80 rounded-xl p-5">
-                                <span class="text-xs font-medium text-emerald-400 uppercase tracking-wider">Caution / Dépôt de garantie</span>
-                                <p class="text-2xl font-bold text-white mt-1">3 000 € – 6 000 €</p>
-                                <p class="text-xs text-slate-400 mt-2">Empreinte bancaire bloquée par le loueur professionnel au départ de Marseille.</p>
-                            </div>
-                            <div class="bg-slate-900/60 border border-slate-800/80 rounded-xl p-5">
-                                <span class="text-xs font-medium text-emerald-400 uppercase tracking-wider">Frais d'abandon (One-Way)</span>
-                                <p class="text-2xl font-bold text-white mt-1">Sur devis spécifique</p>
-                                <p class="text-xs text-slate-400 mt-2">Rares sont les loueurs acceptant de laisser leur flotte en Tunisie sans frais de convoyage retour vers la France.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- ONGLET 3 : BUDGETS & TRAJET -->
-                <div id="tab-budget" class="tab-content space-y-6 hidden">
-                    <div class="bg-cardbg border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-xl">
-                        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
-                            <div>
-                                <h2 class="text-xl font-bold text-white">Simulation Globale : Voile vs Moteur</h2>
-                                <p id="prop-desc" class="text-xs text-slate-400 mt-1">Estimations basées sur un grand voilier ou catamaran capable d'accueillir 12 personnes.</p>
-                            </div>
-                            <div class="flex bg-slate-900 p-1 rounded-xl border border-slate-800">
-                                <button id="btn-sail-prop" onclick="switchPropulsion('sail')" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-blue-600 text-white shadow transition-all">Voilier</button>
-                                <button id="btn-motor-prop" onclick="switchPropulsion('motor')" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700 transition-all">Moteur</button>
-                            </div>
-                        </div>
-
-                        <!-- Coûts Voilier -->
-                        <div id="cost-sail" class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <div class="bg-slate-900/60 border border-slate-800/80 rounded-xl p-5">
-                                <span class="text-xs font-medium text-blue-400 uppercase tracking-wider">Carburant Auxiliaire</span>
-                                <p class="text-2xl font-bold text-white mt-1">400 € – 800 €</p>
-                                <p class="text-xs text-slate-400 mt-2">Manœuvres et calmes plats.</p>
-                            </div>
-                            <div class="bg-slate-900/60 border border-slate-800/80 rounded-xl p-5">
-                                <span class="text-xs font-medium text-blue-400 uppercase tracking-wider">Avitaillement (12 pers.)</span>
-                                <p class="text-2xl font-bold text-white mt-1">1 500 € – 2 500 €</p>
-                                <p class="text-xs text-slate-400 mt-2">Nourriture et eau douce.</p>
-                            </div>
-                            <div class="bg-slate-900/60 border border-slate-800/80 rounded-xl p-5">
-                                <span class="text-xs font-medium text-blue-400 uppercase tracking-wider">Ports & Taxes</span>
-                                <p class="text-2xl font-bold text-white mt-1">600 € – 1 200 €</p>
-                                <p class="text-xs text-slate-400 mt-2">Escales (Cagliari/Trapani) + Bizerte.</p>
-                            </div>
-                        </div>
-
-                        <!-- Coûts Moteur -->
-                        <div id="cost-motor" class="grid grid-cols-1 md:grid-cols-3 gap-4 hidden">
-                            <div class="bg-slate-900/60 border border-slate-800/80 rounded-xl p-5">
-                                <span class="text-xs font-medium text-amber-400 uppercase tracking-wider">Carburant Continu</span>
-                                <p class="text-2xl font-bold text-white mt-1">4 500 € – 9 000 €</p>
-                                <p class="text-xs text-slate-400 mt-2">Forte consommation sur ~460 milles.</p>
-                            </div>
-                            <div class="bg-slate-900/60 border border-slate-800/80 rounded-xl p-5">
-                                <span class="text-xs font-medium text-amber-400 uppercase tracking-wider">Avitaillement (12 pers.)</span>
-                                <p class="text-2xl font-bold text-white mt-1">1 500 € – 2 500 €</p>
-                                <p class="text-xs text-slate-400 mt-2">Provisions pour l'équipage.</p>
-                            </div>
-                            <div class="bg-slate-900/60 border border-slate-800/80 rounded-xl p-5">
-                                <span class="text-xs font-medium text-amber-400 uppercase tracking-wider">Ports & Taxes</span>
-                                <p class="text-2xl font-bold text-white mt-1">800 € – 1 500 €</p>
-                                <p class="text-xs text-slate-400 mt-2">Frais majorés pour grande unité.</p>
-                            </div>
-                        </div>
-
-                        <div class="mt-8 border-t border-slate-800 pt-6">
-                            <h3 class="font-bold text-white mb-3">Rappel du Trajet Théorique Exact</h3>
-                            <ul class="space-y-2 text-sm text-slate-300">
-                                <li>📍 **Départ :** Port de Marseille (Vieux-Port ou Pointe Rouge) ➔ **Sardaigne** (Cagliari) ➔ **Sicile** (Trapani) ➔ **Arrivée :** **Port de Bizerte** (Marina de Bizerte).</li>
-                                <li>⏱️ **Durée totale :** 4 à 7 jours selon la météo et les escales.</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- ONGLET 4 : DOUANES BIZERTE -->
-                <div id="tab-douane" class="tab-content space-y-6 hidden">
-                    <div class="bg-cardbg border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-xl">
-                        <h2 class="text-xl font-bold text-white mb-4 flex items-center">
-                            <span class="w-3 h-3 rounded-full bg-purple-500 mr-2"></span> Formalités Douanières et de Police à Bizerte
-                        </h2>
-                        <p class="text-slate-300 text-sm leading-relaxed mb-6">
-                            Dès l'amarrage au quai désigné de la **Marina de Bizerte** ou du port de commerce, l'accès à terre est strictement interdit avant le passage des autorités officielles.
-                        </p>
-                        
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div class="bg-slate-900/60 border border-slate-800/80 rounded-xl p-5 space-y-2">
-                                <h3 class="font-bold text-white">1. Contrôle des 12 Passeports (PAF)</h3>
-                                <p class="text-slate-300 text-sm">La Police aux Frontières examine les passeports de l'ensemble des 12 passagers et valide le **rôle d'équipage** officiel visé au départ de France.</p>
-                            </div>
-                            <div class="bg-slate-900/60 border border-slate-800/80 rounded-xl p-5 space-y-2">
-                                <h3 class="font-bold text-white">2. Apurement de la Douane (Bateau)</h3>
-                                <p class="text-slate-300 text-sm">Établissement du certificat d'<strong>Admission Temporaire</strong> (si le bateau est en séjour touristique) ou dépôt des formalités de dédouanement définitif si le propriétaire y est éligible.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </main>
-        </div>
-
-        <!-- PAGE : LE BATEAU -->
-        <div id="page-bateau" class="page-section space-y-8 hidden">
-            <header class="text-center mb-8">
-                <span class="inline-block bg-emerald-500/10 text-emerald-400 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider mb-3 border border-emerald-500/20">Sélection de Navires (Capacité 12 Personnes)</span>
-                <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-white mb-3">Types de Bateaux, Avantages, Inconvénients & Tarifs</h1>
-                <p class="text-slate-400 max-w-2xl mx-auto text-sm sm:text-base">Analyse comparative pour une traversée hauturière Marseille-Bizerte avec 12 passagers à bord.</p>
-            </header>
-
-            <!-- Synthèse rapide : Moins cher & Meilleur rapport qualité/prix -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-3xl mx-auto mb-8">
-                <div class="bg-emerald-950/40 border border-emerald-500/30 rounded-2xl p-5 shadow-lg">
-                    <span class="text-xs font-semibold text-emerald-400 uppercase tracking-wider">Option la Moins Chère</span>
-                    <h3 class="text-lg font-bold text-white mt-1">Le Grand Voilier Monocoque</h3>
-                    <p class="text-xs text-slate-300 mt-2">Coût de location et carburant minimal, mais exige de tasser 12 personnes dans les cabines et carrés transformables, avec un confort plus rustique en mer.</p>
-                </div>
-                <div class="bg-blue-950/40 border border-blue-500/30 rounded-2xl p-5 shadow-lg">
-                    <span class="text-xs font-semibold text-blue-400 uppercase tracking-wider">Meilleur Rapport Qualité / Prix</span>
-                    <h3 class="text-lg font-bold text-white mt-1">Le Grand Catamaran de Croisière</h3>
-                    <p class="text-xs text-slate-300 mt-2">Espace de vie exceptionnel, stabilité parfaite pour limiter le mal de mer de 12 passagers pendant la traversée, et autonomie remarquable sous voile.</p>
-                </div>
-            </div>
-
-            <!-- Sous-onglets types de bateaux -->
-            <div class="flex flex-wrap justify-center gap-2 mb-6 bg-slate-900/80 p-2 rounded-2xl border border-slate-800 max-w-2xl mx-auto">
-                <button id="btn-boat-mono" onclick="switchBoatTab('boat-mono')" class="boat-tab-btn px-4 py-2 rounded-xl font-semibold text-sm bg-emerald-600 text-white shadow-lg transition-all">1. Voilier Monocoque</button>
-                <button id="btn-boat-cata" onclick="switchBoatTab('boat-cata')" class="boat-tab-btn px-4 py-2 rounded-xl font-semibold text-sm bg-slate-800 text-slate-300 hover:bg-slate-700 transition-all">2. Catamaran</button>
-                <button id="btn-boat-yacht" onclick="switchBoatTab('boat-yacht')" class="boat-tab-btn px-4 py-2 rounded-xl font-semibold text-sm bg-slate-800 text-slate-300 hover:bg-slate-700 transition-all">3. Vedette / Yacht Moteur</button>
-            </div>
-
-            <main class="max-w-3xl mx-auto">
-                <!-- VOILIER MONOCOQUE -->
-                <div id="boat-mono" class="boat-content space-y-6">
-                    <div class="bg-cardbg border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-xl space-y-6">
-                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-slate-800 pb-4">
-                            <h2 class="text-xl font-bold text-white">Grand Voilier Monocoque (50 à 55 pieds)</h2>
-                            <span class="bg-emerald-500/10 text-emerald-400 px-3 py-1 rounded-full text-xs font-semibold border border-emerald-500/20">Location Semaine : 3 500 € – 6 000 €</span>
-                        </div>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-800">
-                                <h4 class="font-bold text-emerald-400 mb-2">Avantages</h4>
-                                <ul class="list-disc list-inside text-xs text-slate-300 space-y-1.5">
-                                    <li>Le plus économique du marché pour une grande unité.</li>
-                                    <li>Comportement marin d'exception en haute mer et au près.</li>
-                                    <li>Frais de port d'escale modérés par rapport au multicoque.</li>
-                                </ul>
-                            </div>
-                            <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-800">
-                                <h4 class="font-bold text-amber-400 mb-2">Inconvénients</h4>
-                                <ul class="list-disc list-inside text-xs text-slate-300 space-y-1.5">
-                                    <li>Gîte prononcée en navigation (inconfort pour les non-initiés).</li>
-                                    <li>Espace intérieur restreint pour loger confortablement 12 personnes.</li>
-                                    <li>Cadence de croisière plus lente si le vent faiblit.</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- CATAMARAN -->
-                <div id="boat-cata" class="boat-content space-y-6 hidden">
-                    <div class="bg-cardbg border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-xl space-y-6">
-                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-slate-800 pb-4">
-                            <h2 class="text-xl font-bold text-white">Grand Catamaran de Croisière (45 à 52 pieds)</h2>
-                            <span class="bg-blue-500/10 text-blue-400 px-3 py-1 rounded-full text-xs font-semibold border border-blue-500/20">Location Semaine : 7 000 € – 13 000 €</span>
-                        </div>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-800">
-                                <h4 class="font-bold text-emerald-400 mb-2">Avantages</h4>
-                                <ul class="list-disc list-inside text-xs text-slate-300 space-y-1.5">
-                                    <li>Espace de vie gigantesque (carré panoramique, vaste cockpit) parfait pour 12 personnes.</li>
-                                    <li>Absence de gîte : confort et stabilité anti-mal de mer accrus.</li>
-                                    <li>Multiples cabines indépendantes et sanitaires privatifs.</li>
-                                </ul>
-                            </div>
-                            <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-800">
-                                <h4 class="font-bold text-amber-400 mb-2">Inconvénients</h4>
-                                <ul class="list-disc list-inside text-xs text-slate-300 space-y-1.5">
-                                    <li>Tarifs de location et de caution nettement plus élevés.</li>
-                                    <li>Frais de port majorés de 50 % à 100 % dans les marinas (encombrement).</li>
-                                    <li>Moins incisif au près serré face au vent de face.</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- YACHT / VEDETTE -->
-                <div id="boat-yacht" class="boat-content space-y-6 hidden">
-                    <div class="bg-cardbg border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-xl space-y-6">
-                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-slate-800 pb-4">
-                            <h2 class="text-xl font-bold text-white">Vedette à Moteur / Yacht (50+ pieds)</h2>
-                            <span class="bg-purple-500/10 text-purple-400 px-3 py-1 rounded-full text-xs font-semibold border border-purple-500/20">Location Semaine : 10 000 € – 25 000 €+</span>
-                        </div>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-800">
-                                <h4 class="font-bold text-emerald-400 mb-2">Avantages</h4>
-                                <ul class="list-disc list-inside text-xs text-slate-300 space-y-1.5">
-                                    <li>Vitesse de déplacement élevée : traversée Marseille-Bizerte pliée en 30 à 36 heures.</li>
-                                    <li>Luxe hôtelier haut de gamme pour l'ensemble des passagers.</li>
-                                    <li>Indépendance totale vis-à-vis des conditions de vent.</li>
-                                </ul>
-                            </div>
-                            <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-800">
-                                <h4 class="font-bold text-amber-400 mb-2">Inconvénients</h4>
-                                <ul class="list-disc list-inside text-xs text-slate-300 space-y-1.5">
-                                    <li>Budget carburant astronomique (plusieurs milliers d'euros de gazole).</li>
-                                    <li>Vulnérabilité importante en cas de mer forte (slamming, tangage).</li>
-                                    <li>Disponibilité et conditions d'assurance très strictes.</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </main>
-        </div>
-
-        <!-- PAGE 2 : QCM & PERMIS NAUTIQUES -->
-        <div id="page-qcm" class="page-section space-y-8 hidden">
-            <header class="text-center mb-8">
-                <span class="inline-block bg-emerald-500/10 text-emerald-400 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider mb-3 border border-emerald-500/20">Foire Aux Questions & Réglementation</span>
-                <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-white mb-3">Permis Côtiers, Hauturiers & Exigences Légales</h1>
-                <p class="text-slate-400 max-w-2xl mx-auto text-sm sm:text-base">Tout savoir sur les coûts, la durée d'apprentissage, le renouvellement des brevets, la reconnaissance en Tunisie et l'éligibilité CPF.</p>
-            </header>
-
-            <div class="space-y-4 max-w-3xl mx-auto">
-                <!-- Question 1 -->
-                <div class="bg-cardbg border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
-                    <button onclick="toggleQcm(1)" class="w-full flex items-center justify-between p-6 text-left font-bold text-white hover:bg-slate-800/50 transition-all">
-                        <span class="flex items-center space-x-3">
-                            <span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span>
-                            <span>Coût et durée d'apprentissage : Permis Côtier et Extension Hauturière</span>
-                        </span>
-                        <svg id="icon-1" class="w-5 h-5 text-slate-400 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                    </button>
-                    <div id="qcm-1" class="hidden px-6 pb-6 text-sm text-slate-300 space-y-4 border-t border-slate-800/80 pt-4">
-                        <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-800">
-                            <h4 class="font-bold text-white mb-1">Permis Option Côtière (Navigation jusqu'à 6 milles d'un abri)</h4>
-                            <p class="text-slate-400"><strong>Durée :</strong> 5 heures de cours théoriques minimum + 2 heures de pratique à la barre. Formation étalée sur un week-end.</p>
-                            <p class="text-slate-400 mt-1"><strong>Coût :</strong> Entre 350 € et 500 € (hors timbre fiscal de délivrance de 78 €).</p>
-                        </div>
-                        <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-800">
-                            <h4 class="font-bold text-white mb-1">Extension Hauturière (Sans limitation de distance - Requis pour traverser)</h4>
-                            <p class="text-slate-400"><strong>Durée :</strong> Environ 15 à 20 heures de formation théorique (calculs de marées, cartes, radionavigation, météo) sanctionnées par un examen écrit de 1h30.</p>
-                            <p class="text-slate-400 mt-1"><strong>Coût :</strong> Entre 300 € et 500 € de formation (nécessite le permis côtier préalable).</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Question 2 -->
-                <div class="bg-cardbg border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
-                    <button onclick="toggleQcm(2)" class="w-full flex items-center justify-between p-6 text-left font-bold text-white hover:bg-slate-800/50 transition-all">
-                        <span class="flex items-center space-x-3">
-                            <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
-                            <span>Quand renouveler son permis bateau, comment et combien ?</span>
-                        </span>
-                        <svg id="icon-2" class="w-5 h-5 text-slate-400 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                    </button>
-                    <div id="qcm-2" class="hidden px-6 pb-6 text-sm text-slate-300 space-y-3 border-t border-slate-800/80 pt-4">
-                        <p><strong>Validité :</strong> En France, le permis de plaisance est <strong>permanent et ne périt jamais</strong>. Il n'y a aucune date de validité obligatoire liée au temps pour les cartes obtenues après 2008.</p>
-                        <p><strong>Cas de modification (Comment & Combien) :</strong> Un renouvellement (fabrication d'une nouvelle carte plastique) n'est nécessaire qu'en cas de **perte, vol, détérioration ou changement d'état civil**. La démarche s'effectue auprès de la DDTM ou en ligne via les téléprocédures, moyennant un timbre fiscal de <strong>78 €</strong>.</p>
-                    </div>
-                </div>
-
-                <!-- Question 3 -->
-                <div class="bg-cardbg border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
-                    <button onclick="toggleQcm(3)" class="w-full flex items-center justify-between p-6 text-left font-bold text-white hover:bg-slate-800/50 transition-all">
-                        <span class="flex items-center space-x-3">
-                            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
-                            <span>Ces permis sont-ils acceptés en Tunisie ? Comment les transformer ?</span>
-                        </span>
-                        <svg id="icon-3" class="w-5 h-5 text-slate-400 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                    </button>
-                    <div id="qcm-3" class="hidden px-6 pb-6 text-sm text-slate-300 space-y-4 border-t border-slate-800/80 pt-4">
-                        <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-800">
-                            <h4 class="font-bold text-white mb-1">Acceptation en Tunisie</h4>
-                            <p class="text-slate-400">Le permis plaisance français est globalement accepté et respecté pour la conduite des navires sous pavillon français ou en escale. De plus, la législation tunisienne n'impose pas de permis obligatoire pour la navigation de loisir privée non-professionnelle.</p>
-                        </div>
-                        <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-800">
-                            <h4 class="font-bold text-white mb-1">Transformation en permis tunisien</h4>
-                            <p class="text-slate-400">Il n'existe pas de procédure de conversion sèche d'un brevet de plaisance français en permis tunisien, les autorités locales s'appuyant sur les brevets internationaux (type normes ISSA ou STCW) pour le commerce. Présenter votre titre français en règle suffit amplement pour la plaisance.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Question 4 -->
-                <div class="bg-cardbg border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
-                    <button onclick="toggleQcm(4)" class="w-full flex items-center justify-between p-6 text-left font-bold text-white hover:bg-slate-800/50 transition-all">
-                        <span class="flex items-center space-x-3">
-                            <span class="w-2.5 h-2.5 rounded-full bg-purple-500"></span>
-                            <span>Formation finançable par CPF ?</span>
-                        </span>
-                        <svg id="icon-4" class="w-5 h-5 text-slate-400 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                    </button>
-                    <div id="qcm-4" class="hidden px-6 pb-6 text-sm text-slate-300 space-y-3 border-t border-slate-800/80 pt-4">
-                        <p><strong>Non.</strong> Les permis plaisance de loisir (options côtière ou extension hauturière) ne sont <strong>pas éligibles</strong> au Compte Personnel de Formation (CPF).</p>
-                        <p class="text-slate-400">Le CPF ne finance que des cursus professionnalisants et certifiants inscrits au RNCP/RS liés aux métiers de la mer (marins professionnels, capitaines marchands).</p>
-                    </div>
-                </div>
-
-                <!-- Question 5 -->
-                <div class="bg-cardbg border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
-                    <button onclick="toggleQcm(5)" class="w-full flex items-center justify-between p-6 text-left font-bold text-white hover:bg-slate-800/50 transition-all">
-                        <span class="flex items-center space-x-3">
-                            <span class="w-2.5 h-2.5 rounded-full bg-cyan-500"></span>
-                            <span>Exigences légales de la France et de la Tunisie pour une telle traversée</span>
-                        </span>
-                        <svg id="icon-5" class="w-5 h-5 text-slate-400 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                    </button>
-                    <div id="qcm-5" class="hidden px-6 pb-6 text-sm text-slate-300 space-y-4 border-t border-slate-800/80 pt-4">
-                        <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-800">
-                            <h4 class="font-bold text-white mb-1">Côté France (Sortie des eaux territoriales)</h4>
-                            <ul class="list-disc list-inside space-y-1 text-slate-400">
-                                <li>Matériel de sécurité hauturier complet à bord (radeau de survie, balise EPIRB, gilets conformes).</li>
-                                <lI>Acte de francisation et pavillon français en règle.</lI>
-                                <li>Rôle d'équipage nominatif listant les 12 personnes à bord, signé.</li>
-                            </ul>
-                        </div>
-                        <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-800">
-                            <h4 class="font-bold text-white mb-1">Côté Tunisie (Arrivée à Bizerte)</h4>
-                            <ul class="list-disc list-inside space-y-1 text-slate-400">
-                                <li>Obligation absolue de s'amarrer dans un port d'entrée désigné (Marina de Bizerte) sans débarquer quiconque avant l'inspection douanière et sanitaire.</li>
-                                <li>Présentation des 12 passeports valides pour le contrôle de la police aux frontières (PAF).</li>
-                                <li>Régularisation du statut douanier du navire (Admission Temporaire).</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Footer -->
-        <footer class="text-center mt-16 text-xs text-slate-500">
-            <p>Guide interactif maritime - Liaison Marseille / Bizerte et réglementation des permis plaisance.</p>
-        </footer>
+<!-- ============================================================
+     LAYOUT PLEIN ÉCRAN
+     ============================================================ -->
+<div class="layout">
+  <!-- MENU LATÉRAL AVEC CHAPITRES -->
+  <nav class="side-menu" id="sideMenu">
+    <h3>Modules</h3>
+    <div class="menu-tabs" id="menuTabs">
+      <div class="menu-tab active" data-tab="cotier">
+        <span class="pastille">C</span> Permis Côtier
+      </div>
+      <div class="menu-tab" data-tab="hauturier">
+        <span class="pastille">H</span> Permis Hauturier
+      </div>
+      <div class="menu-tab" data-tab="glossaire">
+        <span class="pastille">G</span> Glossaire
+      </div>
     </div>
+    <h3 id="menuCourseTitle">Chapitres</h3>
+    <ul class="menu-course-list" id="menuCourseList"></ul>
+  </nav>
+
+  <!-- CONTENU -->
+  <main class="main-content" id="mainContent">
+    <div id="chapterView"></div>
+
+    <!-- GLOSSAIRE -->
+    <div id="glossaireView" style="display:none;">
+      <div class="chapter-view">
+        <div class="chapter-header">
+          <div>
+            <h2 class="chapter-title">📖 Glossaire Maritime — FR · EN · AR</h2>
+            <div class="chapter-badges">
+              <span class="badge badge-num"><span id="termCount">0</span> termes</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="glossary-toolbar">
+          <button class="glossary-search-toggle" id="searchToggle" aria-expanded="false">🔍 Rechercher un terme…</button>
+          <div class="glossary-search-box" id="searchBox">
+            <input type="text" id="searchInput" placeholder="Tapez en FR, EN ou AR…" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+          </div>
+          <div class="glossary-filters">
+            <button class="glossary-filter-btn active" data-filter="all">Tous</button>
+            <button class="glossary-filter-btn voile" data-filter="voile">⛵ Voile</button>
+            <button class="glossary-filter-btn moteur" data-filter="moteur">⚙️ Moteur</button>
+            <button class="glossary-filter-btn navigation" data-filter="navigation">🧭 Nav</button>
+          </div>
+        </div>
+
+        <div class="glossary-empty" id="emptyMessage">
+          Aucun terme ne correspond à votre recherche.
+        </div>
+
+        <div class="term-list" id="termList"></div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- ============================================================
+     FOOTER BAR (toujours visible)
+     ============================================================ -->
+<div class="footer-bar">
+  <div class="footer-left">
+    <button class="theme-toggle" id="themeToggle">
+      <span id="themeIcon">🌙</span> <span id="themeLabel">Mode sombre</span>
+    </button>
+    <span id="footerStatus">Prêt</span>
+  </div>
+  <button class="expand-btn" id="footerExpand" aria-label="Ouvrir les paramètres">▲</button>
+</div>
+
+<!-- ============================================================
+     FOOTER PANEL (se déplie du bas vers le haut)
+     ============================================================ -->
+<div class="footer-panel" id="footerPanel">
+  <h4>⚙️ Paramètres</h4>
+
+  <div class="settings-row">
+    <div>
+      <div class="settings-label">Thème clair / sombre</div>
+      <div class="settings-desc">Basculez entre le mode sombre et le mode clair.</div>
+    </div>
+    <label class="switch">
+      <input type="checkbox" id="themeSwitch">
+      <span class="slider"></span>
+    </label>
+  </div>
+
+  <div class="settings-row">
+    <div>
+      <div class="settings-label">Navigation clavier</div>
+      <div class="settings-desc">← → pour changer de chapitre, Home pour l'accueil.</div>
+    </div>
+    <span style="font-size:0.75rem;color:var(--text-light);">← →</span>
+  </div>
+
+  <div class="footer-credits">
+    Sommaire généré à partir de formations-maritimes.fr — © Patrick Belliot / Mata'i Nautisme
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   DATA — CÔTIER (15 cours)
+   ============================================================ */
+const cotierCourses = [
+  {
+    num: 1, titre: "Balisage maritime et littoral - Signaux portuaires",
+    url: "https://formations-maritimes.fr/permis-cotier/1-balisage-maritime-et-littoral-signaux-portuaires/",
+    duree: "50:39",
+    sections: [
+      { titre: "Sommaire complet", items: [
+        "Présentation","Formes des balises","Identification : le jour et la nuit",
+        "Principales caractéristiques des feux","Sens conventionnel","Zones A et B de l'AISM",
+        "Marques latérales","Marques de chenal préféré","Marques de danger isolé",
+        "Marques d'eaux saines","Marques spéciales","Marques cardinales",
+        "Marques d'épave en cas d'urgence","Signalisation des dangers nouveaux",
+        "Balisage des plages","Signaux de trafic portuaire","Balisage des ponts"
+      ]}
+    ]
+  },
+  {
+    num: 2, titre: "Règles de barre et de route - RIPAM 1",
+    url: "https://formations-maritimes.fr/permis-cotier/2-regles-de-barre-et-de-route-ripam-1/",
+    duree: "41:51",
+    sections: [
+      { titre: "Sommaire complet", items: [
+        "Présentation du RIPAM - Exemples de collisions en image",
+        "Présentation de COLREG et de l'ouvrage RIPAM du SHOM",
+        "Généralités et définitions importantes","La veille","La vitesse de sécurité",
+        "Risque d'abordage et manœuvre pour les éviter","Naviguer dans un chenal étroit",
+        "Le DST - Dispositif de Séparation de Trafic",
+        "Risque d'abordage en navires à voile - La Règle 12","Règle du navire rattrapant",
+        "Règles des navires qui font des routes directement opposées",
+        "Règle des navires qui font des routes qui se croisent",
+        "Manœuvre du navire non privilégié","Manœuvre des navires privilégiés",
+        "Responsabilité réciproques des navires - Règle des privilèges"
+      ]}
+    ]
+  },
+  {
+    num: 3, titre: "Feux, marques de jour et signaux des navires - RIPAM 2",
+    url: "https://formations-maritimes.fr/permis-cotier/3-feux-marques-de-jour-et-signaux-des-navires-ripam-2/",
+    duree: "40:50",
+    sections: [
+      { titre: "1. Généralités", items: [
+        "Ouvrage de référence COLREG - RIPAM du SHOM Partie C et D",
+        "Champ d'application","Définition des feux des navires","Portée lumineuse des feux"
+      ]},
+      { titre: "2. Feux, marques de jour et signaux sonores des navires", items: [
+        "Navire à propulsion mécanique faisant route","Remorquage et poussage",
+        "Navire à voile et à l'aviron","Navires en pêche",
+        "Navires en pêche autre que chalutier","Navire non maître de sa manœuvre",
+        "Navire à capacité de manœuvre restreinte","Navire handicapé par son tirant d'eau",
+        "Bateaux pilotes","Navires au mouillage ou échoués"
+      ]},
+      { titre: "3. Signaux sonores et lumineux", items: [
+        "Définitions « bref » et « prolongé »","Matériel de signalisation sonore",
+        "Signaux de manœuvre et d'avertissement","Signaux sonores par visibilité réduite"
+      ]},
+      { titre: "4. Autres signaux", items: [
+        "Pavillons de plongée","Signaux de détresse","Signaux BMS des sémaphores et capitaineries"
+      ]}
+    ]
+  },
+  {
+    num: 4, titre: "Navigation Partie 1 - Notions de base",
+    url: "https://formations-maritimes.fr/permis-cotier/4-navigation-partie-1-notions-de-base/",
+    duree: "46:00",
+    sections: [
+      { titre: "Sommaire complet", items: [
+        "Qu'est-ce que la « navigation » ?","Types de carte marine - Papier, raster, vectorielle",
+        "Les angles par rapport au nord","Notions de Gisement - Relèvement",
+        "Latitude - Longitude - Coordonnées géographiques","Mille nautique",
+        "Le nœud comme unité de vitesse","Division des minutes de coordonnées",
+        "Énoncer clairement sa position à l'aide des coordonnées géographiques",
+        "Projection de Mercator"
+      ]}
+    ]
+  },
+  {
+    num: 5, titre: "Navigation Partie 2 - Initiation à la lecture de la carte marine",
+    url: "https://formations-maritimes.fr/permis-cotier/5-navigation-partie-2-initiation-a-la-lecture-de-la-carte-marine/",
+    duree: "34:22",
+    sections: [
+      { titre: "Sommaire complet", items: [
+        "Symboles, abréviations et termes des cartes marine, l'ouvrage 1D du SHOM",
+        "Mesure des distances (cartes papier, raster et vectorielle)",
+        "Flamme magenta et symboles du balisage","Ancre barrée","Épaves",
+        "Symboles des diverses zones (plaisance / pêche...)","Estran",
+        "Balisage (couleurs / fixe ou flottant)","Phares",
+        "Sondes positives et négatives, couvrantes et découvrantes - Zéro hydrographique",
+        "Natures des fonds","Tenue à jour des cartes","Quel parcours suivre entre les balises"
+      ]}
+    ]
+  },
+  {
+    num: 6, titre: "La marée",
+    url: "https://formations-maritimes.fr/permis-cotier/6-la-maree/",
+    duree: "41:46",
+    sections: [
+      { titre: "Sommaire complet", items: [
+        "Introduction","Les forces universelles qui génèrent la marée",
+        "Phénomènes influençant les marées sur terre","La terre tourne sur elle-même",
+        "La lune tourne autour de la terre","Le couple terre-lune tourne autour du soleil",
+        "Les autres phénomènes","Amplitudes et types de marée dans le monde",
+        "Publications du SHOM","Vocabulaire et définitions",
+        "Sonde et hauteur d'eau => calcul des profondeurs","Questions tests",
+        "À retenir pour le permis côtier","Conclusion"
+      ]}
+    ]
+  },
+  {
+    num: 7, titre: "Météorologie marine",
+    url: "https://formations-maritimes.fr/permis-cotier/7-meteorologie-marine/",
+    duree: "58:40",
+    sections: [
+      { titre: "1. Les forces en présence", items: [
+        "Écarts de températures et cellules de convection",
+        "Écarts de pression et spécificités des masses d'air","Le rôle de la force de Coriolis"
+      ]},
+      { titre: "2. Analyse et phénomènes météo", items: [
+        "Application et analyse d'une carte avec champs de pression basique (fichier Grib)",
+        "Perturbation atmosphérique - Front chaud et front froid",
+        "Symboles utilisés sur les cartes d'analyse météo"
+      ]},
+      { titre: "3. Effets locaux et échelles", items: [
+        "Effets locaux (reliefs, brise thermique, régimes de vent locaux, cumulonimbus, grains...)",
+        "Échelle de Beaufort - Bulletin Météo Spécial (BMS)",
+        "Échelle d'état de la mer - La houle, le clapot, les moutons",
+        "Prendre la météo, comment se procurer les informations ?"
+      ]}
+    ]
+  },
+  {
+    num: 8, titre: "Sécurité du navire - Responsabilité du chef de bord",
+    url: "https://formations-maritimes.fr/permis-cotier/8-securite-du-navire-responsabilite-du-chef-de-bord/",
+    duree: "42:55",
+    sections: [
+      { titre: "Sommaire complet", items: [
+        "Responsabilité du chef de bord",
+        "Catégories de conception des navires de plaisance marqués CE",
+        "Plaque constructeur, nombre de personnes - charge embarquée",
+        "Zones de navigation - Notion d'abri et d'éloignement - Vitesse",
+        "Conseils généraux de sécurité","Plaisance et sports nautiques - Obligations à respecter",
+        "Matériel d'armement et de sécurité des navires de plaisance",
+        "Pièces administratives à bord et sanctions - Registre de Vérification Spéciale"
+      ]}
+    ]
+  },
+  {
+    num: 9, titre: "Environnement - Consommation - Pêche",
+    url: "https://formations-maritimes.fr/permis-cotier/9-environnement-consommation-peche/",
+    duree: "28:23",
+    sections: [
+      { titre: "Sommaire complet", items: [
+        "Consommation de carburant - Facteurs et calculs","Réglementation de la pêche de loisir",
+        "Réglementation des réserves","Observation des cétacés - « Whale Watching »","Carénage",
+        "Quelques éléments supplémentaires (mouillage, cuves à eaux noires, feeding...)"
+      ]}
+    ]
+  },
+  {
+    num: 10, titre: "Radio VHF Marine + CRR",
+    url: "https://formations-maritimes.fr/permis-cotier/10-radio-vhf/",
+    duree: "1h40 (7 chapitres)",
+    sections: [
+      { titre: "Sommaire complet", items: [
+        "Introduction, généralités importantes et CRR (Certificat Restreint de Radiotéléphoniste)",
+        "Le SMDSM : historique, conventions internationales, fonctions et zones ; ANFR, MRCC, CROSS, système SAR",
+        "Les différents types de VHF, puissance, portée, utilisation ; présentation de deux façades de radios VHF",
+        "Fonctionnement de l'ASN, le MMSI, et indicatif d'appel international",
+        "Types d'appel et de message, canaux importants, protection des fréquences",
+        "Exemple d'appel de détresse en phonie, vocabulaire normalisé en anglais, alphabet international",
+        "Goniométrie, Navtex, balises de détresse (EPIRB), AIS et MOB AIS, transpondeurs SART, CIAC, CROSS de Toulouse"
+      ]}
+    ]
+  },
+  {
+    num: 11, titre: "Sécurité individuelle et collective",
+    url: "https://formations-maritimes.fr/permis-cotier/11-securite-individuelle-et-collective/",
+    duree: "1h20",
+    sections: [
+      { titre: "1. Sécurité individuelle", items: [
+        "1.1 Choisir la brassière adaptée aux types de navigation, harnais, longes et lignes de vie",
+        "1.2 Mettre et ajuster les brassières selon la morphologie, en particulier des enfants",
+        "1.3 Contrôler la conformité et l'état d'usure des brassières"
+      ]},
+      { titre: "2. Sécurité collective", items: [
+        "2.1 Usage des matériels de sécurité collective à bord",
+        "2.2 Localiser sur un plan les points sensibles du bateau"
+      ]},
+      { titre: "3. Moyens de communication", items: [
+        "3.1 Usage et limite du téléphone portable en mer",
+        "3.2 Utilisation pratique d'une radio VHF"
+      ]},
+      { titre: "4. Usage des moyens de détresse", items: [
+        "4.1 Principe de base de l'assistance en mer",
+        "4.2 Moyens susceptibles d'être engagés suite à un signal de détresse",
+        "4.3 Conséquences d'un déclenchement abusif d'un signal de détresse"
+      ]}
+    ]
+  },
+  {
+    num: 12, titre: "Responsabilité et environnement - Préparer la sortie",
+    url: "https://formations-maritimes.fr/permis-cotier/12-responsabilite-et-environnement-preparer-la-sortie/",
+    duree: "46 minutes",
+    sections: [
+      { titre: "1. Responsabilité", items: [
+        "1.1 Obligations principales du chef de bord",
+        "1.2 Principales infractions relatives à la navigation et au navire et leurs conséquences",
+        "1.3 Contrôler la conformité et l'état d'usure des brassières"
+      ]},
+      { titre: "2. Environnement", items: [
+        "2.1 Sources et degrés de pollution possible - Délais de biodégradabilité",
+        "2.2 Conséquences d'un comportement irrespectueux de l'environnement",
+        "2.3 Participer à la préservation de l'environnement"
+      ]},
+      { titre: "3. Préparer la sortie", items: [
+        "3.1 Décider de sortir selon bulletin météo et horaires de marée",
+        "3.2 Préparer son trajet en tenant compte du balisage et des obstacles"
+      ]}
+    ]
+  },
+  {
+    num: 13, titre: "Mise en route et conduite du bateau",
+    url: "https://formations-maritimes.fr/permis-cotier/13-mise-en-route-et-conduite-du-bateau/",
+    duree: "1h03",
+    sections: [
+      { titre: "1. Avant le départ", items: [
+        "1.1 Checklist avant départ","1.2 Contrôle et démarrage du moteur","1.3 Larguer les amarres"
+      ]},
+      { titre: "2. Conduite et trajectoire", items: [
+        "2.1 Particularité des girations en bateau",
+        "2.2 Demi-tour, manœuvre de Boutakov - Williamson",
+        "2.3 Casser l'erre, réaliser une marche arrière","2.4 Suivre un cap au compas",
+        "2.5 Alignement et courbe du chien"
+      ]},
+      { titre: "3. Gérer la vitesse", items: [
+        "3.1 Estimation de la vitesse","3.2 Accélérer et ralentir en sécurité sur un bateau puissant"
+      ]}
+    ]
+  },
+  {
+    num: 14, titre: "Les manœuvres à maîtriser",
+    url: "https://formations-maritimes.fr/permis-cotier/14-les-manoeuvres-a-maitriser/",
+    duree: "1h36",
+    sections: [
+      { titre: "Sommaire complet", items: [
+        "1. Accoster le quai","2. Quitter le quai","3. Amarrage du bateau","4. Prendre un coffre",
+        "5. Le pas d'hélice et le côté favorable",
+        "6. Mouiller - Jeter l'ancre : 6.1 Choisir une zone de mouillage / 6.2 Préparer, mouiller et relever le mouillage / 6.3 Vérifier la tenue du mouillage",
+        "7. Récupérer une personne tombée à la mer"
+      ]}
+    ]
+  },
+  {
+    num: 15, titre: "Cordages et quelques nœuds essentiels",
+    url: "https://formations-maritimes.fr/permis-cotier/15-cordages-et-quelques-noeuds-essentiels/",
+    duree: "33 minutes",
+    sections: [
+      { titre: "Sommaire complet", items: [
+        "1. Types de cordages","2. Types de nœuds","3. Termes de matelotage et composition des nœuds",
+        "4. Quelques nœuds essentiels : 4.1 Nœud de taquet / 4.2 Un tour mort et deux demi-clés / 4.3 Nœud de cabestan / 4.4 Nœud de chaise / 4.5 Nœud de huit / 4.6 Fermer un cordage lové",
+        "5. Mon application préférée"
+      ]}
+    ]
+  }
+];
+
+/* ============================================================
+   DATA — HAUTURIER (18 cours)
+   ============================================================ */
+const hauturierCourses = [
+  {
+    num: 1, titre: "Informations de base sur la carte marine",
+    url: "https://formations-maritimes.fr/permis-hauturier/cours-1-informations-de-base-sur-la-carte-marine/",
+    duree: "33 min",
+    sections: [
+      { titre: "Sommaire de ce cours", items: [
+        "Titre et numéro des cartes marines",
+        "Services hydrographiques",
+        "Échelles des cartes et catégories",
+        "Projection de Mercator",
+        "Échelle des latitudes et des longitudes",
+        "Les couleurs utilisées sur la carte",
+        "Sondes couvrantes et découvrantes",
+        "Lignes de sonde et zéro hydrographique",
+        "Roses de déclinaison des compas magnétiques",
+        "Tableau des courants",
+        "Tenue à jour des cartes marines – Groupes d'Avis aux Navigateurs",
+        "Un mot sur les systèmes géodésiques et la carte 9999"
+      ]}
+    ]
+  },
+  {
+    num: 2, titre: "Symboles, abréviations et termes utilisés sur les cartes",
+    url: "https://formations-maritimes.fr/permis-hauturier/cours-2-symboles-abreviations-et-termes-utilises-sur-les-cartes/",
+    duree: "43 min",
+    sections: [{ titre: "Sommaire (à compléter)", items: ["Contenu à récupérer depuis la page du cours 2"] }]
+  },
+  {
+    num: 3, titre: "Représentation des feux et du balisage sur la carte",
+    url: "https://formations-maritimes.fr/permis-hauturier/cours-3-representation-des-feux-et-du-balisage-sur-la-carte/",
+    duree: "36 min",
+    sections: [{ titre: "Sommaire (à compléter)", items: ["Contenu à récupérer depuis la page du cours 3"] }]
+  },
+  {
+    num: 4, titre: "Quadrillage latitudes – longitudes – Parallèles – méridiens",
+    url: "https://formations-maritimes.fr/permis-hauturier/cours-4-quadrillage-latitudes-longitudes-paralleles-meridiens/",
+    duree: "44 min",
+    sections: [{ titre: "Sommaire (à compléter)", items: ["Contenu à récupérer depuis la page du cours 4"] }]
+  },
+  {
+    num: 5, titre: "Division des degrés, les milles nautiques et les nœuds",
+    url: "https://formations-maritimes.fr/permis-hauturier/cours-5-division-des-degres-les-milles-nautiques-et-les-noeuds/",
+    duree: "24 min",
+    sections: [{ titre: "Sommaire (à compléter)", items: ["Contenu à récupérer depuis la page du cours 5"] }]
+  },
+  {
+    num: 6, titre: "Calculer le rapport Distance – Vitesse – Temps",
+    url: "https://formations-maritimes.fr/permis-hauturier/cours-6-calculer-le-rapport-distance-vitesse-temps/",
+    duree: "22 min",
+    sections: [{ titre: "Sommaire (à compléter)", items: ["Contenu à récupérer depuis la page du cours 6"] }]
+  },
+  {
+    num: 7, titre: "Rose – Routes et vitesses – Position par rapport à un amer",
+    url: "https://formations-maritimes.fr/permis-hauturier/cours-7-rose-routes-et-vitesses-position-par-rapport-a-un-amer/",
+    duree: "43 min",
+    sections: [{ titre: "Sommaire (à compléter)", items: ["Contenu à récupérer depuis la page du cours 7"] }]
+  },
+  {
+    num: 8, titre: "Maîtriser la règle Cras",
+    url: "https://formations-maritimes.fr/permis-hauturier/cours-8-maitriser-la-regle-cras/",
+    duree: "42 min",
+    sections: [{ titre: "Sommaire (à compléter)", items: ["Contenu à récupérer depuis la page du cours 8"] }]
+  },
+  {
+    num: 9, titre: "Se positionner avec des relèvements",
+    url: "https://formations-maritimes.fr/permis-hauturier/cours-9-se-positionner-avec-des-releveements/",
+    duree: "20 min",
+    sections: [{ titre: "Sommaire (à compléter)", items: ["Contenu à récupérer depuis la page du cours 9"] }]
+  },
+  {
+    num: 10, titre: "Ligne de foi et cap vrai – Notion de gisement",
+    url: "https://formations-maritimes.fr/permis-hauturier/cours-10-ligne-de-foi-et-cap-vrai-notion-de-gisement/",
+    duree: "25 min",
+    sections: [{ titre: "Sommaire (à compléter)", items: ["Contenu à récupérer depuis la page du cours 10"] }]
+  },
+  {
+    num: 11, titre: "Déclinaison et déviation – La variation magnétique",
+    url: "https://formations-maritimes.fr/permis-hauturier/cours-11-declinaison-et-deviation-la-variation-magnetique/",
+    duree: "57 min",
+    sections: [{ titre: "Sommaire (à compléter)", items: ["Contenu à récupérer depuis la page du cours 11"] }]
+  },
+  {
+    num: 12, titre: "Calcul de la dérive due au vent",
+    url: "https://formations-maritimes.fr/permis-hauturier/cours-12-calcul-de-la-derive-due-au-vent/",
+    duree: "32 min",
+    sections: [{ titre: "Sommaire (à compléter)", items: ["Contenu à récupérer depuis la page du cours 12"] }]
+  },
+  {
+    num: 13, titre: "Les courants – Corriger un cap – Faire valoir une route",
+    url: "https://formations-maritimes.fr/permis-hauturier/cours-13-les-courants-corriger-un-cap-faire-valoir-une-route/",
+    duree: "65 min",
+    sections: [{ titre: "Sommaire (à compléter)", items: ["Contenu à récupérer depuis la page du cours 13"] }]
+  },
+  {
+    num: 14, titre: "Calcul des marées 1",
+    url: "https://formations-maritimes.fr/permis-hauturier/cours-14-calcul-des-marees-1/",
+    duree: "61 min",
+    sections: [{ titre: "Sommaire (à compléter)", items: ["Contenu à récupérer depuis la page du cours 14"] }]
+  },
+  {
+    num: 15, titre: "Calcul des marées 2",
+    url: "https://formations-maritimes.fr/permis-hauturier/cours-15-calcul-des-marees-2/",
+    duree: "60 min",
+    sections: [{ titre: "Sommaire (à compléter)", items: ["Contenu à récupérer depuis la page du cours 15"] }]
+  },
+  {
+    num: 16, titre: "Météorologie",
+    url: "https://formations-maritimes.fr/permis-hauturier/cours-16-meteorologie/",
+    duree: "52 min",
+    sections: [{ titre: "Sommaire (à compléter)", items: ["Contenu à récupérer depuis la page du cours 16"] }]
+  },
+  {
+    num: 17, titre: "Aide électronique à la navigation – GPS",
+    url: "https://formations-maritimes.fr/permis-hauturier/cours-17-aide-electronique-a-la-navigation-gps/",
+    duree: "52 min",
+    sections: [{ titre: "Sommaire (à compléter)", items: ["Contenu à récupérer depuis la page du cours 17"] }]
+  },
+  {
+    num: 18, titre: "Réglementation – Matériel de sécurité en navigation hauturière",
+    url: "https://formations-maritimes.fr/permis-hauturier/cours-18-reglementation-materiel-de-securite-en-navigation-hauturiere/",
+    duree: "51 min",
+    sections: [{ titre: "Sommaire (à compléter)", items: ["Contenu à récupérer depuis la page du cours 18"] }]
+  }
+];
+
+/* ============================================================
+   DATA — GLOSSAIRE MARITIME (FR · EN · AR)
+   ============================================================ */
+const glossaryData = [
+  { fr: "Voile", en: "Sail", ar: "شِراع", wiki: "https://fr.wikipedia.org/wiki/Voile_(navire)", category: "voile",
+    desc: "Surface en toile ou fibre synthétique qui, une fois hissée, capte le vent pour propulser le bateau.",
+    ex: "Nous avons hissé la voile dès que le vent s'est levé." },
+  { fr: "Grand-voile", en: "Mainsail", ar: "الشراع الرئيسي", wiki: "https://fr.wikipedia.org/wiki/Grand-voile", category: "voile",
+    desc: "Voile principale fixée derrière le mât, sur la bôme.",
+    ex: "La grand-voile a été réduite pour affronter la tempête." },
+  { fr: "Génois", en: "Genoa", ar: "شراع الجينوا", wiki: "https://fr.wikipedia.org/wiki/Génois", category: "voile",
+    desc: "Grande voile d'avant qui recouvre partiellement la grand-voile.",
+    ex: "Le génois est idéal pour naviguer au près dans le vent léger." },
+  { fr: "Spinnaker", en: "Spinnaker", ar: "شراع سبينيكر", wiki: "https://fr.wikipedia.org/wiki/Spinnaker", category: "voile",
+    desc: "Voile légère et bombée, utilisée pour naviguer vent arrière.",
+    ex: "Le spinnaker a gonflé magnifiquement sous le vent portant." },
+  { fr: "Tourmentin", en: "Storm jib", ar: "شراع العاصفة", wiki: "https://fr.wikipedia.org/wiki/Tourmentin", category: "voile",
+    desc: "Petite voile d'avant très solide, utilisée par gros temps.",
+    ex: "Par force 8, seul le tourmentin restait hissé." },
+  { fr: "Trinquette", en: "Jib", ar: "شراع أمامي صغير", wiki: "https://fr.wikipedia.org/wiki/Trinquette", category: "voile",
+    desc: "Voile d'avant de taille moyenne.",
+    ex: "La trinquette est parfaite pour remonter au vent dans la brise." },
+  { fr: "Bôme", en: "Boom", ar: "ذِراع الشراع", wiki: "https://fr.wikipedia.org/wiki/Bôme", category: "voile",
+    desc: "Espar horizontal fixé au mât, qui maintient la bordure de la grand-voile.",
+    ex: "Attention à la bôme lors du virement de bord !" },
+  { fr: "Mât", en: "Mast", ar: "صاري", wiki: "https://fr.wikipedia.org/wiki/Mât", category: "voile",
+    desc: "Espar vertical dressé sur le pont, qui porte les voiles.",
+    ex: "Le mât a été vérifié avant la traversée." },
+  { fr: "Écoute", en: "Sheet", ar: "حبل الشد", wiki: "https://fr.wikipedia.org/wiki/Écoute_(marine)", category: "voile",
+    desc: "Cordage servant à régler l'angle d'une voile par rapport au vent.",
+    ex: "Bordez l'écoute de génois pour mieux remonter au vent." },
+  { fr: "Drisse", en: "Halyard", ar: "حبل الرفع", wiki: "https://fr.wikipedia.org/wiki/Drisse", category: "voile",
+    desc: "Cordage servant à hisser ou affaler une voile.",
+    ex: "La drisse de grand-voile s'est coincée dans la poulie." },
+  { fr: "Louvoyer", en: "Tack (to)", ar: "المناورة ضد الريح", wiki: "https://fr.wikipedia.org/wiki/Louvoyer", category: "voile",
+    desc: "Naviguer en zigzag en remontant au vent.",
+    ex: "Nous avons louvoyé pendant deux heures pour atteindre le port." },
+  { fr: "Empanner", en: "Jibe (to)", ar: "التحول بالشراع", wiki: "https://fr.wikipedia.org/wiki/Empanner", category: "voile",
+    desc: "Changer d'amure en passant par le vent arrière.",
+    ex: "L'empannage a été brutal à cause du vent fort." },
+  { fr: "Virement", en: "Tack (noun)", ar: "تحول", wiki: "https://fr.wikipedia.org/wiki/Virement_de_bord", category: "voile",
+    desc: "Changement d'amure en passant par le vent debout.",
+    ex: "Le virement de bord a été effectué proprement." },
+  { fr: "Près", en: "Close-hauled", ar: "الإبحار ضد الريح", wiki: "https://fr.wikipedia.org/wiki/Près_(marine)", category: "voile",
+    desc: "Allure la plus proche du vent, environ 45°.",
+    ex: "Nous naviguons au près serré pour gagner au vent." },
+  { fr: "Largue", en: "Broad reach", ar: "الإبحار مع الريح", wiki: "https://fr.wikipedia.org/wiki/Largue", category: "voile",
+    desc: "Allure portante où le vent vient de l'arrière du travers.",
+    ex: "Au largue, le bateau accélère et la voile porte bien." },
+  { fr: "Vent arrière", en: "Running", ar: "الإبحار مع الريح الخلفية", wiki: "https://fr.wikipedia.org/wiki/Vent_arrière", category: "voile",
+    desc: "Allure où le vent vient directement de l'arrière.",
+    ex: "Vent arrière, nous avons établi le spinnaker." },
+  { fr: "Winch", en: "Winch", ar: "رافعة حبل", wiki: "https://fr.wikipedia.org/wiki/Winch", category: "voile",
+    desc: "Treuil mécanique utilisé pour border les cordages.",
+    ex: "Le winch de génois a été utilisé pour border l'écoute." },
+  { fr: "Taquet", en: "Cleat", ar: "مثبت الحبل", wiki: "https://fr.wikipedia.org/wiki/Taquet_(marine)", category: "voile",
+    desc: "Pièce fixe servant à bloquer un cordage.",
+    ex: "L'écoute est bloquée dans le taquet." },
+  { fr: "Haubans", en: "Shrouds", ar: "حبال تثبيت الصاري", wiki: "https://fr.wikipedia.org/wiki/Hauban", category: "voile",
+    desc: "Câbles qui maintiennent le mât latéralement.",
+    ex: "Les haubans doivent être vérifiés régulièrement." },
+  { fr: "Pataras", en: "Backstay", ar: "حبل الصاري الخلفي", wiki: "https://fr.wikipedia.org/wiki/Pataras", category: "voile",
+    desc: "Câble allant du sommet du mât à l'arrière.",
+    ex: "Le pataras est tendu pour cintrer le mât." },
+  { fr: "Tangon", en: "Spinnaker pole", ar: "ذراع سبينيكر", wiki: "https://fr.wikipedia.org/wiki/Tangon", category: "voile",
+    desc: "Espar horizontal servant à maintenir le spinnaker.",
+    ex: "Le tangon est fixé au mât pour le spinnaker." },
+  { fr: "Safran", en: "Rudder blade", ar: "ريشة الدفة", wiki: "https://fr.wikipedia.org/wiki/Safran_(marine)", category: "voile",
+    desc: "Surface mobile immergée qui permet de diriger le bateau.",
+    ex: "Le safran a touché le fond près de la côte." },
+  { fr: "Quille", en: "Keel", ar: "عارضة سفلية", wiki: "https://fr.wikipedia.org/wiki/Quille_(marine)", category: "voile",
+    desc: "Partie basse et lestée du bateau.",
+    ex: "La quille longue offre une meilleure stabilité." },
+  { fr: "Dérive", en: "Centerboard", ar: "لوح مقاومة الانحراف", wiki: "https://fr.wikipedia.org/wiki/Dérive_(marine)", category: "voile",
+    desc: "Plan antidérive mobile.",
+    ex: "On remonte la dérive pour accoster." },
+  { fr: "Catamaran", en: "Catamaran", ar: "قارب بمحيطين", wiki: "https://fr.wikipedia.org/wiki/Catamaran", category: "voile",
+    desc: "Bateau à deux coques parallèles.",
+    ex: "Le catamaran est très stable au mouillage." },
+  { fr: "Trimaran", en: "Trimaran", ar: "قارب بثلاثة محيطات", wiki: "https://fr.wikipedia.org/wiki/Trimaran", category: "voile",
+    desc: "Bateau à trois coques.",
+    ex: "Le trimaran a battu le record de traversée." },
+  { fr: "Moteur hors-bord", en: "Outboard motor", ar: "محرك خارجي", wiki: "https://fr.wikipedia.org/wiki/Hors-bord", category: "moteur",
+    desc: "Moteur fixé à l'extérieur du tableau arrière.",
+    ex: "Le hors-bord a démarré au premier coup." },
+  { fr: "Moteur inboard", en: "Inboard motor", ar: "محرك داخلي", wiki: "https://fr.wikipedia.org/wiki/In-board", category: "moteur",
+    desc: "Moteur fixé à l'intérieur de la coque.",
+    ex: "Le moteur inboard est plus silencieux." },
+  { fr: "Moteur diesel", en: "Diesel engine", ar: "محرك ديزل", wiki: "https://fr.wikipedia.org/wiki/Moteur_diesel", category: "moteur",
+    desc: "Moteur à allumage par compression, économique.",
+    ex: "Le diesel consomme moins à régime constant." },
+  { fr: "Hélice", en: "Propeller", ar: "مروحة دافعة", wiki: "https://fr.wikipedia.org/wiki/Hélice_(marine)", category: "moteur",
+    desc: "Organe rotatif à pales qui transforme la rotation en poussée.",
+    ex: "L'hélice a été changée pour un modèle plus adapté." },
+  { fr: "Gouvernail", en: "Rudder", ar: "دفة", wiki: "https://fr.wikipedia.org/wiki/Gouvernail", category: "moteur",
+    desc: "Surface mobile immergée qui permet de diriger.",
+    ex: "Le gouvernail répond bien à la barre." },
+  { fr: "Barre", en: "Helm / Wheel", ar: "عجلة القيادة", wiki: "https://fr.wikipedia.org/wiki/Barre_(bateau)", category: "moteur",
+    desc: "Organe de commande du gouvernail.",
+    ex: "La barre est tenue par le skipper." },
+  { fr: "Manette des gaz", en: "Throttle", ar: "خانق / مسرع", wiki: "https://fr.wikipedia.org/wiki/Levier_de_poussée", category: "moteur",
+    desc: "Levier qui contrôle le régime du moteur.",
+    ex: "La manette des gaz a été poussée à fond." },
+  { fr: "Inverseur", en: "Gearbox", ar: "علبة التروس", wiki: "https://fr.wikipedia.org/wiki/Inverseur_(marine)", category: "moteur",
+    desc: "Boîte de vitesses marine.",
+    ex: "L'inverseur a été mis au point mort." },
+  { fr: "Tableau arrière", en: "Transom", ar: "اللوح الخلفي", wiki: "https://fr.wikipedia.org/wiki/Tableau_arrière", category: "moteur",
+    desc: "Surface plate à l'arrière du bateau.",
+    ex: "Le tableau arrière supporte le moteur." },
+  { fr: "Réservoir de carburant", en: "Fuel tank", ar: "خزان الوقود", wiki: "https://fr.wikipedia.org/wiki/Réservoir_(carburant)", category: "moteur",
+    desc: "Réservoir stockant le carburant.",
+    ex: "Le réservoir a été rempli avant le départ." },
+  { fr: "Filtre à carburant", en: "Fuel filter", ar: "فلتر الوقود", wiki: "https://fr.wikipedia.org/wiki/Filtre_à_carburant", category: "moteur",
+    desc: "Dispositif qui retient les impuretés.",
+    ex: "Le filtre à carburant a été remplacé." },
+  { fr: "Batterie", en: "Battery", ar: "بطارية", wiki: "https://fr.wikipedia.org/wiki/Batterie_d%27accumulateurs", category: "moteur",
+    desc: "Accumulateur fournissant l'énergie électrique.",
+    ex: "La batterie est en charge au port." },
+  { fr: "Alternateur", en: "Alternator", ar: "مولد التيار", wiki: "https://fr.wikipedia.org/wiki/Alternateur", category: "moteur",
+    desc: "Générateur qui recharge la batterie.",
+    ex: "L'alternateur produit 12 volts." },
+  { fr: "Démarreur", en: "Starter", ar: "بادئ الحركة", wiki: "https://fr.wikipedia.org/wiki/Démarreur", category: "moteur",
+    desc: "Moteur électrique qui lance le moteur thermique.",
+    ex: "Le démarreur a été sollicité plusieurs fois." },
+  { fr: "Pompe de cale", en: "Bilge pump", ar: "مضخة المياه", wiki: "https://fr.wikipedia.org/wiki/Pompe_de_cale", category: "moteur",
+    desc: "Pompe qui évacue l'eau accumulée.",
+    ex: "La pompe de cale fonctionne automatiquement." },
+  { fr: "Presse-étoupe", en: "Stuffing box", ar: "صندوق الحشو", wiki: "https://fr.wikipedia.org/wiki/Presse-étoupe", category: "moteur",
+    desc: "Dispositif étanche autour de l'arbre d'hélice.",
+    ex: "Le presse-étoupe doit être légèrement humide." },
+  { fr: "Vanne de coque", en: "Seacock", ar: "صمام الهيكل", wiki: "https://fr.wikipedia.org/wiki/Vanne_de_coque", category: "moteur",
+    desc: "Robinet traversant la coque.",
+    ex: "La vanne de coque est fermée au mouillage." },
+  { fr: "Échappement", en: "Exhaust", ar: "العادم", wiki: "https://fr.wikipedia.org/wiki/Échappement_(mécanique)", category: "moteur",
+    desc: "Circuit évacuant les gaz brûlés.",
+    ex: "L'échappement est refroidi par eau." },
+  { fr: "Propulseur d'étrave", en: "Bow thruster", ar: "دافع المقدمة", wiki: "https://fr.wikipedia.org/wiki/Propulseur_d%27étrave", category: "moteur",
+    desc: "Hélice transversale à l'avant.",
+    ex: "Le propulseur d'étrave aide à accoster." },
+  { fr: "Compteur horaire", en: "Hour meter", ar: "عداد الساعات", wiki: "https://fr.wikipedia.org/wiki/Compteur_horaire", category: "moteur",
+    desc: "Instrument comptant les heures de fonctionnement.",
+    ex: "Le compteur horaire indique 500 heures." },
+  { fr: "SOG", en: "SOG", ar: "السرعة على الأرض", wiki: "https://fr.wikipedia.org/wiki/Speed_over_ground", category: "navigation",
+    desc: "Speed Over Ground — Vitesse sur le fond. Vitesse réelle du bateau par rapport au fond marin, incluant l'effet du courant et de la marée. Affichée par le GPS.",
+    ex: "Le SOG indique 6,2 nœuds, plus rapide que la vitesse surface à cause du courant." },
+  { fr: "COG", en: "COG", ar: "المسار على الأرض", wiki: "https://fr.wikipedia.org/wiki/Course_over_ground", category: "navigation",
+    desc: "Course Over Ground — Cap sur le fond. Direction réelle suivie par le bateau sur le fond, intégrant dérive et courant. C'est la route effectivement parcourue.",
+    ex: "Le COG est au 085° alors que le cap compas est au 090° à cause de la dérive." },
+  { fr: "BTW", en: "BTW", ar: "السمت نحو نقطة الطريق", wiki: "https://fr.wikipedia.org/wiki/Bearing_(navigation)", category: "navigation",
+    desc: "Bearing To Waypoint — Relèvement du waypoint. Direction (angle) du prochain point de passage à atteindre, mesurée depuis la position actuelle.",
+    ex: "Le BTW vers le port est de 045°, il faut donc mettre le cap dans cette direction." },
+  { fr: "DTW", en: "DTW", ar: "المسافة إلى نقطة الطريق", wiki: "https://fr.wikipedia.org/wiki/Distance", category: "navigation",
+    desc: "Distance To Waypoint — Distance jusqu'au prochain waypoint. Distance restante (en milles marins) pour atteindre le point de passage actif.",
+    ex: "Le DTW indique 12,4 milles avant la bouée d'atterrissage." },
+  { fr: "DTG", en: "DTG", ar: "المسافة إلى الوجهة", wiki: "https://fr.wikipedia.org/wiki/Distance", category: "navigation",
+    desc: "Distance To Go — Distance jusqu'à la destination finale. Distance totale restante pour atteindre le point d'arrivée.",
+    ex: "Le DTG est de 45 milles jusqu'au port de destination." },
+  { fr: "VMC", en: "VMC", ar: "السرعة الفعالة نحو المسار", wiki: "https://fr.wikipedia.org/wiki/Velocity_made_good", category: "navigation",
+    desc: "Velocity Made on Course — Vitesse efficace vers le waypoint. Projection de la vitesse fond (SOG) sur la direction du waypoint actif (BTW). Indique à quelle vitesse on se rapproche réellement du point visé. Peut être négatif si on s'éloigne.",
+    ex: "Avec un SOG de 6 nœuds et un angle de 30° par rapport au BTW, le VMC n'est que de 5,2 nœuds." },
+  { fr: "VMG", en: "VMG", ar: "السرعة الفعالة نحو الريح", wiki: "https://fr.wikipedia.org/wiki/Velocity_made_good", category: "navigation",
+    desc: "Velocity Made Good — Vitesse efficace dans le lit du vent. Mesure la vitesse de progression du bateau par rapport à l'axe du vent (remontée ou descente). Ne pas confondre avec VMC qui concerne le waypoint.",
+    ex: "En louvoyant, le VMG est plus important que la vitesse du bateau car il mesure le gain réel au vent." },
+  { fr: "TTG", en: "TTG", ar: "الوقت المتبقي", wiki: "https://fr.wikipedia.org/wiki/Time_to_go", category: "navigation",
+    desc: "Time To Go — Temps restant. Estimation du temps nécessaire pour atteindre le waypoint actif, calculée à partir de la distance (DTW) et de la vitesse de rapprochement (VMC).",
+    ex: "Le TTG est de 2 heures et 15 minutes jusqu'à la marina." },
+  { fr: "ETA", en: "ETA", ar: "وقت الوصول المتوقع", wiki: "https://fr.wikipedia.org/wiki/Estimated_time_of_arrival", category: "navigation",
+    desc: "Estimated Time of Arrival — Heure estimée d'arrivée. Heure prévue d'arrivée à destination, calculée en tenant compte du courant, de la marée et de la vitesse réelle.",
+    ex: "L'ETA est prévue à 16h30 heure locale." },
+  { fr: "XTE", en: "XTE", ar: "خطأ المسار العرضي", wiki: "https://fr.wikipedia.org/wiki/Cross_track_error", category: "navigation",
+    desc: "Cross Track Error — Écart de route. Distance latérale entre la position actuelle et la route théorique (la ligne droite entre le waypoint précédent et le waypoint actif). Indique de combien on est à gauche ou à droite de sa route.",
+    ex: "Le XTE est de 0,3 mille à tribord, il faut corriger le cap vers bâbord." },
+  { fr: "HDG", en: "HDG", ar: "اتجاه البوصلة", wiki: "https://fr.wikipedia.org/wiki/Heading_(navigation)", category: "navigation",
+    desc: "Heading — Cap du bateau. Direction dans laquelle pointe l'axe longitudinal du bateau, donnée par le compas ou le gyroscope. Diffère du COG car il ne tient pas compte de la dérive et du courant.",
+    ex: "Le HDG est au 090° mais le COG est au 095° à cause du courant." },
+  { fr: "STW", en: "STW", ar: "السرعة في الماء", wiki: "https://fr.wikipedia.org/wiki/Speed_through_water", category: "navigation",
+    desc: "Speed Through Water — Vitesse surface. Vitesse du bateau par rapport à l'eau, mesurée par le loch. Ne tient pas compte du courant. Diffère du SOG.",
+    ex: "Le STW est de 5,5 nœuds mais le SOG est de 6,2 nœuds grâce au courant portant." },
+  { fr: "TWA", en: "TWA", ar: "زاوية الريح الظاهرية", wiki: "https://fr.wikipedia.org/wiki/True_wind_angle", category: "navigation",
+    desc: "True Wind Angle — Angle du vent réel. Angle entre l'axe du bateau et la direction du vent réel (par opposition au vent apparent). Détermine l'allure et le réglage des voiles.",
+    ex: "Le TWA est de 45°, nous sommes au près." },
+  { fr: "TWD", en: "TWD", ar: "اتجاه الريح الحقيقية", wiki: "https://fr.wikipedia.org/wiki/Wind_direction", category: "navigation",
+    desc: "True Wind Direction — Direction du vent réel. Direction d'où vient le vent réel, par rapport au nord. Calculée à partir du vent apparent, du cap et de la vitesse.",
+    ex: "Le TWD est au 270° (vent d'ouest)." },
+  { fr: "AWA", en: "AWA", ar: "زاوية الريح الظاهرة", wiki: "https://fr.wikipedia.org/wiki/Apparent_wind", category: "navigation",
+    desc: "Apparent Wind Angle — Angle du vent apparent. Angle entre l'axe du bateau et le vent ressenti à bord, résultant de la combinaison du vent réel et du vent vitesse.",
+    ex: "L'AWA indique 30° mais le TWA est de 45°." },
+  { fr: "AWS", en: "AWS", ar: "سرعة الريح الظاهرة", wiki: "https://fr.wikipedia.org/wiki/Apparent_wind", category: "navigation",
+    desc: "Apparent Wind Speed — Vitesse du vent apparent. Vitesse du vent ressenti à bord, combinaison du vent réel et du vent vitesse (dû à l'avancement du bateau).",
+    ex: "L'AWS indique 18 nœuds alors que le TWS n'est que de 12 nœuds." },
+  { fr: "TWS", en: "TWS", ar: "سرعة الريح الحقيقية", wiki: "https://fr.wikipedia.org/wiki/Wind_speed", category: "navigation",
+    desc: "True Wind Speed — Vitesse du vent réel. Vitesse réelle du vent par rapport à la surface de la mer, calculée à partir du vent apparent.",
+    ex: "Le TWS est de 15 nœuds, force 4 Beaufort." },
+  { fr: "DPT", en: "DPT", ar: "العمق", wiki: "https://fr.wikipedia.org/wiki/Depth_sounder", category: "navigation",
+    desc: "Depth — Profondeur. Profondeur d'eau sous la quille ou sous le capteur, mesurée par le sondeur. Essentiel pour éviter les échouements.",
+    ex: "Le DPT indique 4,2 mètres sous la quille." },
+  { fr: "Nœud", en: "Knot", ar: "عقدة", wiki: "https://fr.wikipedia.org/wiki/Nœud_(unité)", category: "navigation",
+    desc: "Unité de vitesse maritime égale à un mille marin par heure (1,852 km/h).",
+    ex: "Le bateau file à 6 nœuds." },
+  { fr: "Mille marin", en: "Nautical mile", ar: "ميل بحري", wiki: "https://fr.wikipedia.org/wiki/Mille_marin", category: "navigation",
+    desc: "Unité de distance maritime valant 1 852 mètres.",
+    ex: "La côte est à 3 milles marins." },
+  { fr: "Cap", en: "Heading", ar: "اتجاه", wiki: "https://fr.wikipedia.org/wiki/Cap_(navigation)", category: "navigation",
+    desc: "Direction dans laquelle pointe l'axe du bateau, exprimée en degrés.",
+    ex: "Nous tenons un cap au 180°." },
+  { fr: "Route", en: "Route / Course", ar: "مسار", wiki: "https://fr.wikipedia.org/wiki/Route_(navigation)", category: "navigation",
+    desc: "Chemin prévu ou suivi pour aller d'un point à un autre.",
+    ex: "La route passe à l'ouest de la bouée." },
+  { fr: "Relèvement", en: "Bearing", ar: "سمت", wiki: "https://fr.wikipedia.org/wiki/Relèvement_(navigation)", category: "navigation",
+    desc: "Angle entre le nord et la direction d'un objet observé.",
+    ex: "Le relèvement du phare est au 090°." },
+  { fr: "Waypoint", en: "Waypoint", ar: "نقطة الطريق", wiki: "https://fr.wikipedia.org/wiki/Waypoint", category: "navigation",
+    desc: "Point de passage enregistré dans le GPS pour construire une route.",
+    ex: "Le waypoint suivant est à 12 milles." },
+  { fr: "GPS", en: "GPS", ar: "نظام تحديد المواقع", wiki: "https://fr.wikipedia.org/wiki/Global_Positioning_System", category: "navigation",
+    desc: "Système de positionnement par satellites donnant la position en temps réel.",
+    ex: "Le GPS nous a donné notre position exacte." },
+  { fr: "AIS", en: "AIS", ar: "نظام التعرف الآلي", wiki: "https://fr.wikipedia.org/wiki/Système_d%27identification_automatique", category: "navigation",
+    desc: "Système d'identification automatique qui échange position, cap et vitesse entre navires.",
+    ex: "L'AIS a permis de détecter le cargo à 5 milles." },
+  { fr: "Radar", en: "Radar", ar: "رادار", wiki: "https://fr.wikipedia.org/wiki/Radar_maritime", category: "navigation",
+    desc: "Appareil émettant des ondes pour détecter les obstacles.",
+    ex: "Le radar a détecté une côte à 8 milles." },
+  { fr: "Compas", en: "Compass", ar: "بوصلة", wiki: "https://fr.wikipedia.org/wiki/Compas_(navigation)", category: "navigation",
+    desc: "Instrument indiquant le cap magnétique ou géographique.",
+    ex: "Le compas indique un cap au 045°." },
+  { fr: "Sondeur", en: "Depth sounder", ar: "مقياس العمق", wiki: "https://fr.wikipedia.org/wiki/Sondeur_bathymétrique", category: "navigation",
+    desc: "Instrument mesurant la profondeur sous la quille par ultrasons.",
+    ex: "Le sondeur indique 8 mètres." },
+  { fr: "VHF", en: "VHF radio", ar: "راديو VHF", wiki: "https://fr.wikipedia.org/wiki/Très_haute_fréquence", category: "navigation",
+    desc: "Radio marine à très haute fréquence pour communiquer et lancer des alertes.",
+    ex: "Nous appelons le port sur le canal VHF 9." },
+  { fr: "Loch", en: "Log", ar: "مقياس السرعة", wiki: "https://fr.wikipedia.org/wiki/Loch_(marine)", category: "navigation",
+    desc: "Instrument mesurant la vitesse du bateau dans l'eau.",
+    ex: "Le loch indique 5,2 nœuds." },
+  { fr: "Pilote automatique", en: "Autopilot", ar: "الطيار الآلي", wiki: "https://fr.wikipedia.org/wiki/Pilote_automatique_(marine)", category: "navigation",
+    desc: "Système maintenant automatiquement un cap ou une route.",
+    ex: "Le pilote automatique tient le cap au près." },
+  { fr: "Carte marine", en: "Nautical chart", ar: "خريطة بحرية", wiki: "https://fr.wikipedia.org/wiki/Carte_marine", category: "navigation",
+    desc: "Document cartographique indiquant profondeurs, côtes et dangers.",
+    ex: "La carte marine indique un haut-fond." },
+  { fr: "Marée", en: "Tide", ar: "مد وجزر", wiki: "https://fr.wikipedia.org/wiki/Marée", category: "navigation",
+    desc: "Mouvement périodique de montée et descente du niveau de la mer.",
+    ex: "La marée monte de 4 mètres." },
+  { fr: "Courant", en: "Current", ar: "تيار", wiki: "https://fr.wikipedia.org/wiki/Courant_marin", category: "navigation",
+    desc: "Déplacement horizontal de l'eau de mer.",
+    ex: "Le courant porte au nord-est." },
+  { fr: "Vent", en: "Wind", ar: "ريح", wiki: "https://fr.wikipedia.org/wiki/Vent", category: "navigation",
+    desc: "Mouvement de l'air, moteur principal de la navigation à voile.",
+    ex: "Le vent a forci au cours de l'après-midi." },
+  { fr: "Beaufort", en: "Beaufort scale", ar: "مقياس بوفورت", wiki: "https://fr.wikipedia.org/wiki/Échelle_de_Beaufort", category: "navigation",
+    desc: "Échelle graduée de 0 à 12 décrivant la force du vent.",
+    ex: "Le vent est de force 5 Beaufort." },
+  { fr: "Feux de navigation", en: "Navigation lights", ar: "أضواء الملاحة", wiki: "https://fr.wikipedia.org/wiki/Feux_de_navigation", category: "navigation",
+    desc: "Feux réglementaires indiquant la position et la route.",
+    ex: "Les feux de navigation sont allumés au crépuscule." },
+  { fr: "Tribord", en: "Starboard", ar: "يمين", wiki: "https://fr.wikipedia.org/wiki/Tribord", category: "navigation",
+    desc: "Côté droit du bateau en regardant vers l'avant.",
+    ex: "Le feu vert est à tribord." },
+  { fr: "Bâbord", en: "Port", ar: "يسار", wiki: "https://fr.wikipedia.org/wiki/Bâbord", category: "navigation",
+    desc: "Côté gauche du bateau en regardant vers l'avant.",
+    ex: "Le feu rouge est à bâbord." },
+  { fr: "Proue", en: "Bow", ar: "مقدمة السفينة", wiki: "https://fr.wikipedia.org/wiki/Proue", category: "navigation",
+    desc: "Avant du bateau.",
+    ex: "La proue fend les vagues." },
+  { fr: "Poupe", en: "Stern", ar: "مؤخرة السفينة", wiki: "https://fr.wikipedia.org/wiki/Poupe", category: "navigation",
+    desc: "Arrière du bateau.",
+    ex: "Le moteur est à la poupe." },
+  { fr: "Mayday", en: "Mayday", ar: "ماي داي", wiki: "https://fr.wikipedia.org/wiki/Mayday", category: "navigation",
+    desc: "Message radio de détresse absolue.",
+    ex: "Mayday, Mayday, Mayday, ici le voilier Étoile." },
+  { fr: "Pan Pan", en: "Pan Pan", ar: "بان بان", wiki: "https://fr.wikipedia.org/wiki/Pan-pan", category: "navigation",
+    desc: "Message radio d'urgence, sans danger immédiat.",
+    ex: "Pan Pan, nous avons une avarie moteur." }
+];
+
+/* ============================================================
+   STATE
+   ============================================================ */
+let currentTab = 'cotier';
+let currentCourseIndex = 0;
+let currentFilter = 'all';
+let expandedIds = new Set();
+
+/* ============================================================
+   DOM REFERENCES
+   ============================================================ */
+const menuToggle = document.getElementById('menuToggle');
+const sideMenu = document.getElementById('sideMenu');
+const menuTabs = document.getElementById('menuTabs');
+const menuCourseTitle = document.getElementById('menuCourseTitle');
+const menuCourseList = document.getElementById('menuCourseList');
+const chapterView = document.getElementById('chapterView');
+const glossaireView = document.getElementById('glossaireView');
+const mainContent = document.getElementById('mainContent');
+const footerStatus = document.getElementById('footerStatus');
+
+/* ============================================================
+   MENU TOGGLE
+   ============================================================ */
+menuToggle.addEventListener('click', () => sideMenu.classList.toggle('open'));
+
+/* ============================================================
+   THEME
+   ============================================================ */
+const themeToggle = document.getElementById('themeToggle');
+const themeSwitch = document.getElementById('themeSwitch');
+const themeIcon = document.getElementById('themeIcon');
+const themeLabel = document.getElementById('themeLabel');
+
+function applyTheme(light) {
+  document.documentElement.classList.toggle('light', light);
+  themeIcon.textContent = light ? '☀️' : '🌙';
+  themeLabel.textContent = light ? 'Mode clair' : 'Mode sombre';
+  themeSwitch.checked = light;
+  try { localStorage.setItem('sailor-theme', light ? 'light' : 'dark'); } catch(e) {}
+}
+
+themeToggle.addEventListener('click', () => applyTheme(!document.documentElement.classList.contains('light')));
+themeSwitch.addEventListener('change', (e) => applyTheme(e.target.checked));
+
+// Load saved theme (dark by default)
+try {
+  const saved = localStorage.getItem('sailor-theme');
+  if (saved === 'light') applyTheme(true);
+} catch(e) {}
+
+/* ============================================================
+   FOOTER PANEL (bas → haut)
+   ============================================================ */
+const footerPanel = document.getElementById('footerPanel');
+const footerExpand = document.getElementById('footerExpand');
+
+footerExpand.addEventListener('click', () => {
+  const open = footerPanel.classList.toggle('open');
+  footerExpand.textContent = open ? '▼' : '▲';
+});
+
+/* ============================================================
+   HELPERS
+   ============================================================ */
+function getCourses() { return currentTab === 'cotier' ? cotierCourses : hauturierCourses; }
+function isGlossary() { return currentTab === 'glossaire'; }
+
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+/* ============================================================
+   RENDER — CHAPITRE PLEIN ÉCRAN
+   ============================================================ */
+function renderChapter() {
+  if (isGlossary()) {
+    chapterView.style.display = 'none';
+    glossaireView.style.display = 'block';
+    renderGlossary();
+    return;
+  }
+  chapterView.style.display = 'block';
+  glossaireView.style.display = 'none';
+
+  const courses = getCourses();
+  const c = courses[currentCourseIndex];
+
+  const sectionsHtml = c.sections.map((s, si) => `
+    <details ${si === 0 ? 'open' : ''}>
+      <summary>${escapeHtml(s.titre)}</summary>
+      <div class="section-body">
+        <ul>${s.items.map(it => `<li>${escapeHtml(it)}</li>`).join('')}</ul>
+      </div>
+    </details>
+  `).join('');
+
+  chapterView.innerHTML = `
+    <div class="chapter-view">
+      <div class="chapter-header">
+        <div>
+          <h2 class="chapter-title">${escapeHtml(c.num + '. ' + c.titre)}</h2>
+          <div class="chapter-badges">
+            <span class="badge badge-num">Chapitre ${c.num}/${courses.length}</span>
+            <span class="badge badge-duree">⏱ ${escapeHtml(c.duree)}</span>
+          </div>
+        </div>
+        <a class="btn-link" href="${c.url}" target="_blank" rel="noopener">Voir le cours →</a>
+      </div>
+      ${sectionsHtml}
+    </div>
+  `;
+
+  mainContent.scrollTop = 0;
+}
+
+/* ============================================================
+   RENDER — MENU (avec chapitres visibles)
+   ============================================================ */
+function renderMenu() {
+  menuTabs.querySelectorAll('.menu-tab').forEach(el => {
+    el.classList.toggle('active', el.dataset.tab === currentTab);
+  });
+
+  if (isGlossary()) {
+    menuCourseTitle.textContent = 'Filtres';
+    menuCourseList.innerHTML = '';
+    const cats = [
+      { id: 'all', label: 'Tous les termes' },
+      { id: 'voile', label: '⛵ Voile' },
+      { id: 'moteur', label: '⚙️ Moteur' },
+      { id: 'navigation', label: '🧭 Navigation' }
+    ];
+    cats.forEach(c => {
+      const li = document.createElement('li');
+      li.innerHTML = `<span class="num">•</span> ${c.label}`;
+      if (currentFilter === c.id) li.classList.add('active');
+      li.addEventListener('click', () => {
+        currentFilter = c.id;
+        document.querySelectorAll('.glossary-filter-btn').forEach(b => {
+          b.classList.toggle('active', b.dataset.filter === c.id);
+        });
+        renderMenu();
+        renderGlossary();
+      });
+      menuCourseList.appendChild(li);
+    });
+    return;
+  }
+
+  const courses = getCourses();
+  menuCourseTitle.textContent = currentTab === 'cotier' ? 'Chapitres Côtier' : 'Chapitres Hauturier';
+  menuCourseList.innerHTML = '';
+
+  courses.forEach((c, i) => {
+    const li = document.createElement('li');
+    li.innerHTML = `<span class="num">${c.num}</span> <span>${escapeHtml(c.titre)}</span>`;
+    li.className = i === currentCourseIndex ? 'active' : '';
+    li.addEventListener('click', () => {
+      currentCourseIndex = i;
+      renderChapter();
+      renderMenu();
+      updateFooterStatus();
+      // Auto-close menu on mobile
+      if (window.innerWidth < 700) sideMenu.classList.remove('open');
+    });
+    menuCourseList.appendChild(li);
+  });
+}
+
+/* ============================================================
+   FOOTER STATUS
+   ============================================================ */
+function updateFooterStatus() {
+  if (isGlossary()) {
+    footerStatus.textContent = 'Glossaire';
+  } else {
+    const courses = getCourses();
+    footerStatus.textContent = `Chapitre ${currentCourseIndex + 1}/${courses.length}`;
+  }
+}
+
+/* ============================================================
+   GLOSSAIRE
+   ============================================================ */
+const termList = document.getElementById('termList');
+const emptyMessage = document.getElementById('emptyMessage');
+const searchInput = document.getElementById('searchInput');
+const searchBox = document.getElementById('searchBox');
+const searchToggle = document.getElementById('searchToggle');
+const termCountEl = document.getElementById('termCount');
+const filterBtns = document.querySelectorAll('.glossary-filter-btn');
+
+function normalize(str) {
+  return str.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+}
+
+function renderGlossary() {
+  if (!termList) return;
+  const rawSearch = searchInput.value.trim();
+  const filterText = normalize(rawSearch);
+  let visibleCount = 0;
+  termList.innerHTML = '';
+
+  glossaryData.forEach((item, index) => {
+    if (currentFilter !== 'all' && item.category !== currentFilter) return;
+
+    const frNorm = normalize(item.fr);
+    const enNorm = normalize(item.en);
+    const arNorm = normalize(item.ar);
+
+    const matches =
+      filterText === '' ||
+      frNorm.includes(filterText) ||
+      enNorm.includes(filterText) ||
+      item.ar.includes(rawSearch) ||
+      arNorm.includes(filterText);
+
+    if (!matches) return;
+
+    visibleCount++;
+    const id = `term-${index}`;
+    const isExpanded = expandedIds.has(id);
+
+    const card = document.createElement('div');
+    card.className = 'term-card' + (isExpanded ? ' expanded' : '');
+    card.dataset.id = id;
+
+    card.innerHTML = `
+      <div class="term-head">
+        <span class="term-fr-main">
+          <a href="${item.wiki}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">${escapeHtml(item.fr)}</a>
+        </span>
+        <span class="category ${item.category}">${item.category}</span>
+        <span class="expand-icon">▼</span>
+      </div>
+      <div class="term-details">
+        <div class="detail-row">
+          <span class="detail-label">Définition</span>
+          <div class="detail-text">${escapeHtml(item.desc)}</div>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Exemple</span>
+          <div class="detail-example">« ${escapeHtml(item.ex)} »</div>
+        </div>
+        <div class="translations">
+          <div class="trans-row">
+            <span class="trans-lang">EN</span>
+            <span class="trans-en">${escapeHtml(item.en)}</span>
+          </div>
+          <div class="trans-row">
+            <span class="trans-lang">AR</span>
+            <span class="trans-ar" lang="ar" dir="rtl">${escapeHtml(item.ar)}</span>
+          </div>
+        </div>
+      </div>
+    `;
+
+    card.addEventListener('click', () => {
+      if (expandedIds.has(id)) {
+        expandedIds.delete(id);
+        card.classList.remove('expanded');
+      } else {
+        expandedIds.add(id);
+        card.classList.add('expanded');
+      }
+    });
+
+    termList.appendChild(card);
+  });
+
+  if (visibleCount === 0) {
+    emptyMessage.style.display = 'block';
+    termList.style.display = 'none';
+  } else {
+    emptyMessage.style.display = 'none';
+    termList.style.display = 'flex';
+  }
+
+  if (termCountEl) termCountEl.textContent = visibleCount;
+}
+
+if (searchToggle) {
+  searchToggle.addEventListener('click', () => {
+    const isVisible = searchBox.classList.toggle('visible');
+    searchToggle.setAttribute('aria-expanded', isVisible);
+    if (isVisible) {
+      searchInput.focus();
+      searchToggle.textContent = '✕ Fermer la recherche';
+    } else {
+      searchToggle.textContent = '🔍 Rechercher un terme…';
+      searchInput.value = '';
+      renderGlossary();
+    }
+  });
+}
+
+if (searchInput) searchInput.addEventListener('input', renderGlossary);
+
+filterBtns.forEach(btn => {
+  btn.addEventListener('click', () => {
+    filterBtns.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentFilter = btn.dataset.filter;
+    renderGlossary();
+  });
+});
+
+/* ============================================================
+   MENU TAB EVENTS
+   ============================================================ */
+menuTabs.querySelectorAll('.menu-tab').forEach(el => {
+  el.addEventListener('click', () => {
+    const tab = el.dataset.tab;
+    if (tab === currentTab) return;
+    currentTab = tab;
+    currentCourseIndex = 0;
+    renderChapter();
+    renderMenu();
+    updateFooterStatus();
+  });
+});
+
+/* ============================================================
+   KEYBOARD NAV
+   ============================================================ */
+document.addEventListener('keydown', (e) => {
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+  if (isGlossary()) return;
+  const courses = getCourses();
+  if (e.key === 'ArrowRight' && currentCourseIndex < courses.length - 1) {
+    currentCourseIndex++; renderChapter(); renderMenu(); updateFooterStatus();
+  }
+  if (e.key === 'ArrowLeft' && currentCourseIndex > 0) {
+    currentCourseIndex--; renderChapter(); renderMenu(); updateFooterStatus();
+  }
+  if (e.key === 'Home') {
+    currentTab = 'cotier'; currentCourseIndex = 0;
+    renderChapter(); renderMenu(); updateFooterStatus();
+  }
+});
+
+/* ============================================================
+   INIT
+   ============================================================ */
+renderChapter();
+renderMenu();
+updateFooterStatus();
+</script>
 
 </body>
 </html>
