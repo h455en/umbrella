@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#000000">
 <title>Sky Gazing 2026</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&family=Noto+Naskh+Arabic:wght@400;700&display=swap" rel="stylesheet">
@@ -10,14 +11,15 @@
 <script>
   tailwind.config = { theme: { extend: {
     fontFamily: { sans: ['Roboto', 'sans-serif'] },
-    colors: { night:'#0b0f2b', panel:'#151a3d', panel2:'#1e2452', border:'#2a2f5a', gold:'#ffd166', sky:'#6ec6ff', green:'#9be89b' }
+    colors: { night:'#000000', panel:'#0b0b0b', panel2:'#161616', border:'#2a2a2a', gold:'#ffd166', sky:'#6ec6ff', green:'#9be89b' }
   } } }
 </script>
 <style>
+  html, body { background:#000; }
   body { font-family: 'Roboto', sans-serif; }
   a.wikilink { text-decoration: underline dotted; text-underline-offset: 3px; }
   a.wikilink:hover { color: #ffd166; }
-  .timeline-line { background: #2a2f5a; }
+  .timeline-line { background: #2a2a2a; }
   .dot-pulse { box-shadow: 0 0 0 0 rgba(239,68,68,0.6); animation: pulse 2s infinite; }
   @keyframes pulse { 0%{box-shadow:0 0 0 0 rgba(239,68,68,.6)} 70%{box-shadow:0 0 0 6px rgba(239,68,68,0)} 100%{box-shadow:0 0 0 0 rgba(239,68,68,0)} }
   .arabic { font-family: 'Noto Naskh Arabic', serif; direction: rtl; }
@@ -27,13 +29,14 @@
   .scrollbar-hide::-webkit-scrollbar { display: none; }
   .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
   .footer-panel { max-height: 0; overflow: hidden; transition: max-height .35s ease; }
-  .footer-panel.open { max-height: 70vh; overflow-y: auto; }
+  .footer-panel.open { max-height: 68vh; overflow-y: auto; }
   .footer-chevron { transition: transform .3s ease; display: inline-block; }
   .footer-chevron.open { transform: rotate(180deg); }
   details > summary { cursor: pointer; list-style: none; }
   details > summary::-webkit-details-marker { display: none; }
   details[open] > summary .sum-arrow { transform: rotate(90deg); }
   .sum-arrow { display:inline-block; transition: transform .2s; }
+  input[type=number] { background:#161616; border:1px solid #2a2a2a; border-radius:6px; color:#eee; padding:2px 6px; width:60px; font-size:12px; }
 </style>
 </head>
 <body class="bg-night text-gray-100 flex flex-col min-h-screen">
@@ -42,8 +45,8 @@
   <div class="flex items-center justify-center gap-1.5 text-[10px] sm:text-xs">
     <span class="text-gold font-black text-sm">🌌 Sky Gazing</span>
     <span class="text-gray-600">·</span>
-    <button id="locBizerte" class="px-2 py-0.5 rounded text-[10px] font-bold">🇹🇳 Bizerte</button>
     <button id="locParis" class="px-2 py-0.5 rounded text-[10px] font-bold">🇫🇷 Paris</button>
+    <button id="locBizerte" class="px-2 py-0.5 rounded text-[10px] font-bold">🇹🇳 Bizerte</button>
     <span class="text-gray-600">·</span>
     <span id="clock" class="text-sky font-medium"></span>
   </div>
@@ -52,7 +55,6 @@
 <main class="max-w-4xl mx-auto px-3 sm:px-6 py-4 flex-1 w-full">
   <div id="mainTabs" class="flex justify-center gap-1 mb-4">
     <button data-view="calendar" class="px-3 py-1 rounded text-[11px] border">📅 Calendrier</button>
-    <button data-view="nav" class="px-3 py-1 rounded text-[11px] border">🧭 Navigation</button>
     <button data-view="ready" class="px-3 py-1 rounded text-[11px] border">🎒 Ready</button>
   </div>
 
@@ -67,29 +69,41 @@
     <p class="text-center text-gray-600 text-[10px] mt-2 sm:hidden">👈 glissez pour changer de mois 👉</p>
   </section>
 
-  <section id="view-nav" class="hidden"></section>
   <section id="view-ready" class="hidden"></section>
 </main>
 
-<footer class="bg-panel border-t border-border">
+<footer class="sticky bottom-0 z-30 bg-panel border-t border-border">
   <div id="footerPanel" class="footer-panel px-4">
     <div class="py-3">
       <div class="text-gold text-xs font-bold mb-2">⚙️ Réglages</div>
       <label for="defaultLocSelect" class="text-[11px] text-gray-400 block mb-1">Lieu par défaut</label>
       <select id="defaultLocSelect" class="bg-panel2 border border-border rounded-md text-xs py-1.5 px-2 text-gray-100 mb-1">
-        <option value="Bizerte">🇹🇳 Bizerte, Tunisie</option>
         <option value="Paris">🇫🇷 Paris, France</option>
+        <option value="Bizerte">🇹🇳 Bizerte, Tunisie</option>
       </select>
-      <div class="text-[10px] text-gray-500 mb-4">Enregistré sur cet appareil. Heures locales, hauteur des astres, passages satellites, météo, Lune, étoiles visibles et lieux d'observation s'adaptent au lieu choisi.</div>
+      <div class="text-[10px] text-gray-500 mb-3">Enregistré sur cet appareil. Heures, hauteur des astres, passages satellites, météo, Lune, étoiles visibles et lieux d'observation s'adaptent au lieu choisi.</div>
+
+      <div class="text-[11px] text-gray-400 mb-1">Angles de calcul des prières (fenêtres Maghrib / Icha / Fajr)</div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-1 text-[11px] text-gray-300">
+        <div>🇫🇷 Paris — Fajr <input id="angParF" type="number" step="0.5" min="6" max="20"> ° · Icha <input id="angParI" type="number" step="0.5" min="6" max="20"> °</div>
+        <div>🇹🇳 Bizerte — Fajr <input id="angBizF" type="number" step="0.5" min="6" max="20"> ° · Icha <input id="angBizI" type="number" step="0.5" min="6" max="20"> °</div>
+      </div>
+      <div class="text-[10px] text-gray-500 mb-1">Défauts : Paris 12°/12° (UOIF), Bizerte 18°/18°. Maghrib = coucher du Soleil. Ajustez selon le calendrier de votre mosquée.</div>
+      <button id="angReset" class="text-[10px] text-sky underline mb-4">Réinitialiser les angles</button>
+
+      <details class="mb-4 bg-panel2/50 border border-border rounded-lg">
+        <summary class="px-3 py-2 text-gold font-bold text-xs"><span class="sum-arrow">▸</span> 🧭 Navigation céleste (orientation d'urgence)</summary>
+        <div id="navBox" class="p-3 pt-1"></div>
+      </details>
 
       <div class="text-gold text-xs font-bold mb-2">🔗 Liens utiles</div>
-      <div id="footerLinks" class="grid gap-2 sm:grid-cols-2"></div>
+      <div id="footerLinks" class="grid gap-2 sm:grid-cols-2 pb-2"></div>
     </div>
   </div>
   <button id="footerToggle" class="w-full py-1.5 text-center text-[10px] sm:text-xs text-gray-400 hover:text-gold flex items-center justify-center gap-1">
-    <span class="footer-chevron">▲</span> Réglages & liens utiles
+    <span class="footer-chevron">▲</span> Navigation, réglages & liens utiles
   </button>
-  <div class="text-center text-[10px] sm:text-xs text-gray-500 pb-1.5">Source : astropixels.com — Année 2026</div>
+  <div class="text-center text-[10px] text-gray-600 pb-1">Source : astropixels.com — Année 2026</div>
 </footer>
 
 <script>
@@ -104,15 +118,27 @@ const LOCS = {
   Bizerte: { tz:'Africa/Tunis', lat:37.2744, lng:9.8739, flag:'🇹🇳', label:'Bizerte, Tunisie' },
   Paris:   { tz:'Europe/Paris', lat:48.8566, lng:2.3522, flag:'🇫🇷', label:'Paris, France' }
 };
-function loadDefaultLoc() { try { const v = localStorage.getItem('sg_default_loc'); if (v && LOCS[v]) return v; } catch(e){} return 'Bizerte'; }
+function loadDefaultLoc() { try { const v = localStorage.getItem('sg_default_loc'); if (v && LOCS[v]) return v; } catch(e){} return 'Paris'; }
 function saveDefaultLoc(v) { try { localStorage.setItem('sg_default_loc', v); } catch(e){} }
 let currentLocation = loadDefaultLoc();
+
+const PRAYER_DEFAULTS = { Bizerte:{ fajr:18, isha:18 }, Paris:{ fajr:12, isha:12 } };
+function getAngles(loc) {
+  try { const s = JSON.parse(localStorage.getItem('sg_angles_' + loc)); if (s && isFinite(s.fajr) && isFinite(s.isha)) return s; } catch(e){}
+  return PRAYER_DEFAULTS[loc];
+}
+function saveAngles(loc, f, i) { try { localStorage.setItem('sg_angles_' + loc, JSON.stringify({ fajr:f, isha:i })); } catch(e){} }
+function resetAngles() { try { localStorage.removeItem('sg_angles_Paris'); localStorage.removeItem('sg_angles_Bizerte'); } catch(e){} }
 
 const fmtCache = {};
 function tzFmt(tz) {
   return fmtCache[tz] || (fmtCache[tz] = new Intl.DateTimeFormat('fr-FR', { hour:'2-digit', minute:'2-digit', hourCycle:'h23', timeZone: tz }));
 }
 function fmtTime(ms, tz) { return tzFmt(tz).format(new Date(ms)); }
+function localParts(ms, tz) {
+  return Object.fromEntries(new Intl.DateTimeFormat('en-CA', { timeZone: tz, year:'numeric', month:'2-digit', day:'2-digit' }).formatToParts(new Date(ms)).map(x => [x.type, x.value]));
+}
+function localDayKey(ms, tz) { const p = localParts(ms, tz); return `${p.year}-${p.month}-${p.day}`; }
 function tzOffset(tz, date) { // minutes
   const f = new Intl.DateTimeFormat('en-US', { timeZone: tz, hourCycle:'h23', year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit', second:'2-digit' });
   const p = Object.fromEntries(f.formatToParts(date).map(x => [x.type, x.value]));
@@ -144,9 +170,9 @@ function getLocalTime(mi, day, gmt) {
 //  CLOCK, FOOTER
 // ====================================================================
 function updateClock() {
-  const now = new Date();
-  const dateStr = now.toLocaleDateString('fr-FR', { weekday:'short', day:'2-digit', month:'short', year:'numeric', timeZone: LOCS[currentLocation].tz });
-  const timeStr = now.toLocaleTimeString('fr-FR', { hour:'2-digit', minute:'2-digit', second:'2-digit', timeZone: LOCS[currentLocation].tz });
+  const now = new Date(), tz = LOCS[currentLocation].tz;
+  const dateStr = now.toLocaleDateString('fr-FR', { weekday:'short', day:'2-digit', month:'short', year:'numeric', timeZone: tz });
+  const timeStr = now.toLocaleTimeString('fr-FR', { hour:'2-digit', minute:'2-digit', second:'2-digit', timeZone: tz });
   $('clock').textContent = `${dateStr} ${timeStr}`;
 }
 updateClock(); setInterval(updateClock, 1000);
@@ -168,6 +194,7 @@ const footerLinks = [
   ['🌍 TimeAndDate Astronomie','timeanddate.com','https://www.timeanddate.com/astronomy/'],
   ['☁️ Clear Outside (météo astro)','clearoutside.com','https://clearoutside.com'],
   ['🌦️ Open-Meteo','open-meteo.com','https://open-meteo.com'],
+  ['🕌 Mawaqit (horaires mosquées)','mawaqit.net','https://mawaqit.net'],
   ['📖 Wikipédia — Liste des constellations','fr.wikipedia.org','https://fr.wikipedia.org/wiki/Liste_des_constellations'],
   ['📖 Wikipedia — Lunar mansion (manazil)','en.wikipedia.org','https://en.wikipedia.org/wiki/Lunar_mansion']
 ];
@@ -299,7 +326,7 @@ function constelSvg(name) {
   const { points, lines } = info.shape;
   const lineSvg = lines.map(([a, b]) => `<line x1="${points[a][0]}" y1="${points[a][1]}" x2="${points[b][0]}" y2="${points[b][1]}" stroke="#6ec6ff" stroke-width="1.4" opacity="0.8"/>`).join('');
   const dotSvg = points.map(p => `<circle cx="${p[0]}" cy="${p[1]}" r="2.6" fill="#ffd166"/>`).join('');
-  return `<svg viewBox="0 0 100 100" class="w-28 h-28 mx-auto my-2 bg-panel2/40 rounded-md p-1">${lineSvg}${dotSvg}</svg>`;
+  return `<svg viewBox="0 0 100 100" class="w-28 h-28 mx-auto my-2 bg-panel2/60 rounded-md p-1">${lineSvg}${dotSvg}</svg>`;
 }
 function arabicDetailHtml(constellation) {
   const info = constelArabic[constellation];
@@ -324,9 +351,8 @@ function satelliteDetailHtml() {
 }
 
 // ====================================================================
-//  ASTRONOMY ENGINE (moon phases 2026, positions, rise/set)
+//  ASTRONOMY ENGINE
 // ====================================================================
-// [type 0=Nouvelle 1=PQ 2=Pleine 3=DQ, date UTC]
 const PHASES_RAW = [
  [2,'2025-12-04T23:14'],[3,'2025-12-11T20:52'],[0,'2025-12-20T01:43'],[1,'2025-12-27T04:09'],
  [2,'2026-01-03T10:03'],[3,'2026-01-10T15:48'],[0,'2026-01-18T19:52'],[1,'2026-01-26T04:47'],
@@ -367,6 +393,17 @@ function sunLon(ms) {
   const g = (357.528 + 0.9856003 * n) * R;
   return norm(L + 1.915 * Math.sin(g) + 0.020 * Math.sin(2 * g));
 }
+function sunEq(ms) { // declination (deg) and (mean longitude − RA) in degrees
+  const n = jd(ms) - 2451545.0;
+  const L = norm(280.460 + 0.9856474 * n);
+  const g = norm(357.528 + 0.9856003 * n) * R;
+  const lam = norm(L + 1.915 * Math.sin(g) + 0.020 * Math.sin(2 * g)) * R;
+  const eps = (23.439 - 0.0000004 * n) * R;
+  const dec = Math.asin(Math.sin(eps) * Math.sin(lam)) / R;
+  const ra = norm(Math.atan2(Math.cos(eps) * Math.sin(lam), Math.cos(lam)) / R);
+  let eot = L - ra; if (eot > 180) eot -= 360; if (eot < -180) eot += 360;
+  return { dec, eot };
+}
 function moonEq(ms) {
   const elong = elongAt(ms);
   const lon = norm(sunLon(ms) + elong);
@@ -387,7 +424,7 @@ function moonAltAz(ms, lat, lng) {
   const az = norm(Math.atan2(-Math.cos(d) * Math.sin(H), Math.sin(d) * Math.cos(phi) - Math.cos(d) * Math.cos(H) * Math.sin(phi)) / R);
   return { ...q, alt, az, illum: (1 - Math.cos(q.elong * R)) / 2, age: ageAt(ms) };
 }
-function moonDay(dayUTCms, L) { // dayUTCms = Date.UTC(y,m,d) of the local calendar date
+function moonDay(dayUTCms, L) {
   const off = tzOffset(L.tz, new Date(dayUTCms + 12 * 3600000));
   const start = dayUTCms - off * 60000;
   let rise = null, set = null, best = -99, bestM = -1, prevA = null, prevT = null;
@@ -414,8 +451,55 @@ function phaseName(e) {
 const MOON_EMO = ['🌑','🌒','🌓','🌔','🌕','🌖','🌗','🌘'];
 const moonEmoji = e => MOON_EMO[Math.round(e / 45) % 8];
 const compass = az => ['N','NE','E','SE','S','SO','O','NO'][Math.round(az / 45) % 8];
+const DIR_LONG = ['Nord','Nord-Est','Est','Sud-Est','Sud','Sud-Ouest','Ouest','Nord-Ouest'];
 const AYANAMSA = 24.2;
 const manzilIndex = lon => Math.floor(norm(lon - AYANAMSA) / (360 / 28));
+
+// ---- prayer times (astronomical) ----
+function prayerTimes(dayUTCms, L, ang) {
+  const probe = dayUTCms + 12 * 3600000 - L.lng * 4 * 60000;
+  const { dec, eot } = sunEq(probe);
+  const noon = dayUTCms + (720 - 4 * L.lng + 4 * eot) * 60000;
+  const phi = L.lat * R, d = dec * R;
+  const H = a => { const c = (Math.sin(a * R) - Math.sin(phi) * Math.sin(d)) / (Math.cos(phi) * Math.cos(d)); return (c < -1 || c > 1) ? null : Math.acos(c) / R * 4 * 60000; };
+  const hs = H(-0.833), hi = H(-ang.isha), hf = H(-ang.fajr);
+  const sunset = noon + hs, sunrise = noon - hs;
+  return { noon, sunset, sunrise, maghrib: sunset,
+    isha: hi !== null ? noon + hi : sunset + 90 * 60000,
+    fajr: hf !== null ? noon - hf : sunrise - 90 * 60000,
+    approx: (hi === null || hf === null) };
+}
+function nightWindows(y, m, d, L) {
+  const p = prayerTimes(Date.UTC(y, m, d), L, getAngles(currentLocation));
+  return { p, eve: [p.maghrib + 30 * 60000, p.isha + 2 * 3600000], morn: [p.fajr - 3600000, p.fajr + 3600000] };
+}
+
+// ---- sky snapshot (bright stars by compass sector) ----
+function skySnapshot(ms, L) {
+  const n = jd(ms) - 2451545.0, lst = norm(280.46061837 + 360.98564736629 * n + L.lng), phi = L.lat * R;
+  const aa = (raDeg, dec) => {
+    const H = norm(lst - raDeg) * R, d = dec * R;
+    const alt = Math.asin(Math.sin(phi) * Math.sin(d) + Math.cos(phi) * Math.cos(d) * Math.cos(H)) / R;
+    const az = norm(Math.atan2(-Math.cos(d) * Math.sin(H), Math.sin(d) * Math.cos(phi) - Math.cos(d) * Math.cos(H) * Math.sin(phi)) / R);
+    return { alt, az };
+  };
+  const sectors = Array.from({ length: 8 }, () => ({ n: 0, list: [] }));
+  topStars.forEach(s => {
+    const p = aa(s[8] * 15, s[7]);
+    if (p.alt >= 15) { const k = Math.round(p.az / 45) % 8; sectors[k].n++; sectors[k].list.push({ name:s[1], mag:parseFloat(s[2].replace(',', '.')) }); }
+  });
+  return { sectors, gc: aa(266.42, -29.0), total: sectors.reduce((a, s) => a + s.n, 0), moon: moonAltAz(ms, L.lat, L.lng) };
+}
+function bestDir(snap) {
+  let bk = 0, bs = -1;
+  snap.sectors.forEach((s, k) => { const sc = s.n * 100 + s.list.reduce((a, x) => a + (3 - x.mag), 0); if (sc > bs) { bs = sc; bk = k; } });
+  return bk;
+}
+function moonStatus(mp) {
+  const ill = (mp.illum * 100).toFixed(0);
+  if (mp.alt > 0) return `${moonEmoji(mp.elong)} ${ill} % · levée (${compass(mp.az)} ${mp.alt.toFixed(0)}°) — ${mp.illum > 0.5 ? 'ciel lumineux' : 'ciel peu gêné'}`;
+  return `${moonEmoji(mp.elong)} ${ill} % · sous l'horizon — ciel sombre`;
+}
 
 // ====================================================================
 //  DATA — monthly events [day, GMT, title, explanation, constellation]
@@ -529,15 +613,12 @@ const data = {
   ["30","18:59","DERNIER QUARTIER","Moitié de la face visible de la Lune éclairée.","Vierge"], SAT ]}
 };
 
-// Constellation of lunar phase events is recomputed from the Sun's longitude
 function evConstel(mi, e) {
   const m = e[2].match(/NOUVELLE LUNE|PLEINE LUNE|PREMIER QUARTIER|DERNIER QUARTIER/);
   if (!m) return e[4];
   const ty = { 'NOUVELLE LUNE':0, 'PREMIER QUARTIER':1, 'PLEINE LUNE':2, 'DERNIER QUARTIER':3 }[m[0]];
-  const ms = gmtMs(mi, e[0], e[1]);
-  return eclConstel(norm(sunLon(ms) + ty * 90));
+  return eclConstel(norm(sunLon(gmtMs(mi, e[0], e[1])) + ty * 90));
 }
-// Max altitude badge for Moon-star events (depends on location latitude)
 const starDec = { "Antarès":-26.4, "Spica":-11.2, "Regulus":12.0, "Pollux":28.0, "Pléiades":24.1 };
 function altBadge(title) {
   for (const k in starDec) {
@@ -551,62 +632,61 @@ function altBadge(title) {
 }
 
 // ====================================================================
-//  STARS / GALAXIES / MANAZIL / SEASONS  (with declination for visibility)
+//  STARS / GALAXIES / MANAZIL / SEASONS
 // ====================================================================
-// [rank, name, mag, constellation, url, arabic, translit, dec]
+// [rank, name, mag, constellation, url, arabic, translit, dec, RA(h)]
 const topStars = [
-["1","Sirius","-1,46","Grand Chien","https://fr.wikipedia.org/wiki/Sirius","الشِّعرى اليَمانِيّة","Ash-Shi'ra Al-Yamaniyya",-16.7],
-["2","Canopus","-0,74","Carène","https://fr.wikipedia.org/wiki/Canopus","سُهَيل","Suhail",-52.7],
-["3","Alpha du Centaure","-0,27","Centaure","https://fr.wikipedia.org/wiki/Alpha_du_Centaure","رِجل القِنطور","Rijl Al-Qintur",-60.8],
-["4","Arcturus","-0,05","Bouvier","https://fr.wikipedia.org/wiki/Arcturus","السِّماك الرَّامِح","As-Simak Ar-Ramih",19.2],
-["5","Véga","0,03","Lyre","https://fr.wikipedia.org/wiki/Véga_(étoile)","النَّسر الواقع","An-Nasr Al-Waqi'",38.8],
-["6","Capella","0,08","Cocher","https://fr.wikipedia.org/wiki/Capella","العَيُّوق","Al-'Ayyuq",46.0],
-["7","Rigel","0,13","Orion","https://fr.wikipedia.org/wiki/Rigel","رِجل الجَوزاء","Rijl Al-Jawza",-8.2],
-["8","Procyon","0,34","Petit Chien","https://fr.wikipedia.org/wiki/Procyon","الشِّعرى الشَّامِيَّة","Ash-Shi'ra Ash-Shamiyya",5.2],
-["9","Bételgeuse","0,42","Orion","https://fr.wikipedia.org/wiki/Bételgeuse","يَد الجَوزاء","Yad Al-Jawza",7.4],
-["10","Achernar","0,46","Éridan","https://fr.wikipedia.org/wiki/Achernar","آخِر النَّهر","Akhir An-Nahr",-57.2],
-["11","Hadar (Agena)","0,61","Centaure","https://fr.wikipedia.org/wiki/Beta_Centauri","حَضار","Hadar",-60.4],
-["12","Altaïr","0,76","Aigle","https://fr.wikipedia.org/wiki/Altaïr","النَّسر الطَّائر","An-Nasr At-Ta'ir",8.9],
-["13","Acrux","0,77","Croix du Sud","https://fr.wikipedia.org/wiki/Acrux","أكروكس","Acrux",-63.1],
-["14","Aldébaran","0,85","Taureau","https://fr.wikipedia.org/wiki/Aldébaran","الدَّبَران","Ad-Dabaran",16.5],
-["15","Spica","0,98","Vierge","https://fr.wikipedia.org/wiki/Spica","السُّنبُلة","As-Sunbula",-11.2],
-["16","Antarès","1,06","Scorpion","https://fr.wikipedia.org/wiki/Antar%C3%A8s","قلب العقرب","Qalb Al-Aqrab",-26.4],
-["17","Pollux","1,14","Gémeaux","https://fr.wikipedia.org/wiki/Pollux_(%C3%A9toile)","الرأس المُؤَخَّر","Ar-Ras Al-Muakhkhar",28.0],
-["18","Fomalhaut","1,16","Poisson austral","https://fr.wikipedia.org/wiki/Fomalhaut","فَم الحوت","Fam Al-Hut",-29.6],
-["19","Deneb","1,25","Cygne","https://fr.wikipedia.org/wiki/Deneb","ذَنَب الدَّجاجة","Dhanab Ad-Dajaja",45.3],
-["20","Mimosa (Becrux)","1,25","Croix du Sud","https://fr.wikipedia.org/wiki/Beta_Crucis","الميموزا","Al-Mimuza",-59.7],
-["21","Régulus","1,35","Lion","https://fr.wikipedia.org/wiki/R%C3%A9gulus_(%C3%A9toile)","قلب الأسد","Qalb Al-Asad",12.0],
-["22","Adhara","1,50","Grand Chien","https://fr.wikipedia.org/wiki/Adhara","العَذارى","Al-'Adhara",-29.0],
-["23","Castor","1,57","Gémeaux","https://fr.wikipedia.org/wiki/Castor_(%C3%A9toile)","الرأس المُقَدَّم","Ar-Ras Al-Muqaddam",31.9],
-["24","Shaula","1,62","Scorpion","https://fr.wikipedia.org/wiki/Shaula","الشَّولاء","Ash-Shawla",-37.1],
-["25","Gacrux","1,63","Croix du Sud","https://fr.wikipedia.org/wiki/Gamma_Crucis","جاكروكس","Gacrux",-57.1],
-["26","Bellatrix","1,64","Orion","https://fr.wikipedia.org/wiki/Bellatrix","بيلاتريكس","Bellatrix",6.3],
-["27","Elnath","1,65","Taureau","https://fr.wikipedia.org/wiki/Elnath","النَّطْح","An-Natih",28.6],
-["28","Miaplacidus","1,67","Carène","https://fr.wikipedia.org/wiki/Miaplacidus","مِياه هادئة","Miya Hadi'a",-69.7],
-["29","Alnilam","1,69","Orion","https://fr.wikipedia.org/wiki/Alnilam","النِّظام","An-Nizam",-1.2],
-["30","Alnair","1,73","Grue","https://fr.wikipedia.org/wiki/Alnair","النَّير","An-Nayyir",-47.0],
-["31","Regor","1,75","Voiles","https://fr.wikipedia.org/wiki/Gamma_Velorum","ريغور","Regor",-47.3],
-["32","Alioth","1,76","Grande Ourse","https://fr.wikipedia.org/wiki/Alioth","أَلْيَة","Alya",56.0],
-["33","Alnitak","1,79","Orion","https://fr.wikipedia.org/wiki/Alnitak","النِّطاق","An-Nitaq",-1.9],
-["34","Kaus Australis","1,79","Sagittaire","https://fr.wikipedia.org/wiki/Kaus_Australis","قوس الجنوبي","Qaws Al-Janubi",-34.4],
-["35","Mirfak","1,79","Persée","https://fr.wikipedia.org/wiki/Mirfak","مِرفَق الثُّرَيّا","Mirfaq Ath-Thurayya",49.9],
-["36","Dubhe","1,79","Grande Ourse","https://fr.wikipedia.org/wiki/Dubhe","ظَهر الدُّب","Zahr Ad-Dubb",61.8],
-["37","Wezen","1,83","Grand Chien","https://fr.wikipedia.org/wiki/Wezen","الوَزْن","Al-Wazn",-26.4],
-["38","Alkaid","1,85","Grande Ourse","https://fr.wikipedia.org/wiki/Alkaid","قائد بَنات نَعش","Qa'id Banat Na'sh",49.3],
-["39","Sargas","1,86","Scorpion","https://fr.wikipedia.org/wiki/Sargas","سرجس","Sargas",-43.0],
-["40","Avior","1,86","Carène","https://fr.wikipedia.org/wiki/Avior","أفيور","Avior",-59.5],
-["41","Menkalinan","1,90","Cocher","https://fr.wikipedia.org/wiki/Menkalinan","مَنكِب ذي العِنان","Mankib Dhi Al-'Inan",44.9],
-["42","Atria","1,91","Triangle austral","https://fr.wikipedia.org/wiki/Atria","أتريا","Atria",-69.0],
-["43","Alhena","1,93","Gémeaux","https://fr.wikipedia.org/wiki/Alhena","الهَنعَة","Al-Han'ah",16.4],
-["44","Peacock","1,94","Paon","https://fr.wikipedia.org/wiki/Peacock_(%C3%A9toile)","الطَّاووس","At-Tawus",-56.7],
-["45","Polaris","1,98","Petite Ourse","https://fr.wikipedia.org/wiki/%C3%89toile_polaire","الجَدي (نجم الشمال)","Al-Jady (Najm Ash-Shamal)",89.3],
-["46","Mirzam","1,98","Grand Chien","https://fr.wikipedia.org/wiki/Mirzam","المِرزَم","Al-Mirzam",-18.0],
-["47","Alphard","1,99","Hydre","https://fr.wikipedia.org/wiki/Alphard_(%C3%A9toile)","الفَرد","Al-Fard",-8.7],
-["48","Algieba","2,01","Lion","https://fr.wikipedia.org/wiki/Algieba","الجَبْهة","Al-Jabha",19.8],
-["49","Hamal","2,01","Bélier","https://fr.wikipedia.org/wiki/Hamal","الحَمَل","Al-Hamal",23.5],
-["50","Diphda","2,04","Baleine","https://fr.wikipedia.org/wiki/Diphda","الضِّفدَع","Ad-Difda'",-18.0]
+["1","Sirius","-1,46","Grand Chien","https://fr.wikipedia.org/wiki/Sirius","الشِّعرى اليَمانِيّة","Ash-Shi'ra Al-Yamaniyya",-16.7,6.752],
+["2","Canopus","-0,74","Carène","https://fr.wikipedia.org/wiki/Canopus","سُهَيل","Suhail",-52.7,6.399],
+["3","Alpha du Centaure","-0,27","Centaure","https://fr.wikipedia.org/wiki/Alpha_du_Centaure","رِجل القِنطور","Rijl Al-Qintur",-60.8,14.660],
+["4","Arcturus","-0,05","Bouvier","https://fr.wikipedia.org/wiki/Arcturus","السِّماك الرَّامِح","As-Simak Ar-Ramih",19.2,14.261],
+["5","Véga","0,03","Lyre","https://fr.wikipedia.org/wiki/Véga_(étoile)","النَّسر الواقع","An-Nasr Al-Waqi'",38.8,18.616],
+["6","Capella","0,08","Cocher","https://fr.wikipedia.org/wiki/Capella","العَيُّوق","Al-'Ayyuq",46.0,5.278],
+["7","Rigel","0,13","Orion","https://fr.wikipedia.org/wiki/Rigel","رِجل الجَوزاء","Rijl Al-Jawza",-8.2,5.242],
+["8","Procyon","0,34","Petit Chien","https://fr.wikipedia.org/wiki/Procyon","الشِّعرى الشَّامِيَّة","Ash-Shi'ra Ash-Shamiyya",5.2,7.655],
+["9","Bételgeuse","0,42","Orion","https://fr.wikipedia.org/wiki/Bételgeuse","يَد الجَوزاء","Yad Al-Jawza",7.4,5.919],
+["10","Achernar","0,46","Éridan","https://fr.wikipedia.org/wiki/Achernar","آخِر النَّهر","Akhir An-Nahr",-57.2,1.629],
+["11","Hadar (Agena)","0,61","Centaure","https://fr.wikipedia.org/wiki/Beta_Centauri","حَضار","Hadar",-60.4,14.064],
+["12","Altaïr","0,76","Aigle","https://fr.wikipedia.org/wiki/Altaïr","النَّسر الطَّائر","An-Nasr At-Ta'ir",8.9,19.846],
+["13","Acrux","0,77","Croix du Sud","https://fr.wikipedia.org/wiki/Acrux","أكروكس","Acrux",-63.1,12.443],
+["14","Aldébaran","0,85","Taureau","https://fr.wikipedia.org/wiki/Aldébaran","الدَّبَران","Ad-Dabaran",16.5,4.599],
+["15","Spica","0,98","Vierge","https://fr.wikipedia.org/wiki/Spica","السُّنبُلة","As-Sunbula",-11.2,13.420],
+["16","Antarès","1,06","Scorpion","https://fr.wikipedia.org/wiki/Antar%C3%A8s","قلب العقرب","Qalb Al-Aqrab",-26.4,16.490],
+["17","Pollux","1,14","Gémeaux","https://fr.wikipedia.org/wiki/Pollux_(%C3%A9toile)","الرأس المُؤَخَّر","Ar-Ras Al-Muakhkhar",28.0,7.755],
+["18","Fomalhaut","1,16","Poisson austral","https://fr.wikipedia.org/wiki/Fomalhaut","فَم الحوت","Fam Al-Hut",-29.6,22.961],
+["19","Deneb","1,25","Cygne","https://fr.wikipedia.org/wiki/Deneb","ذَنَب الدَّجاجة","Dhanab Ad-Dajaja",45.3,20.690],
+["20","Mimosa (Becrux)","1,25","Croix du Sud","https://fr.wikipedia.org/wiki/Beta_Crucis","الميموزا","Al-Mimuza",-59.7,12.795],
+["21","Régulus","1,35","Lion","https://fr.wikipedia.org/wiki/R%C3%A9gulus_(%C3%A9toile)","قلب الأسد","Qalb Al-Asad",12.0,10.139],
+["22","Adhara","1,50","Grand Chien","https://fr.wikipedia.org/wiki/Adhara","العَذارى","Al-'Adhara",-29.0,6.977],
+["23","Castor","1,57","Gémeaux","https://fr.wikipedia.org/wiki/Castor_(%C3%A9toile)","الرأس المُقَدَّم","Ar-Ras Al-Muqaddam",31.9,7.577],
+["24","Shaula","1,62","Scorpion","https://fr.wikipedia.org/wiki/Shaula","الشَّولاء","Ash-Shawla",-37.1,17.560],
+["25","Gacrux","1,63","Croix du Sud","https://fr.wikipedia.org/wiki/Gamma_Crucis","جاكروكس","Gacrux",-57.1,12.519],
+["26","Bellatrix","1,64","Orion","https://fr.wikipedia.org/wiki/Bellatrix","بيلاتريكس","Bellatrix",6.3,5.419],
+["27","Elnath","1,65","Taureau","https://fr.wikipedia.org/wiki/Elnath","النَّطْح","An-Natih",28.6,5.438],
+["28","Miaplacidus","1,67","Carène","https://fr.wikipedia.org/wiki/Miaplacidus","مِياه هادئة","Miya Hadi'a",-69.7,9.220],
+["29","Alnilam","1,69","Orion","https://fr.wikipedia.org/wiki/Alnilam","النِّظام","An-Nizam",-1.2,5.603],
+["30","Alnair","1,73","Grue","https://fr.wikipedia.org/wiki/Alnair","النَّير","An-Nayyir",-47.0,22.137],
+["31","Regor","1,75","Voiles","https://fr.wikipedia.org/wiki/Gamma_Velorum","ريغور","Regor",-47.3,8.159],
+["32","Alioth","1,76","Grande Ourse","https://fr.wikipedia.org/wiki/Alioth","أَلْيَة","Alya",56.0,12.900],
+["33","Alnitak","1,79","Orion","https://fr.wikipedia.org/wiki/Alnitak","النِّطاق","An-Nitaq",-1.9,5.679],
+["34","Kaus Australis","1,79","Sagittaire","https://fr.wikipedia.org/wiki/Kaus_Australis","قوس الجنوبي","Qaws Al-Janubi",-34.4,18.403],
+["35","Mirfak","1,79","Persée","https://fr.wikipedia.org/wiki/Mirfak","مِرفَق الثُّرَيّا","Mirfaq Ath-Thurayya",49.9,3.405],
+["36","Dubhe","1,79","Grande Ourse","https://fr.wikipedia.org/wiki/Dubhe","ظَهر الدُّب","Zahr Ad-Dubb",61.8,11.062],
+["37","Wezen","1,83","Grand Chien","https://fr.wikipedia.org/wiki/Wezen","الوَزْن","Al-Wazn",-26.4,7.140],
+["38","Alkaid","1,85","Grande Ourse","https://fr.wikipedia.org/wiki/Alkaid","قائد بَنات نَعش","Qa'id Banat Na'sh",49.3,13.792],
+["39","Sargas","1,86","Scorpion","https://fr.wikipedia.org/wiki/Sargas","سرجس","Sargas",-43.0,17.622],
+["40","Avior","1,86","Carène","https://fr.wikipedia.org/wiki/Avior","أفيور","Avior",-59.5,8.375],
+["41","Menkalinan","1,90","Cocher","https://fr.wikipedia.org/wiki/Menkalinan","مَنكِب ذي العِنان","Mankib Dhi Al-'Inan",44.9,5.992],
+["42","Atria","1,91","Triangle austral","https://fr.wikipedia.org/wiki/Atria","أتريا","Atria",-69.0,16.811],
+["43","Alhena","1,93","Gémeaux","https://fr.wikipedia.org/wiki/Alhena","الهَنعَة","Al-Han'ah",16.4,6.629],
+["44","Peacock","1,94","Paon","https://fr.wikipedia.org/wiki/Peacock_(%C3%A9toile)","الطَّاووس","At-Tawus",-56.7,20.427],
+["45","Polaris","1,98","Petite Ourse","https://fr.wikipedia.org/wiki/%C3%89toile_polaire","الجَدي (نجم الشمال)","Al-Jady (Najm Ash-Shamal)",89.3,2.530],
+["46","Mirzam","1,98","Grand Chien","https://fr.wikipedia.org/wiki/Mirzam","المِرزَم","Al-Mirzam",-18.0,6.378],
+["47","Alphard","1,99","Hydre","https://fr.wikipedia.org/wiki/Alphard_(%C3%A9toile)","الفَرد","Al-Fard",-8.7,9.460],
+["48","Algieba","2,01","Lion","https://fr.wikipedia.org/wiki/Algieba","الجَبْهة","Al-Jabha",19.8,10.333],
+["49","Hamal","2,01","Bélier","https://fr.wikipedia.org/wiki/Hamal","الحَمَل","Al-Hamal",23.5,2.120],
+["50","Diphda","2,04","Baleine","https://fr.wikipedia.org/wiki/Diphda","الضِّفدَع","Ad-Difda'",-18.0,0.727]
 ];
-// [rank, name, mag, constellation, conditions, url, arabic, dec]
 const topGalaxies = [
 ["1","Grand Nuage de Magellan (LMC)","0,9","Dorade / Table","Œil nu, hémisphère sud","https://fr.wikipedia.org/wiki/Grand_Nuage_de_Magellan","سحابة ماجلان الكبرى",-69.8],
 ["2","Petit Nuage de Magellan (SMC)","2,7","Toucan","Œil nu, hémisphère sud","https://fr.wikipedia.org/wiki/Petit_Nuage_de_Magellan","سحابة ماجلان الصغرى",-72.8],
@@ -671,8 +751,6 @@ const seasonConstellations = {
   "Été": ["Scorpion","Sagittaire","Lyre","Aigle","Cygne"],
   "Automne": ["Pégase","Andromède","Cassiopée","Persée","Poissons","Bélier","Verseau","Baleine"]
 };
-
-// Best sky-gazing spots (indicative — always check light pollution map & access rules)
 const SPOTS = {
   Paris: [
     { n:"Buttes de Paris (Montmartre, Buttes-Chaumont, Belleville, Bergeyre)", d:"0–5 km", p:"Très élevée", q:"Butte Montmartre Paris", note:"Points hauts à vue dégagée. Lune, planètes, étoiles brillantes et grosses pluies de météores seulement." },
@@ -681,7 +759,7 @@ const SPOTS = {
     { n:"Uranoscope de l'Île-de-France", d:"≈ 35 km", p:"Modérée", q:"Uranoscope de l'Ile-de-France", note:"Centre d'astronomie à ~35 km de Paris, animations et soirées d'observation." },
     { n:"Plateau de Limours (Essonne)", d:"≈ 35 km", p:"Modérée", q:"Plateau de Limours", note:"Horizon dégagé, cité pour les pluies d'étoiles filantes." },
     { n:"Haute Vallée de Chevreuse (PNR)", d:"< 1 h", p:"Modérée à faible", q:"Parc naturel régional de la Haute Vallée de Chevreuse", note:"Clairières et plateaux dégagés, lieu de rendez-vous d'associations d'astronomie. Enfoncez-vous dans la forêt pour plus de noir." },
-    { n:"Forêt de Rambouillet (vers Adainville)", d:"≈ 50 km", p:"Modérée à faible", q:"Adainville", note:"Au sud de Paris : la pollution de la capitale reste derrière vous si vous regardez vers le sud. Le ciel y est décrit comme excellent vers Adainville." },
+    { n:"Forêt de Rambouillet (vers Adainville)", d:"≈ 50 km", p:"Modérée à faible", q:"Adainville", note:"Au sud de Paris : la pollution de la capitale reste derrière vous si vous regardez vers le sud. Ciel décrit comme excellent vers Adainville." },
     { n:"Forêt de Fontainebleau", d:"≈ 60 km", p:"Modérée à faible", q:"Forêt de Fontainebleau", note:"Accessible en train, nombreuses clairières. Bivouac réglementé." },
     { n:"PNR du Vexin français", d:"≈ 50 km", p:"Modérée", q:"Parc naturel régional du Vexin français", note:"Champs ouverts au nord-ouest de Paris." },
     { n:"Perche (PNR du Perche)", d:"≈ 110 km", p:"Faible", q:"Parc naturel régional du Perche", note:"Réputé pour le meilleur rapport pollution lumineuse / distance depuis Paris (moins de 2 h)." },
@@ -689,7 +767,7 @@ const SPOTS = {
   ],
   Bizerte: [
     { n:"Fort d'Espagne & Kasbah (vue panoramique)", d:"En ville", p:"Élevée", q:"Fort d'Espagne Bizerte", note:"Belle vue sur le canal et la mer, mais lumières urbaines : Lune, planètes, étoiles brillantes." },
-    { n:"Plage Rimel / côte nord", d:"≈ 5–10 km", p:"Modérée", q:"Plage Rimel Bizerte", note:"Horizon maritime dégagé au nord. Cité parmi les plages calmes — pollution à vérifier sur la carte." },
+    { n:"Plage Rimel / côte nord", d:"≈ 5–10 km", p:"Modérée", q:"Plage Rimel Bizerte", note:"Horizon maritime dégagé au nord. Pollution à vérifier sur la carte." },
     { n:"Cap Angela (Ras Angela / Ras ben Sakka)", d:"≈ 30 min en voiture", p:"Faible (à vérifier)", q:"Cap Angela Bizerte", note:"Point le plus au nord de l'Afrique : horizon nord sur la mer, pas de grande ville au nord. Prévoir transport (pas de transport public jusqu'au site)." },
     { n:"Plages de Ras Engela", d:"≈ 30 min en voiture", p:"Faible (à vérifier)", q:"Ras Angela plage", note:"Côte isolée, horizon dégagé. Vérifiez l'accès et la sécurité de nuit." },
     { n:"Parc national d'Ichkeul (lac)", d:"≈ 25–30 km", p:"Faible (à vérifier)", q:"Parc national d'Ichkeul", note:"Zone protégée UNESCO, loin des grandes villes. Renseignez-vous sur l'accès de nuit et les autorisations." },
@@ -702,21 +780,37 @@ const SPOTS = {
 //  STATE
 // ====================================================================
 const today = new Date();
-let selectedMonth = today.getMonth();
+function computeDefaultMonth() {
+  const mi = today.getMonth();
+  const remaining = data[MONTHS[mi]].events.some(e => e[0] !== '—' && parseInt(e[0], 10) >= today.getDate());
+  return remaining ? mi : (mi + 1) % 12;
+}
+let selectedMonth = computeDefaultMonth();
 let currentView = 'calendar';
 let readyDirty = true;
 let uid = 0;
-
 function toggleDetail(id) { $(id).classList.toggle('open'); }
 
 // ====================================================================
-//  LOCATION SWITCH
+//  LOCATION SWITCH + SETTINGS
 // ====================================================================
 function setLocationButtons() {
   $('locBizerte').className = 'px-2 py-0.5 rounded text-[10px] font-bold ' + (currentLocation === 'Bizerte' ? 'bg-sky text-night' : 'bg-panel2 text-gray-400');
   $('locParis').className = 'px-2 py-0.5 rounded text-[10px] font-bold ' + (currentLocation === 'Paris' ? 'bg-sky text-night' : 'bg-panel2 text-gray-400');
   $('defaultLocSelect').value = loadDefaultLoc();
 }
+function fillAngleInputs() {
+  const p = getAngles('Paris'), b = getAngles('Bizerte');
+  $('angParF').value = p.fajr; $('angParI').value = p.isha; $('angBizF').value = b.fajr; $('angBizI').value = b.isha;
+}
+function onAngleChange(loc, fId, iId) {
+  const f = parseFloat($(fId).value), i = parseFloat($(iId).value);
+  if (isFinite(f) && isFinite(i) && f >= 6 && f <= 20 && i >= 6 && i <= 20) { saveAngles(loc, f, i); renderCalendar(); }
+}
+['angParF','angParI'].forEach(id => $(id).onchange = () => onAngleChange('Paris', 'angParF', 'angParI'));
+['angBizF','angBizI'].forEach(id => $(id).onchange = () => onAngleChange('Bizerte', 'angBizF', 'angBizI'));
+$('angReset').onclick = () => { resetAngles(); fillAngleInputs(); renderCalendar(); };
+
 function changeLocation(loc) {
   currentLocation = loc; setLocationButtons(); updateClock();
   renderCalendar(); renderNav(); readyDirty = true;
@@ -727,8 +821,121 @@ $('locParis').onclick = () => changeLocation('Paris');
 $('defaultLocSelect').onchange = e => { saveDefaultLoc(e.target.value); changeLocation(e.target.value); };
 
 // ====================================================================
-//  CALENDAR VIEW (current month + selector)
+//  CALENDAR : OVERVIEW + EVENTS
 // ====================================================================
+function refDayFor(mi) { return mi === today.getMonth() ? today.getDate() : 15; }
+
+function moonGridHtml(mi, L) {
+  const dim = new Date(Date.UTC(2026, mi + 1, 0)).getUTCDate();
+  const startDow = (new Date(Date.UTC(2026, mi, 1)).getUTCDay() + 6) % 7;
+  const head = ['LUN','MAR','MER','JEU','VEN','SAM','DIM'].map(d => `<div class="text-center text-[9px] font-bold ${d === 'VEN' || d === 'SAM' ? 'text-green' : 'text-gray-500'}">${d}</div>`).join('');
+  const cells = []; const dark = [];
+  for (let i = 0; i < startDow; i++) cells.push('<div></div>');
+  for (let d = 1; d <= dim; d++) {
+    const dayMs = Date.UTC(2026, mi, d);
+    const off = tzOffset(L.tz, new Date(dayMs + 12 * 3600000));
+    const t = dayMs - off * 60000 + 22 * 3600000;
+    const e = elongAt(t), ill = (1 - Math.cos(e * R)) / 2;
+    const dow = new Date(dayMs).getUTCDay(), wkd = (dow === 5 || dow === 6);
+    const isToday = (mi === today.getMonth() && d === today.getDate());
+    if (ill < 0.25) dark.push(d);
+    cells.push(`<div class="relative rounded border ${wkd ? 'border-green-700/60 bg-green-900/20' : 'border-border bg-panel2/60'} py-1 text-center">
+      ${isToday ? '<span class="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-red-500 dot-pulse"></span>' : ''}
+      <div class="text-[10px] text-gray-400">${d}</div><div class="text-base leading-none">${moonEmoji(e)}</div><div class="text-[9px] text-gray-500">${(ill * 100).toFixed(0)}%</div></div>`);
+  }
+  // contiguous dark ranges
+  const ranges = []; let s = null, prev = null;
+  dark.forEach(d => { if (s === null) { s = d; prev = d; } else if (d === prev + 1) prev = d; else { ranges.push([s, prev]); s = d; prev = d; } });
+  if (s !== null) ranges.push([s, prev]);
+  const darkTxt = ranges.length ? ranges.map(r => r[0] === r[1] ? `${r[0]}` : `${r[0]}–${r[1]}`).join(', ') : '—';
+  return { html: `<div class="grid grid-cols-7 gap-1 mb-1">${head}</div><div class="grid grid-cols-7 gap-1">${cells.join('')}</div>`, darkTxt, darkCount: dark.length };
+}
+
+function eventsInWindows(mi, L) {
+  const evs = data[MONTHS[mi]].events.filter(e => e[0] !== '—').map(e => ({ ms: gmtMs(mi, e[0], e[1]), title: e[2] }));
+  const dim = new Date(Date.UTC(2026, mi + 1, 0)).getUTCDate();
+  const eve = [], morn = [], seen = new Set();
+  for (let d = 0; d <= dim + 1; d++) {
+    const w = nightWindows(2026, mi, d, L);
+    evs.forEach(ev => {
+      const key = ev.ms + ev.title;
+      if (ev.ms >= w.eve[0] && ev.ms <= w.eve[1] && !seen.has('e' + key)) { seen.add('e' + key); eve.push(ev); }
+      if (ev.ms >= w.morn[0] && ev.ms <= w.morn[1] && !seen.has('m' + key)) { seen.add('m' + key); morn.push(ev); }
+    });
+  }
+  eve.sort((a, b) => a.ms - b.ms); morn.sort((a, b) => a.ms - b.ms);
+  return { eve, morn };
+}
+
+function buildOverview(mi, L) {
+  const month = MONTHS[mi], T = ms => fmtTime(ms, L.tz);
+  const dim = new Date(Date.UTC(2026, mi + 1, 0)).getUTCDate();
+  const refD = refDayFor(mi), ang = getAngles(currentLocation);
+  const w = nightWindows(2026, mi, refD, L), wF = nightWindows(2026, mi, 1, L), wL = nightWindows(2026, mi, dim, L);
+  const eveMid = (w.eve[0] + w.eve[1]) / 2, mornMid = (w.morn[0] + w.morn[1]) / 2;
+  const sEve = skySnapshot(eveMid, L), sMorn = skySnapshot(mornMid, L);
+  const refLabel = new Date(Date.UTC(2026, mi, refD)).toLocaleDateString('fr-FR', { weekday:'short', day:'2-digit', month:'short', timeZone:'UTC' });
+  const win = (a, b) => `${T(a)} → ${T(b)}${localDayKey(a, L.tz) !== localDayKey(b, L.tz) ? ' <span class="text-gray-500 text-[10px]">(+1 j)</span>' : ''}`;
+
+  // phases of the month
+  const names = ['🌑 Nouvelle Lune','🌓 Premier quartier','🌕 Pleine Lune','🌗 Dernier quartier'];
+  const phaseItems = [];
+  PHASES_RAW.forEach(([ty, iso]) => {
+    const ms = Date.parse(iso + ':00Z'), p = localParts(ms, L.tz);
+    if (+p.year === 2026 && +p.month - 1 === mi) {
+      const cst = eclConstel(norm(sunLon(ms) + ty * 90));
+      phaseItems.push(`<div class="flex justify-between gap-2 text-xs border-b border-border/50 py-1"><span>${names[ty]}</span><span class="text-gold whitespace-nowrap">${p.day}/${p.month} ${T(ms)}</span><span class="text-right">${constelLink(cst, false)}</span></div>`);
+    }
+  });
+  const grid = moonGridHtml(mi, L);
+
+  // direction block
+  const bk = bestDir(sEve), maxN = Math.max(...sEve.sectors.map(s => s.n), 1);
+  const bestStars = sEve.sectors[bk].list.slice().sort((a, b) => a.mag - b.mag).slice(0, 5).map(x => x.name).join(', ') || '—';
+  const bars = sEve.sectors.map((s, k) => `<div class="flex items-center gap-1 text-[10px]"><span class="w-16 text-gray-400">${DIR_LONG[k]}</span>
+    <div class="flex-1 h-1.5 bg-panel2 rounded"><div class="h-full rounded ${k === bk ? 'bg-gold' : 'bg-sky/50'}" style="width:${s.n / maxN * 100}%"></div></div>
+    <span class="w-4 text-right ${k === bk ? 'text-gold font-bold' : 'text-gray-500'}">${s.n}</span></div>`).join('');
+  const gcTxt = sEve.gc.alt > 0 ? `centre de la Voie lactée à <b>${sEve.gc.alt.toFixed(0)}°</b> (${DIR_LONG[Math.round(sEve.gc.az / 45) % 8]})${sEve.gc.alt < 15 ? ' — très bas, ciel très sombre requis' : ''}` : 'centre de la Voie lactée sous l\'horizon à cette heure';
+
+  // night cards
+  const ev = eventsInWindows(mi, L);
+  const dayFmt = ms => new Date(ms).toLocaleDateString('fr-FR', { day:'2-digit', month:'short', timeZone: L.tz });
+  const evHtml = list => list.length ? list.map(e => `<div class="text-[11px] py-0.5"><span class="text-sky">${dayFmt(e.ms)}</span> <span class="text-gold">${T(e.ms)}</span> · ${linkify(e.title)}${altBadge(e.title)}</div>`).join('') : '<div class="text-[11px] text-gray-500">Aucun événement dans cette fenêtre ce mois-ci.</div>';
+  const card = (title, subtitle, winTxt, firstTxt, lastTxt, snap, list) => {
+    const k = bestDir(snap), top = snap.sectors[k].list.slice().sort((a, b) => a.mag - b.mag).slice(0, 4).map(x => x.name).join(', ') || '—';
+    return `<div class="bg-panel border border-border rounded-lg p-3">
+      <div class="text-gold font-bold text-sm">${title}</div>
+      <div class="text-[10px] text-gray-500 mb-2">${subtitle}</div>
+      <div class="text-xs mb-1">📅 ${refLabel} : <b class="text-gold">${winTxt}</b></div>
+      <div class="text-[10px] text-gray-500 mb-2">1ᵉʳ : ${firstTxt} · ${dim} : ${lastTxt}</div>
+      <div class="text-xs mb-1">🌙 ${moonStatus(snap.moon)}</div>
+      <div class="text-xs mb-2">🧭 Meilleure direction : <b class="text-gold">${DIR_LONG[k]}</b> (${snap.sectors[k].n} étoiles brillantes : ${top})</div>
+      <div class="text-sky text-[11px] font-bold mb-1">Événements du mois dans cette fenêtre</div>${evHtml(list)}</div>`;
+  };
+  const cardEve = card('🌆 Soirée', 'Maghrib + 30 min → Icha + 2 h', win(w.eve[0], w.eve[1]), win(wF.eve[0], wF.eve[1]), win(wL.eve[0], wL.eve[1]), sEve, ev.eve);
+  const cardMorn = card('🌅 Avant l\'aube', 'Fajr − 1 h → Fajr + 1 h', win(w.morn[0], w.morn[1]), win(wF.morn[0], wF.morn[1]), win(wL.morn[0], wL.morn[1]), sMorn, ev.morn);
+
+  return `
+    <div class="text-gold font-bold text-sm mb-2">📋 Aperçu général — ${month} 2026</div>
+    <div class="grid gap-3 sm:grid-cols-2 mb-3">
+      <div class="bg-panel border border-border rounded-lg p-3">
+        <div class="text-sky font-bold text-xs mb-2">🌙 Lune du mois (illumination à 22 h)</div>
+        ${grid.html}
+        <div class="text-[11px] text-gray-300 mt-2">🌌 Nuits sombres (Lune &lt; 25 %) : <b class="text-gold">${grid.darkCount} nuit${grid.darkCount > 1 ? 's' : ''}</b> — jours ${grid.darkTxt}</div>
+        <div class="mt-2">${phaseItems.join('') || '<div class="text-xs text-gray-500">—</div>'}</div>
+      </div>
+      <div class="bg-panel border border-border rounded-lg p-3">
+        <div class="text-sky font-bold text-xs mb-2">🧭 Direction la plus riche en étoiles à l'œil nu</div>
+        <div class="text-[10px] text-gray-500 mb-2">${refLabel}, ${T(eveMid)} (milieu de la fenêtre du soir) — étoiles du top 50 à plus de 15° au-dessus de l'horizon</div>
+        <div class="text-sm mb-2"><b class="text-gold">${DIR_LONG[bk]}</b> · ${sEve.sectors[bk].n} étoiles sur ${sEve.total} <span class="text-gray-400 text-xs">(${bestStars})</span></div>
+        <div class="space-y-1 mb-2">${bars}</div>
+        <div class="text-[11px] text-gray-300">🌌 ${gcTxt}.</div>
+      </div>
+    </div>
+    <div class="grid gap-3 sm:grid-cols-2 mb-2">${cardEve}${cardMorn}</div>
+    <div class="text-[10px] text-gray-600 mb-4">🕌 Maghrib = coucher du Soleil (${T(w.p.maghrib)} le ${refLabel}) · Icha ${T(w.p.isha)} · Fajr ${T(w.p.fajr)} — calcul astronomique ${currentLocation} (Fajr ${ang.fajr}° / Icha ${ang.isha}°)${w.p.approx ? ' · approximation (crépuscule non atteint)' : ''}. Réglable dans le footer.</div>`;
+}
+
 function renderCalendar() {
   const mi = selectedMonth, month = MONTHS[mi], evs = data[month].events, L = LOCS[currentLocation];
   $('monthSelect').innerHTML = MONTHS.map((m, i) => `<option value="${i}" ${i === mi ? 'selected' : ''}>${m} 2026 — ${data[m].events.filter(e => e[0] !== '—').length} événements${i === today.getMonth() ? ' • mois actuel' : ''}</option>`).join('');
@@ -777,7 +984,9 @@ function renderCalendar() {
       <tr class="detail-row" id="${id}"><td colspan="6" class="bg-panel2 px-4 py-2">${detail}</td></tr>`;
   }).join('');
 
-  $('monthEvents').innerHTML = `<div class="flex flex-col sm:hidden">${cards}</div>
+  $('monthEvents').innerHTML = buildOverview(mi, L) + `
+    <div class="text-gold font-bold text-sm mb-2">📅 Détail des événements</div>
+    <div class="flex flex-col sm:hidden">${cards}</div>
     <div class="hidden sm:block overflow-x-auto rounded-lg border border-border"><table class="w-full bg-panel text-sm">
       <thead><tr class="bg-panel2 text-gold text-xs"><th class="py-2 px-3 w-8"></th><th class="py-2 px-3 text-left">Date</th>
       <th class="py-2 px-3 text-left">Heure locale (GMT)</th><th class="py-2 px-3 text-left">Événement</th>
@@ -796,35 +1005,35 @@ $('monthEvents').addEventListener('touchend', e => {
 });
 
 // ====================================================================
-//  NAVIGATION VIEW
+//  NAVIGATION (now inside the footer)
 // ====================================================================
 function renderNav() {
   const L = LOCS[currentLocation];
-  $('view-nav').innerHTML = `
-    <div class="bg-panel border border-gold/40 rounded-lg p-3 mb-4">
-      <div class="text-gold font-bold text-sm mb-1">📍 Pour ${L.flag} ${currentLocation} (latitude ≈ ${L.lat.toFixed(1)}° N)</div>
-      <div class="text-gray-300 text-xs">Polaris se trouve à environ <b class="text-gold">${L.lat.toFixed(0)}°</b> au-dessus de l'horizon nord (≈ ${(L.lat / 10).toFixed(1)} poings à bout de bras). Les étoiles situées au sud de la déclinaison <b>${(L.lat - 90).toFixed(0)}°</b> ne se lèvent jamais ici.</div>
+  $('navBox').innerHTML = `
+    <div class="bg-panel border border-gold/40 rounded-lg p-3 mb-3">
+      <div class="text-gold font-bold text-xs mb-1">📍 Pour ${L.flag} ${currentLocation} (latitude ≈ ${L.lat.toFixed(1)}° N)</div>
+      <div class="text-gray-300 text-[11px]">Polaris se trouve à environ <b class="text-gold">${L.lat.toFixed(0)}°</b> au-dessus de l'horizon nord (≈ ${(L.lat / 10).toFixed(1)} poings à bout de bras). Les étoiles de déclinaison inférieure à <b>${(L.lat - 90).toFixed(0)}°</b> ne se lèvent jamais ici.</div>
     </div>
-    <p class="text-gray-400 text-xs mb-4">Techniques classiques d'orientation nocturne issues des manuels de navigation d'urgence (survie, marine, randonnée).</p>
-    <div class="space-y-3 mb-6">
+    <p class="text-gray-400 text-[11px] mb-3">Techniques classiques d'orientation nocturne issues des manuels de navigation d'urgence.</p>
+    <div class="space-y-2 mb-4">
       ${[
-        ['🌟 Trouver le Nord avec la Grande Ourse',"Repérez la Grande Ourse (7 étoiles). Prolongez la ligne formée par les deux étoiles du « bord » du chariot (Dubhe → Merak) d'environ 5 fois leur écart : vous tombez sur Polaris, quasi immobile toute la nuit. Elle indique le Nord vrai à moins de 1° près."],
-        ['📏 Estimer sa latitude avec Polaris',"La hauteur de Polaris au-dessus de l'horizon (en degrés) correspond approximativement à votre latitude. Poing tendu ≈ 10°, main ouverte ≈ 20°."],
-        ['🪄 Bâton et ombre (de jour)',"Plantez un bâton vertical, marquez le bout de son ombre, attendez 15-20 min et marquez à nouveau. La ligne entre les deux marques donne l'axe Est-Ouest (1ʳᵉ marque = Ouest)."],
+        ['🌟 Trouver le Nord avec la Grande Ourse',"Prolongez la ligne formée par les deux étoiles du « bord » du chariot (Dubhe → Merak) d'environ 5 fois leur écart : vous tombez sur Polaris, quasi immobile. Elle indique le Nord vrai à moins de 1° près."],
+        ['📏 Estimer sa latitude avec Polaris',"La hauteur de Polaris (en degrés) ≈ votre latitude. Poing tendu ≈ 10°, main ouverte ≈ 20°."],
+        ['🪄 Bâton et ombre (de jour)',"Plantez un bâton vertical, marquez le bout de son ombre, attendez 15-20 min et marquez à nouveau : la ligne entre les deux marques donne l'axe Est-Ouest (1ʳᵉ marque = Ouest)."],
         ['⌚ Montre analogique comme boussole',"Pointez la petite aiguille vers le Soleil : la bissectrice entre l'aiguille et le « 12h » indique le Sud (hémisphère nord). En heure d'été, utilisez le « 1h »."],
         ['🎯 Orion : Est / Ouest',"La Ceinture d'Orion se lève presque plein Est et se couche presque plein Ouest, quelle que soit la saison."],
-        ['🕐 Estimer l\'heure la nuit',"Les étoiles tournent autour de Polaris à ≈ 15° par heure. Suivre une étoile repère permet d'estimer le temps écoulé."],
-        ['🌙 Croissant de Lune',"La ligne reliant les deux pointes du croissant, prolongée jusqu'à l'horizon, indique approximativement le Sud (hémisphère nord). Peu précis, utile en dépannage."]
-      ].map(t => `<div class="bg-panel border border-border rounded-lg p-3"><div class="text-gold font-bold text-sm mb-1">${t[0]}</div><div class="text-gray-300 text-xs">${t[1]}</div></div>`).join('')}
+        ['🕐 Estimer l\'heure la nuit',"Les étoiles tournent autour de Polaris à ≈ 15° par heure : suivre une étoile repère permet d'estimer le temps écoulé."],
+        ['🌙 Croissant de Lune',"La ligne reliant les deux pointes du croissant, prolongée jusqu'à l'horizon, indique approximativement le Sud (hémisphère nord)."]
+      ].map(t => `<div class="bg-panel border border-border rounded-lg p-2.5"><div class="text-gold font-bold text-xs mb-0.5">${t[0]}</div><div class="text-gray-300 text-[11px]">${t[1]}</div></div>`).join('')}
     </div>
-    <div class="text-sky font-bold text-sm mb-2">📚 Meilleures ressources</div>
+    <div class="text-sky font-bold text-xs mb-2">📚 Meilleures ressources</div>
     <div class="grid gap-2 sm:grid-cols-2">
       ${[
-        ['📘 Emergency Navigation — David Burch','https://www.starpath.com/emergnavbook/','Référence de navigation de secours sans instruments.'],
+        ['📘 Emergency Navigation — David Burch','https://www.starpath.com/emergnavbook/','Navigation de secours sans instruments.'],
         ['📗 US Army Survival Manual FM 21-76','https://archive.org/details/FM21-76','Chapitre navigation et orientation céleste.'],
-        ['🔭 In-The-Sky.org','https://in-the-sky.org','Positions en direct des astres pour s\'entraîner.'],
+        ['🔭 In-The-Sky.org','https://in-the-sky.org','Positions en direct des astres.'],
         ['🪐 Stellarium Web','https://stellarium-web.org','Planétarium interactif gratuit.']
-      ].map(l => `<a href="${l[1]}" target="_blank" rel="noopener" class="bg-panel border border-border rounded-lg p-3 hover:bg-panel2"><div class="text-gold font-bold text-sm">${l[0]}</div><div class="text-gray-400 text-xs">${l[2]}</div></a>`).join('')}
+      ].map(l => `<a href="${l[1]}" target="_blank" rel="noopener" class="bg-panel border border-border rounded-lg p-2.5 hover:bg-panel2"><div class="text-gold font-bold text-xs">${l[0]}</div><div class="text-gray-400 text-[11px]">${l[2]}</div></a>`).join('')}
     </div>`;
 }
 
@@ -832,11 +1041,9 @@ function renderNav() {
 //  READY VIEW
 // ====================================================================
 function sec(title, body, open = false) {
-  return `<details ${open ? 'open' : ''} class="mb-4 bg-panel/40 border border-border rounded-lg">
+  return `<details ${open ? 'open' : ''} class="mb-4 bg-panel/60 border border-border rounded-lg">
     <summary class="px-3 py-2 text-gold font-bold text-sm"><span class="sum-arrow">▸</span> ${title}</summary><div class="p-3 pt-1">${body}</div></details>`;
 }
-
-// ---- weather ----
 const wxCache = {};
 async function fetchWx(loc) {
   if (wxCache[loc] && Date.now() - wxCache[loc].t < 600000) return wxCache[loc].j;
@@ -915,7 +1122,6 @@ async function fillWeather() {
   }
 }
 
-// ---- moon ----
 function buildMoonSection() {
   const L = LOCS[currentLocation];
   const [y, m, d] = nowLocalISO(L.tz).slice(0, 10).split('-').map(Number);
@@ -950,11 +1156,9 @@ function buildMoonSection() {
       manzil <span class="arabic text-gold">${t.mz[0]} ${t.mz[1]}</span>
       · ${t.p.alt > 0 ? `direction <b>${compass(t.p.az)}</b>, hauteur <b>${t.p.alt.toFixed(0)}°</b>` : 'sous l\'horizon à 22h'}</div></div>`;
 
-  // monthly table
   const monthCells = Array.from({ length: 12 }, () => [[], [], [], []]);
   PHASES_RAW.forEach(([ty, iso]) => {
-    const ms = Date.parse(iso + ':00Z');
-    const parts = Object.fromEntries(new Intl.DateTimeFormat('en-CA', { timeZone:L.tz, year:'numeric', month:'2-digit', day:'2-digit' }).formatToParts(new Date(ms)).map(x => [x.type, x.value]));
+    const ms = Date.parse(iso + ':00Z'), parts = localParts(ms, L.tz);
     if (+parts.year !== 2026) return;
     const cst = eclConstel(norm(sunLon(ms) + ty * 90));
     monthCells[+parts.month - 1][ty].push(`<div class="whitespace-nowrap">${parts.day} <span class="text-gray-500 text-[10px]">${fmtTime(ms, L.tz)}</span> · ${constelLink(cst, false)}</div>`);
@@ -965,8 +1169,8 @@ function buildMoonSection() {
 
   const explain = `<div class="text-xs text-gray-300 space-y-1.5 mb-3">
     <p>🧭 <b class="text-gold">Mouvement vers l'est :</b> parmi les étoiles, la Lune avance d'environ <b>13,2° par jour</b> (≈ 0,55° par heure, soit un diamètre lunaire par heure) et fait le tour du ciel en <b>27,3 jours</b>.</p>
-    <p>☀️ <b class="text-gold">Par rapport au Soleil</b> (qui avance de ≈ 1°/jour) elle gagne ≈ <b>12,2°/jour</b> : d'où le cycle de phases de 29,5 jours.</p>
-    <p>⏱️ <b class="text-gold">Conséquence :</b> la Lune se lève en moyenne <b>≈ 50 min plus tard chaque jour</b> (de ≈ 25-35 min autour de la pleine Lune d'automne à ≈ 70 min selon saison et latitude).</p>
+    <p>☀️ <b class="text-gold">Par rapport au Soleil</b> (≈ 1°/jour) elle gagne ≈ <b>12,2°/jour</b> : d'où le cycle de phases de 29,5 jours.</p>
+    <p>⏱️ <b class="text-gold">Conséquence :</b> la Lune se lève en moyenne <b>≈ 50 min plus tard chaque jour</b> (≈ 25-35 min autour de la pleine Lune d'automne, jusqu'à ≈ 70 min selon saison et latitude).</p>
     <p>📐 <b class="text-gold">Hauteur au méridien</b> = 90° − latitude + déclinaison. La déclinaison lunaire oscille entre ≈ −28° et +28° en 27 jours (cycle de 18,6 ans proche de son maximum en 2025-2026) : à ${currentLocation}, la Lune culmine entre ≈ ${(90 - LOCS[currentLocation].lat - 28).toFixed(0)}° et ≈ ${(90 - LOCS[currentLocation].lat + 28).toFixed(0)}°.</p>
     <p>🌕 <b class="text-gold">Où la trouver chaque mois :</b> la pleine Lune est toujours à l'opposé du Soleil (haute en hiver, basse en été), la nouvelle Lune dans la constellation du Soleil, les quartiers à ≈ 90° de part et d'autre.</p></div>`;
 
@@ -995,7 +1199,6 @@ function buildMoonSection() {
       <tbody>${mrows}</tbody></table></div>`;
 }
 
-// ---- spots ----
 function spotsHtml(loc) {
   return SPOTS[loc].map(s => `<div class="bg-panel border border-border rounded-lg p-2.5 mb-2">
     <div class="flex justify-between gap-2"><div class="text-sm font-bold text-gray-100">${s.n}</div><div class="text-[10px] text-sky whitespace-nowrap">${s.d}</div></div>
@@ -1004,8 +1207,7 @@ function spotsHtml(loc) {
       <a class="wikilink text-sky text-[11px]" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(s.q)}" target="_blank" rel="noopener">📍 Carte</a></div></div>`).join('');
 }
 function buildSpotsSection() {
-  const other = currentLocation === 'Paris' ? 'Bizerte' : 'Paris';
-  const L = LOCS[currentLocation];
+  const other = currentLocation === 'Paris' ? 'Bizerte' : 'Paris', L = LOCS[currentLocation];
   return `<div class="text-[11px] text-gray-500 mb-2">Indicatif : vérifiez toujours la pollution lumineuse (<a class="wikilink text-sky" href="https://www.lightpollutionmap.info/#zoom=9&lat=${L.lat}&lon=${L.lng}" target="_blank" rel="noopener">carte autour de ${currentLocation}</a>), l'accès de nuit, la sécurité et la réglementation locale.</div>
     <div class="text-sky font-bold text-xs mb-2">${LOCS[currentLocation].flag} ${currentLocation}</div>${spotsHtml(currentLocation)}
     <details class="mt-3"><summary class="text-sky font-bold text-xs mb-2"><span class="sum-arrow">▸</span> ${LOCS[other].flag} ${other}</summary><div class="mt-2">${spotsHtml(other)}</div></details>
@@ -1023,7 +1225,9 @@ function buildReadyHtml() {
        ['🪐 Stellarium Web','https://stellarium-web.org','Planétarium interactif']
       ].map(l => `<a href="${l[1]}" target="_blank" rel="noopener" class="bg-panel border border-border rounded-lg p-2.5 hover:bg-panel2"><div class="text-gold font-bold text-xs">${l[0]}</div><div class="text-gray-400 text-[11px]">${l[2]}</div></a>`).join('')}</div>`;
 
-  const tonightMz = manzilIndex(moonAltAz(Date.UTC(...nowLocalISO(L.tz).slice(0, 10).split('-').map((v, i) => i === 1 ? +v - 1 : +v)) - tzOffset(L.tz, new Date()) * 60000 + 22 * 3600000, L.lat, L.lng).lon);
+  const [ty, tm, td] = nowLocalISO(L.tz).slice(0, 10).split('-').map(Number);
+  const t22 = Date.UTC(ty, tm - 1, td) - tzOffset(L.tz, new Date()) * 60000 + 22 * 3600000;
+  const tonightMz = manzilIndex(moonAltAz(t22, L.lat, L.lng).lon);
 
   const starsRows = topStars.map(s => `<tr class="border-b border-border hover:bg-panel2">
     <td class="py-1.5 px-3 text-gray-500">${s[0]}</td><td class="py-1.5 px-3"><a class="wikilink text-sky" href="${s[4]}" target="_blank" rel="noopener">${s[1]}</a></td>
@@ -1038,15 +1242,13 @@ function buildReadyHtml() {
     <td class="py-1.5 px-3 arabic text-gold text-base"><a href="https://ar.wikipedia.org/w/index.php?search=${encodeURIComponent(z[1])}" target="_blank" rel="noopener">${z[1]}</a></td>
     <td class="py-1.5 px-3 text-sky italic text-xs">${z[2]}</td><td class="py-1.5 px-3 text-gray-300">${z[3]}</td>
     <td class="py-1.5 px-3 text-gray-400">${constelLink(z[4], false)}</td></tr>`).join('');
-
-  const seasonBlock = `<div class="flex gap-1.5 mb-3" id="seasonBtns"></div><div id="seasonList" class="grid gap-2 sm:grid-cols-2"></div>`;
   const tbl = (head, body) => `<div class="overflow-x-auto rounded-lg border border-border"><table class="w-full bg-panel text-sm"><thead><tr class="bg-panel2 text-gold text-xs">${head.map(h => `<th class="py-2 px-3 text-left">${h}</th>`).join('')}</tr></thead><tbody>${body}</tbody></table></div>`;
 
   return `${tools}
     ${sec('🌤️ Météo cette nuit & indice de visibilité à l\'œil nu', `<div id="wxBox" class="text-xs text-gray-400">Chargement de la météo…</div>`, true)}
     ${sec('🌙 La Lune : où la trouver, jour après jour', buildMoonSection(), true)}
     ${sec('📍 Meilleurs lieux d\'observation', buildSpotsSection(), false)}
-    ${sec('🍂 Constellations par saison', seasonBlock, false)}
+    ${sec('🍂 Constellations par saison', `<div class="flex gap-1.5 mb-3" id="seasonBtns"></div><div id="seasonList" class="grid gap-2 sm:grid-cols-2"></div>`, false)}
     ${sec('⭐ Top 50 des étoiles les plus brillantes à l\'œil nu', `<div class="text-[11px] text-gray-500 mb-2">Colonne « Visible » calculée pour ${currentLocation} (hauteur maximale au méridien).</div>` + tbl(['#','Étoile','اسم عربي','Magnitude','Constellation',`Visible (${currentLocation})`], starsRows), false)}
     ${sec('🌌 Top 20 des galaxies les plus brillantes à l\'œil nu', tbl(['#','Galaxie','اسم عربي','Magnitude','Constellation','Conditions',`Visible (${currentLocation})`], galRows), false)}
     ${sec('🌙 Manazil al-Qamar — منازل القمر (28 stations lunaires)', `<p class="text-gray-500 text-xs mb-2">Système traditionnel arabe divisant le zodiaque en 28 stations que la Lune traverse en ≈ 27,3 jours. La station de ce soir est surlignée. Liens : nom arabe → Wikipédia arabe · constellation → Wikipédia · <a class="wikilink text-sky" href="https://en.wikipedia.org/wiki/Lunar_mansion" target="_blank" rel="noopener">article « Lunar mansion »</a> · <a class="wikilink text-sky" href="https://fr.wikipedia.org/w/index.php?search=mansions+lunaires+arabes" target="_blank" rel="noopener">recherche FR</a>.</p>` + tbl(['#','اسم عربي','Translittération','Signification','Constellation'], mzRows), false)}
@@ -1055,7 +1257,6 @@ function buildReadyHtml() {
 function renderReady() {
   const v = $('view-ready');
   v.innerHTML = buildReadyHtml();
-  // season filter
   const seasonNow = ['Hiver','Hiver','Printemps','Printemps','Printemps','Été','Été','Été','Automne','Automne','Automne','Hiver'][today.getMonth()];
   let active = seasonNow;
   const btns = v.querySelector('#seasonBtns'), list = v.querySelector('#seasonList');
@@ -1073,7 +1274,7 @@ function renderReady() {
 // ====================================================================
 function showView(name) {
   currentView = name;
-  ['calendar', 'nav', 'ready'].forEach(n => $('view-' + n).classList.toggle('hidden', n !== name));
+  ['calendar', 'ready'].forEach(n => $('view-' + n).classList.toggle('hidden', n !== name));
   document.querySelectorAll('#mainTabs button').forEach(b => {
     b.className = 'px-3 py-1 rounded text-[11px] border ' + (b.dataset.view === name ? 'bg-sky text-night font-bold border-sky' : 'bg-panel text-gray-300 border-border hover:bg-panel2');
   });
@@ -1086,6 +1287,7 @@ document.querySelectorAll('#mainTabs button').forEach(b => b.onclick = () => sho
 //  INIT
 // ====================================================================
 setLocationButtons();
+fillAngleInputs();
 renderCalendar();
 renderNav();
 showView('calendar');
