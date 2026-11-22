@@ -36,7 +36,9 @@
   details > summary::-webkit-details-marker { display: none; }
   details[open] > summary .sum-arrow { transform: rotate(90deg); }
   .sum-arrow { display:inline-block; transition: transform .2s; }
+  .uline { text-decoration: underline; text-decoration-thickness: 3px; text-underline-offset: 4px; }
   input[type=number] { background:#161616; border:1px solid #2a2a2a; border-radius:6px; color:#eee; padding:2px 6px; width:60px; font-size:12px; }
+  #roseSvg text { font-family: 'Roboto', sans-serif; }
 </style>
 </head>
 <body class="bg-night text-gray-100 flex flex-col min-h-screen">
@@ -49,6 +51,7 @@
     <button id="locBizerte" class="px-2 py-0.5 rounded text-[10px] font-bold">🇹🇳 Bizerte</button>
     <span class="text-gray-600">·</span>
     <span id="clock" class="text-sky font-medium"></span>
+    <button id="refreshBtn" title="Actualiser l'heure de référence (instant du chargement)" class="px-1.5 text-sky font-black">↻</button>
   </div>
 </header>
 
@@ -108,11 +111,13 @@
 
 <script>
 // ====================================================================
-//  UTILITIES
+//  UTILITIES — reference instant = exact page load time
 // ====================================================================
 const $ = id => document.getElementById(id);
 const R = Math.PI / 180;
 const norm = x => ((x % 360) + 360) % 360;
+let LOAD_MS = Date.now();
+let today = new Date(LOAD_MS);
 
 const LOCS = {
   Bizerte: { tz:'Africa/Tunis', lat:37.2744, lng:9.8739, flag:'🇹🇳', label:'Bizerte, Tunisie' },
@@ -130,29 +135,38 @@ function getAngles(loc) {
 function saveAngles(loc, f, i) { try { localStorage.setItem('sg_angles_' + loc, JSON.stringify({ fajr:f, isha:i })); } catch(e){} }
 function resetAngles() { try { localStorage.removeItem('sg_angles_Paris'); localStorage.removeItem('sg_angles_Bizerte'); } catch(e){} }
 
-const fmtCache = {};
+// ---- cached Intl formatters (performance) ----
+const fmtCache = {}, lpCache = {}, offCache = {};
 function tzFmt(tz) {
   return fmtCache[tz] || (fmtCache[tz] = new Intl.DateTimeFormat('fr-FR', { hour:'2-digit', minute:'2-digit', hourCycle:'h23', timeZone: tz }));
 }
 function fmtTime(ms, tz) { return tzFmt(tz).format(new Date(ms)); }
 function localParts(ms, tz) {
-  return Object.fromEntries(new Intl.DateTimeFormat('en-CA', { timeZone: tz, year:'numeric', month:'2-digit', day:'2-digit' }).formatToParts(new Date(ms)).map(x => [x.type, x.value]));
+  const f = lpCache[tz] || (lpCache[tz] = new Intl.DateTimeFormat('en-CA', { timeZone: tz, year:'numeric', month:'2-digit', day:'2-digit' }));
+  return Object.fromEntries(f.formatToParts(new Date(ms)).map(x => [x.type, x.value]));
 }
 function localDayKey(ms, tz) { const p = localParts(ms, tz); return `${p.year}-${p.month}-${p.day}`; }
+function localHM(ms, tz) {
+  const p = Object.fromEntries(new Intl.DateTimeFormat('en-GB', { timeZone: tz, hourCycle:'h23', hour:'2-digit', minute:'2-digit' }).formatToParts(new Date(ms)).map(x => [x.type, x.value]));
+  return (+p.hour) * 60 + (+p.minute);
+}
 function tzOffset(tz, date) { // minutes
-  const f = new Intl.DateTimeFormat('en-US', { timeZone: tz, hourCycle:'h23', year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit', second:'2-digit' });
+  const f = offCache[tz] || (offCache[tz] = new Intl.DateTimeFormat('en-US', { timeZone: tz, hourCycle:'h23', year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit', second:'2-digit' }));
   const p = Object.fromEntries(f.formatToParts(date).map(x => [x.type, x.value]));
   const asUTC = Date.UTC(+p.year, +p.month - 1, +p.day, +p.hour, +p.minute, +p.second);
   return (asUTC - date.getTime()) / 60000;
 }
-function nowLocalISO(tz) {
-  const p = Object.fromEntries(new Intl.DateTimeFormat('en-CA', { timeZone: tz, hourCycle:'h23', year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit' }).formatToParts(new Date()).map(x => [x.type, x.value]));
+function nowLocalISO(tz) { // reference instant (page load)
+  const p = Object.fromEntries(new Intl.DateTimeFormat('en-CA', { timeZone: tz, hourCycle:'h23', year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit' }).formatToParts(new Date(LOAD_MS)).map(x => [x.type, x.value]));
   return `${p.year}-${p.month}-${p.day}T${p.hour}:${p.minute}`;
 }
 function localISOtoMs(iso, tz) {
   const [d, t] = iso.split('T'); const [y, mo, da] = d.split('-').map(Number); const [h, mi] = t.split(':').map(Number);
   const guess = Date.UTC(y, mo - 1, da, h, mi);
   return guess - tzOffset(tz, new Date(guess)) * 60000;
+}
+function dayStartMs(y, m, d, L) { // local midnight of date (y, m0, d) in UTC ms
+  return Date.UTC(y, m, d) - tzOffset(L.tz, new Date(Date.UTC(y, m, d, 12))) * 60000;
 }
 function gmtMs(mi, day, gmt) {
   const hourOnly = gmt.endsWith('h');
@@ -164,6 +178,14 @@ function getLocalTime(mi, day, gmt) {
   const hourOnly = gmt.endsWith('h');
   const s = fmtTime(gmtMs(mi, day, gmt), LOCS[currentLocation].tz);
   return hourOnly && s.endsWith(':00') ? s.slice(0, 2) + 'h' : s;
+}
+function relLabel(ms) {
+  const diff = ms - LOAD_MS, a = Math.abs(diff) / 60000; let s;
+  if (a < 60) s = `${Math.max(1, Math.round(a))} min`;
+  else if (a < 720) { const h = Math.floor(a / 60), mm = Math.round(a % 60); s = `${h} h${mm ? ' ' + mm + ' min' : ''}`; }
+  else if (a < 2880) s = `${Math.round(a / 60)} h`;
+  else s = `${Math.round(a / 1440)} j`;
+  return diff >= 0 ? `dans ${s}` : `il y a ${s}`;
 }
 
 // ====================================================================
@@ -181,7 +203,6 @@ $('footerToggle').onclick = () => {
   $('footerPanel').classList.toggle('open');
   document.querySelector('.footer-chevron').classList.toggle('open');
 };
-
 const footerLinks = [
   ['🗺️ Carte pollution lumineuse','lightpollutionmap.info','https://www.lightpollutionmap.info'],
   ['🗺️ Dark Sky Map (D. Lorenz)','djlorenz.github.io','https://djlorenz.github.io/astronomy/lp/overlay/dark.html'],
@@ -204,19 +225,23 @@ $('footerLinks').innerHTML = footerLinks.map(l => `
   </a>`).join('');
 
 // ====================================================================
-//  WIKIPEDIA LINKS, CONSTELLATIONS
+//  WIKIPEDIA LINKS (stars, constellations, planets…)
 // ====================================================================
+const searchWiki = q => `https://fr.wikipedia.org/w/index.php?search=${encodeURIComponent(q)}`;
 const links = {
   "Antarès":"https://fr.wikipedia.org/wiki/Antar%C3%A8s","Spica":"https://fr.wikipedia.org/wiki/Spica",
-  "Regulus":"https://fr.wikipedia.org/wiki/Regulus","Pollux":"https://fr.wikipedia.org/wiki/Pollux_(%C3%A9toile)",
+  "Regulus":"https://fr.wikipedia.org/wiki/R%C3%A9gulus_(%C3%A9toile)","Régulus":"https://fr.wikipedia.org/wiki/R%C3%A9gulus_(%C3%A9toile)",
+  "Pollux":"https://fr.wikipedia.org/wiki/Pollux_(%C3%A9toile)",
   "Pléiades":"https://fr.wikipedia.org/wiki/Pl%C3%A9iades_(amas)","Jupiter":"https://fr.wikipedia.org/wiki/Jupiter_(planète)",
   "Mars":"https://fr.wikipedia.org/wiki/Mars_(planète)","Mercure":"https://fr.wikipedia.org/wiki/Mercure_(planète)",
   "Vénus":"https://fr.wikipedia.org/wiki/Vénus_(planète)","Saturne":"https://fr.wikipedia.org/wiki/Saturne_(planète)",
   "Neptune":"https://fr.wikipedia.org/wiki/Neptune_(planète)","Uranus":"https://fr.wikipedia.org/wiki/Uranus_(planète)",
   "Lune":"https://fr.wikipedia.org/wiki/Lune","Terre":"https://fr.wikipedia.org/wiki/Terre",
   "Quadrantides":"https://fr.wikipedia.org/wiki/Quadrantides","Lyrides":"https://fr.wikipedia.org/wiki/Lyrides",
+  "Êta-Aquarides":searchWiki("Êta-Aquarides"),"Delta-Aquarides":searchWiki("Delta-Aquarides"),
   "Perséides":"https://fr.wikipedia.org/wiki/Perséides","Orionides":"https://fr.wikipedia.org/wiki/Orionides",
   "Léonides":"https://fr.wikipedia.org/wiki/Léonides","Ursides":"https://fr.wikipedia.org/wiki/Ursides",
+  "Géminides":"https://fr.wikipedia.org/wiki/Géminides",
   "Taurides Sud":"https://fr.wikipedia.org/wiki/Taurides","Taurides Nord":"https://fr.wikipedia.org/wiki/Taurides"
 };
 const constelLinks = {
@@ -242,8 +267,21 @@ const constelLinks = {
   "Toucan":"https://fr.wikipedia.org/wiki/Toucan_(constellation)","Sculpteur":"https://fr.wikipedia.org/wiki/Sculpteur_(constellation)",
   "Fourneau":"https://fr.wikipedia.org/wiki/Fourneau_(constellation)","Triangle":"https://fr.wikipedia.org/wiki/Triangle_(constellation)"
 };
-function wikiConstelUrl(name) {
-  return constelLinks[name] || `https://fr.wikipedia.org/w/index.php?search=${encodeURIComponent(name + ' constellation')}`;
+function wikiConstelUrl(name) { return constelLinks[name] || searchWiki(name + ' constellation'); }
+
+const STAR_WIKI = {};
+function buildStarWiki() {
+  topStars.forEach(s => { STAR_WIKI[s[1]] = s[4]; });
+  Object.assign(STAR_WIKI, {
+    'Alcyone (Pléiades)': links['Pléiades'], 'Algol':'https://fr.wikipedia.org/wiki/Algol', 'Mintaka':'https://fr.wikipedia.org/wiki/Mintaka',
+    'Denebola':'https://fr.wikipedia.org/wiki/Denebola', 'Kochab':'https://fr.wikipedia.org/wiki/Kochab', 'Rasalhague':'https://fr.wikipedia.org/wiki/Rasalhague',
+    'Mesarthim':'https://fr.wikipedia.org/wiki/Mesarthim', 'Sheratan':'https://fr.wikipedia.org/wiki/Sheratan',
+    'Antarès':links['Antarès'], 'Regulus':links['Regulus'], 'Spica':links['Spica'], 'Pollux':links['Pollux'], 'Pléiades':links['Pléiades']
+  });
+}
+function starUrl(name) { return STAR_WIKI[name] || searchWiki(name + ' (étoile)'); }
+function starLink(name, cls = 'text-sky', stop = true) {
+  return `<a class="wikilink ${cls}" href="${starUrl(name)}" target="_blank" rel="noopener" ${stop ? 'onclick="event.stopPropagation()"' : ''}>${name}</a>`;
 }
 
 const constelArabic = {
@@ -285,9 +323,9 @@ const constelArabic = {
   "Grand Chien": { ar:"الكَلب الأكبر", stars:[["Sirius","الشِّعرى اليَمانِيّة","Ash-Shi'ra Al-Yamaniyya"],["Adhara","العَذارى","Al-'Adhara"],["Wezen","الوَزْن","Al-Wazn"],["Mirzam","المِرزَم","Al-Mirzam"]] },
   "Petit Chien": { ar:"الكَلب الأصغر", stars:[["Procyon","الشِّعرى الشَّامِيَّة","Ash-Shi'ra Ash-Shamiyya"]] },
   "Éridan": { ar:"إريدانوس (النَّهر)", stars:[["Achernar","آخِر النَّهر","Akhir An-Nahr"]] },
-  "Centaure": { ar:"القِنطور", stars:[["Alpha du Centaure","رِجل القِنطور","Rijl Al-Qintur"],["Hadar","حَضار","Hadar"]] },
+  "Centaure": { ar:"القِنطور", stars:[["Alpha du Centaure","رِجل القِنطور","Rijl Al-Qintur"],["Hadar (Agena)","حَضار","Hadar"]] },
   "Aigle": { ar:"العُقاب", stars:[["Altaïr","النَّسر الطَّائر","An-Nasr At-Ta'ir"]] },
-  "Croix du Sud": { ar:"الصَّليب الجَنوبي", stars:[["Acrux","أكروكس","Acrux"],["Mimosa","الميموزا","Al-Mimuza"],["Gacrux","جاكروكس","Gacrux"]] },
+  "Croix du Sud": { ar:"الصَّليب الجَنوبي", stars:[["Acrux","أكروكس","Acrux"],["Mimosa (Becrux)","الميموزا","Al-Mimuza"],["Gacrux","جاكروكس","Gacrux"]] },
   "Poisson austral": { ar:"الحوت الجَنوبي", stars:[["Fomalhaut","فَم الحوت","Fam Al-Hut"]] },
   "Cygne": { ar:"الدَّجاجة", stars:[["Deneb","ذَنَب الدَّجاجة","Dhanab Ad-Dajaja"]] },
   "Cocher": { ar:"المُمسِك بالأعِنَّة", stars:[["Capella","العَيُّوق","Al-'Ayyuq"],["Menkalinan","مَنكِب ذي العِنان","Mankib Dhi Al-'Inan"]] },
@@ -333,12 +371,12 @@ function arabicDetailHtml(constellation) {
   if (!info) return `<div class="text-gray-500 text-xs">Pas de détail disponible.</div>`;
   const starsHtml = (info.stars.length ? info.stars : [["—","—","—"]]).map(s => `
     <div class="flex justify-between items-center border-b border-border/50 py-1">
-      <span class="text-gray-300 text-xs">${s[0]}</span><span class="arabic text-gold text-sm">${s[1]}</span>
+      <span class="text-xs">${s[0] === '—' ? '—' : starLink(s[0], 'text-gray-200')}</span><span class="arabic text-gold text-sm">${s[1]}</span>
       <span class="text-gray-500 text-[10px] italic">${s[2]}</span></div>`).join('');
   return `<div class="mt-2 pt-2 border-t border-border">
       <div class="text-green text-xs mb-1">Constellation : <a class="wikilink text-green" href="${wikiConstelUrl(constellation)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${constellation}</a> — <span class="arabic text-base">${info.ar}</span></div>
       <div class="text-center">${constelSvg(constellation)}${info.shape ? '<div class="text-gray-600 text-[9px]">schéma simplifié, non à l\'échelle</div>' : ''}</div>
-      <div class="text-gray-400 text-[11px] mb-1 mt-2">Étoiles principales :</div>${starsHtml}</div>`;
+      <div class="text-gray-400 text-[11px] mb-1 mt-2">Étoiles principales (clic = Wikipédia) :</div>${starsHtml}</div>`;
 }
 function satelliteDetailHtml() {
   const L = LOCS[currentLocation];
@@ -368,6 +406,8 @@ const PHASES_RAW = [
  [3,'2026-11-01T20:28'],[0,'2026-11-09T07:02'],[1,'2026-11-17T11:48'],[2,'2026-11-24T14:53'],
  [3,'2026-12-01T06:09'],[0,'2026-12-09T00:52'],[1,'2026-12-17T05:43'],[2,'2026-12-24T01:28'],[3,'2026-12-30T18:59']
 ];
+const SUPER_ISO = new Set(['2026-01-03T10:03','2026-11-24T14:53','2026-12-24T01:28']);
+const BLUE_ISO = new Set(['2026-05-31T08:45']);
 const PH = PHASES_RAW.map(([ty, iso]) => ({ ty, t: Date.parse(iso + ':00Z') }));
 (function extend() { let last = PH[PH.length - 1]; for (let i = 0; i < 8; i++) { last = { ty:(last.ty + 1) % 4, t:last.t + 7.3826 * 86400000 }; PH.push(last); } })();
 
@@ -381,56 +421,44 @@ function elongAt(ms) {
   const k = ms < PH[0].t ? 0 : PH.length - 1;
   return norm(PH[k].ty * 90 + (ms - PH[k].t) / 86400000 * 12.1908);
 }
-function ageAt(ms) {
-  let last = null;
-  for (const p of PH) { if (p.ty === 0 && p.t <= ms) last = p; }
-  return last ? (ms - last.t) / 86400000 : 0;
-}
+function ageAt(ms) { let last = null; for (const p of PH) { if (p.ty === 0 && p.t <= ms) last = p; } return last ? (ms - last.t) / 86400000 : 0; }
 const jd = ms => ms / 86400000 + 2440587.5;
 function sunLon(ms) {
-  const n = jd(ms) - 2451545.0;
-  const L = 280.460 + 0.9856474 * n;
-  const g = (357.528 + 0.9856003 * n) * R;
+  const n = jd(ms) - 2451545.0, L = 280.460 + 0.9856474 * n, g = (357.528 + 0.9856003 * n) * R;
   return norm(L + 1.915 * Math.sin(g) + 0.020 * Math.sin(2 * g));
 }
-function sunEq(ms) { // declination (deg) and (mean longitude − RA) in degrees
-  const n = jd(ms) - 2451545.0;
-  const L = norm(280.460 + 0.9856474 * n);
-  const g = norm(357.528 + 0.9856003 * n) * R;
-  const lam = norm(L + 1.915 * Math.sin(g) + 0.020 * Math.sin(2 * g)) * R;
-  const eps = (23.439 - 0.0000004 * n) * R;
+function sunEq(ms) {
+  const n = jd(ms) - 2451545.0, L = norm(280.460 + 0.9856474 * n), g = norm(357.528 + 0.9856003 * n) * R;
+  const lam = norm(L + 1.915 * Math.sin(g) + 0.020 * Math.sin(2 * g)) * R, eps = (23.439 - 0.0000004 * n) * R;
   const dec = Math.asin(Math.sin(eps) * Math.sin(lam)) / R;
   const ra = norm(Math.atan2(Math.cos(eps) * Math.sin(lam), Math.cos(lam)) / R);
-  let eot = L - ra; if (eot > 180) eot -= 360; if (eot < -180) eot += 360;
+  let eot = L - ra; if (eot > 180) eot -= 360; if (eot < -180) eot += 360;   // equation of time in degrees (EoT_min = 4 × eot)
   return { dec, eot };
 }
 function moonEq(ms) {
-  const elong = elongAt(ms);
-  const lon = norm(sunLon(ms) + elong);
-  const n = jd(ms) - 2451545.0;
-  const F = (93.272 + 13.22935 * n) * R;
-  const lat = 5.145 * Math.sin(F);
+  const elong = elongAt(ms), lon = norm(sunLon(ms) + elong), n = jd(ms) - 2451545.0;
+  const F = (93.272 + 13.22935 * n) * R, lat = 5.145 * Math.sin(F);
   const eps = 23.4393 * R, l = lon * R, b = lat * R;
   const dec = Math.asin(Math.sin(b) * Math.cos(eps) + Math.cos(b) * Math.sin(eps) * Math.sin(l)) / R;
   const ra = norm(Math.atan2(Math.sin(l) * Math.cos(b) * Math.cos(eps) - Math.sin(b) * Math.sin(eps), Math.cos(l) * Math.cos(b)) / R);
   return { elong, lon, lat, ra, dec };
 }
-function moonAltAz(ms, lat, lng) {
-  const q = moonEq(ms);
-  const n = jd(ms) - 2451545.0;
-  const lst = norm(280.46061837 + 360.98564736629 * n + lng);
-  const H = norm(lst - q.ra) * R, phi = lat * R, d = q.dec * R;
+function altAz(ms, lat, lng, raDeg, decDeg) {
+  const n = jd(ms) - 2451545.0, lst = norm(280.46061837 + 360.98564736629 * n + lng);
+  const H = norm(lst - raDeg) * R, phi = lat * R, d = decDeg * R;
   const alt = Math.asin(Math.sin(phi) * Math.sin(d) + Math.cos(phi) * Math.cos(d) * Math.cos(H)) / R;
   const az = norm(Math.atan2(-Math.cos(d) * Math.sin(H), Math.sin(d) * Math.cos(phi) - Math.cos(d) * Math.cos(H) * Math.sin(phi)) / R);
-  return { ...q, alt, az, illum: (1 - Math.cos(q.elong * R)) / 2, age: ageAt(ms) };
+  return { alt, az };
+}
+function moonAltAz(ms, lat, lng) {
+  const q = moonEq(ms), a = altAz(ms, lat, lng, q.ra, q.dec);
+  return { ...q, ...a, illum: (1 - Math.cos(q.elong * R)) / 2, age: ageAt(ms) };
 }
 function moonDay(dayUTCms, L) {
-  const off = tzOffset(L.tz, new Date(dayUTCms + 12 * 3600000));
-  const start = dayUTCms - off * 60000;
+  const off = tzOffset(L.tz, new Date(dayUTCms + 12 * 3600000)), start = dayUTCms - off * 60000;
   let rise = null, set = null, best = -99, bestM = -1, prevA = null, prevT = null;
   for (let m = 0; m <= 1440; m += 5) {
-    const t = start + m * 60000;
-    const a = moonAltAz(t, L.lat, L.lng).alt - 0.125;
+    const t = start + m * 60000, a = moonAltAz(t, L.lat, L.lng).alt - 0.125;
     if (prevA !== null) {
       if (prevA < 0 && a >= 0 && rise === null) rise = prevT + (0 - prevA) / (a - prevA) * (t - prevT);
       if (prevA >= 0 && a < 0 && set === null) set = prevT + prevA / (prevA - a) * (t - prevT);
@@ -438,8 +466,7 @@ function moonDay(dayUTCms, L) {
     if (a + 0.125 > best) { best = a + 0.125; bestM = m; }
     prevA = a; prevT = t;
   }
-  const culm = (bestM > 5 && bestM < 1435) ? start + bestM * 60000 : null;
-  return { start, rise, set, culm, culmAlt: best };
+  return { start, rise, set, culm: (bestM > 5 && bestM < 1435) ? start + bestM * 60000 : null, culmAlt: best };
 }
 const ECL = [[29.1,'Bélier'],[53.4,'Taureau'],[90.4,'Gémeaux'],[118.3,'Cancer'],[138.0,'Lion'],[173.9,'Vierge'],[217.8,'Balance'],[241.1,'Scorpion'],[247.7,'Ophiuchus'],[266.6,'Sagittaire'],[299.7,'Capricorne'],[327.9,'Verseau'],[351.6,'Poissons']];
 function eclConstel(lon) { let name = 'Poissons'; for (const [s, n] of ECL) if (lon >= s) name = n; return name; }
@@ -455,11 +482,11 @@ const DIR_LONG = ['Nord','Nord-Est','Est','Sud-Est','Sud','Sud-Ouest','Ouest','N
 const AYANAMSA = 24.2;
 const manzilIndex = lon => Math.floor(norm(lon - AYANAMSA) / (360 / 28));
 
-// ---- prayer times (astronomical) ----
+// ---- prayer times (astronomical). Solar noon (UTC min) = 720 − 4·longitude − EoT ----
 function prayerTimes(dayUTCms, L, ang) {
   const probe = dayUTCms + 12 * 3600000 - L.lng * 4 * 60000;
   const { dec, eot } = sunEq(probe);
-  const noon = dayUTCms + (720 - 4 * L.lng + 4 * eot) * 60000;
+  const noon = dayUTCms + (720 - 4 * L.lng - 4 * eot) * 60000;
   const phi = L.lat * R, d = dec * R;
   const H = a => { const c = (Math.sin(a * R) - Math.sin(phi) * Math.sin(d)) / (Math.cos(phi) * Math.cos(d)); return (c < -1 || c > 1) ? null : Math.acos(c) / R * 4 * 60000; };
   const hs = H(-0.833), hi = H(-ang.isha), hf = H(-ang.fajr);
@@ -473,158 +500,373 @@ function nightWindows(y, m, d, L) {
   const p = prayerTimes(Date.UTC(y, m, d), L, getAngles(currentLocation));
   return { p, eve: [p.maghrib + 30 * 60000, p.isha + 2 * 3600000], morn: [p.fajr - 3600000, p.fajr + 3600000] };
 }
-
-// ---- sky snapshot (bright stars by compass sector) ----
-function skySnapshot(ms, L) {
-  const n = jd(ms) - 2451545.0, lst = norm(280.46061837 + 360.98564736629 * n + L.lng), phi = L.lat * R;
-  const aa = (raDeg, dec) => {
-    const H = norm(lst - raDeg) * R, d = dec * R;
-    const alt = Math.asin(Math.sin(phi) * Math.sin(d) + Math.cos(phi) * Math.cos(d) * Math.cos(H)) / R;
-    const az = norm(Math.atan2(-Math.cos(d) * Math.sin(H), Math.sin(d) * Math.cos(phi) - Math.cos(d) * Math.cos(H) * Math.sin(phi)) / R);
-    return { alt, az };
-  };
-  const sectors = Array.from({ length: 8 }, () => ({ n: 0, list: [] }));
-  topStars.forEach(s => {
-    const p = aa(s[8] * 15, s[7]);
-    if (p.alt >= 15) { const k = Math.round(p.az / 45) % 8; sectors[k].n++; sectors[k].list.push({ name:s[1], mag:parseFloat(s[2].replace(',', '.')) }); }
-  });
-  return { sectors, gc: aa(266.42, -29.0), total: sectors.reduce((a, s) => a + s.n, 0), moon: moonAltAz(ms, L.lat, L.lng) };
+// day-part classification of an instant: jour / soiree / nuit / aube
+function classify(ms, L) {
+  const k = localParts(ms, L.tz), y = +k.year, m = +k.month - 1, d = +k.day, ang = getAngles(currentLocation);
+  const cur = prayerTimes(Date.UTC(y, m, d), L, ang), prev = prayerTimes(Date.UTC(y, m, d - 1), L, ang);
+  if (ms >= cur.fajr - 3600000 && ms <= cur.fajr + 3600000) return 'aube';
+  if ((ms >= cur.maghrib + 1800000 && ms <= cur.isha + 7200000) || (ms >= prev.maghrib + 1800000 && ms <= prev.isha + 7200000)) return 'soiree';
+  if (ms < cur.fajr - 3600000 || ms > cur.isha + 7200000) return 'nuit';
+  return 'jour';
 }
-function bestDir(snap) {
-  let bk = 0, bs = -1;
-  snap.sectors.forEach((s, k) => { const sc = s.n * 100 + s.list.reduce((a, x) => a + (3 - x.mag), 0); if (sc > bs) { bs = sc; bk = k; } });
-  return bk;
+const DP = {
+  jour:   { label:'☀️ Journée', c:'#fbbf24' },
+  soiree: { label:'🌆 Soirée',  c:'#38bdf8' },
+  nuit:   { label:'🌌 Nuit',    c:'#a78bfa' },
+  aube:   { label:'🌅 Aube',    c:'#f472b6' }
+};
+function starsAt(ms, L) {
+  return topStars.map(s => ({ s, ...altAz(ms, L.lat, L.lng, s[8] * 15, s[7]) }));
 }
-function moonStatus(mp) {
-  const ill = (mp.illum * 100).toFixed(0);
-  if (mp.alt > 0) return `${moonEmoji(mp.elong)} ${ill} % · levée (${compass(mp.az)} ${mp.alt.toFixed(0)}°) — ${mp.illum > 0.5 ? 'ciel lumineux' : 'ciel peu gêné'}`;
-  return `${moonEmoji(mp.elong)} ${ill} % · sous l'horizon — ciel sombre`;
+function moonNote(ms) {
+  const ill = (1 - Math.cos(elongAt(ms) * R)) / 2;
+  return ` · 🌙 Lune ${(ill * 100).toFixed(0)} % au pic (${ill < 0.25 ? 'ciel sombre, conditions favorables' : ill < 0.6 ? 'gêne modérée' : 'forte gêne'})`;
 }
 
 // ====================================================================
-//  DATA — monthly events [day, GMT, title, explanation, constellation]
+//  EVENTS DATA — full 2026 almanac (day + night) + supermoons, eclipses, blue moon
+//  [day(GMT), time(GMT), title, explanation, constellation, tags]
 // ====================================================================
 const MONTHS = ["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"];
-const SAT = ["—","🛰️","Passages satellites (ISS & Tiangong)","Cliquez pour voir les prochains passages visibles.","—"];
+const PHN = {
+  NM:['🌑 NOUVELLE LUNE','La Lune est entre la Terre et le Soleil : invisible, nuits idéales pour le ciel profond.'],
+  FQ:['PREMIER QUARTIER','Moitié de la face visible éclairée (phase croissante), visible en première partie de nuit.'],
+  FM:['🌕 PLEINE LUNE','Face visible entièrement éclairée, levée au coucher du Soleil.'],
+  LQ:['DERNIER QUARTIER','Moitié de la face visible éclairée (phase décroissante), visible en seconde partie de nuit.']
+};
+const STAR_OBJ = ['Pollux','Spica','Antarès','Regulus','Pléiades'];
+const ph = (d,t,k,xt='',xe='',tg='') => [d,t,PHN[k][0]+xt,PHN[k][1]+(xe?' '+xe:''),'@phase:'+k,((k==='NM'||k==='FM')?'imp ':'')+tg];
+const mc = (d,t,obj,sep,cst,occ) => [d,t,`${obj}${sep?` à ${sep} de la Lune`:' près de la Lune'}${occ?' (occultation)':''}`,
+  occ ? `La Lune passe devant ${obj} (occultation visible seulement depuis certaines régions du globe).`
+      : (obj==='Pléiades' ? 'La Lune passe près de l\'amas des Pléiades.' : STAR_OBJ.includes(obj) ? `La Lune passe près de l'étoile ${obj}.` : `Rapprochement apparent entre ${obj} et la Lune.`),
+  cst, occ?'imp':''];
+const mPo=(d,t,s)=>mc(d,t,'Pollux',s,'Gémeaux'),
+      mSp=(d,t,s)=>mc(d,t,'Spica',s,'Vierge'),
+      mAn=(d,t,s)=>mc(d,t,'Antarès',s,'Scorpion'),
+      mRe=(d,t,s,o)=>mc(d,t,'Regulus',s,'Lion',o),
+      mPl=(d,t,s)=>mc(d,t,'Pléiades',s,'Taureau'),
+      mJu=(d,t,s,o)=>mc(d,t,'Jupiter',s,'@moon',o),
+      mMa=(d,t,s,o)=>mc(d,t,'Mars',s,'@moon',o),
+      mVe=(d,t,s,o)=>mc(d,t,'Vénus',s,'@moon',o),
+      mMe=(d,t,s,o)=>mc(d,t,'Mercure',s,'@moon',o),
+      mSa=(d,t,s,o)=>mc(d,t,'Saturne',s,'@moon',o);
+const per=(d,t,km)=>[d,t,'Lune au périgée'+(km?` (${km} km)`:''),'Point le plus proche de la Terre sur l\'orbite lunaire.','—',''];
+const apo=(d,t,km)=>[d,t,'Lune à l\'apogée'+(km?` (${km} km)`:''),'Point le plus éloigné de la Terre sur l\'orbite lunaire.','—',''];
+const na=(d,t)=>[d,t,'Lune au nœud ascendant','La Lune traverse l\'écliptique du sud vers le nord.','—',''];
+const nd=(d,t)=>[d,t,'Lune au nœud descendant','La Lune traverse l\'écliptique du nord vers le sud.','—',''];
+const met=(d,t,n,c)=>[d,t,`Pluie d'étoiles filantes des ${n}`,`Pic d'activité (radiant dans ${c}).`,c,'imp meteor'];
+const xv=(d,t,ti,ex,c,tg='')=>[d,t,ti,ex,c,tg];
+const SATE=['—','🛰️','Passages satellites (ISS & Tiangong)','Cliquez pour voir les prochains passages visibles.','—',''];
+const SUPEREXPL = 'Pleine Lune proche du périgée : disque jusqu\'à ≈ 14 % plus grand et ≈ 30 % plus lumineux qu\'une micro-Lune (selon la définition courante de « superlune »).';
+
 const data = {
 "Janvier": { events:[
-  ["01","21:43","Lune au périgée (360 348 km)","Point le plus proche de la Terre sur l'orbite lunaire.","—"],
-  ["03","17h","Terre au périhélie (0,98330 UA)","La Terre est au point le plus proche du Soleil sur son orbite.","—"],
-  ["03","22h","Pluie d'étoiles filantes des Quadrantides","Pic d'activité d'une pluie de météores intense mais brève.","Bouvier"],
-  ["03","22:01","Jupiter à 3,7° S de la Lune","Rapprochement apparent entre Jupiter et la Lune.","Cancer"],
-  ["04","03:28","Pollux à 3,0° N de la Lune","La Lune passe près de l'étoile Pollux.","Gémeaux"],
-  ["10","23:50","Spica à 1,6° N de la Lune","La Lune passe près de l'étoile Spica.","Vierge"],
-  ["13","20:48","Lune à l'apogée (405 437 km)","Point le plus éloigné de la Terre sur l'orbite lunaire.","—"],
-  ["14","19:28","Antarès à 0,6° N de la Lune","La Lune passe près de l'étoile Antarès.","Scorpion"],
-  ["18","19:52","🌑 NOUVELLE LUNE","La Lune est invisible. Meilleure nuit d'observation du mois.","Sagittaire"],
-  ["22","00:03","Lune au nœud ascendant","La Lune traverse l'écliptique du sud vers le nord.","—"],
-  ["26","04:47","PREMIER QUARTIER","Moitié de la face visible de la Lune éclairée.","Taureau"],
-  ["27","21:07","Pléiades à 1,1° S de la Lune","La Lune passe près de l'amas des Pléiades.","Taureau"],
-  ["31","02:31","Jupiter à 3,8° S de la Lune","Rapprochement apparent entre Jupiter et la Lune.","Cancer"], SAT ]},
+  per('01','21:43','360 348'),
+  ph('03','10:03','FM',' · SUPERLUNE',SUPEREXPL+' Périgée le 1ᵉʳ janv. (360 348 km).','super'),
+  xv('03','17h','Terre au périhélie (0,98330 UA)','La Terre est au point le plus proche du Soleil sur son orbite.','—'),
+  met('03','22h','Quadrantides','Bouvier'),
+  mJu('03','22:01','3,7° S'),
+  mPo('04','03:28','3,0° N'),
+  xv('06','11h','Mercure à l\'aphélie','Mercure au point le plus éloigné du Soleil.','—'),
+  xv('06','16h','Vénus en conjonction supérieure','Vénus passe derrière le Soleil (invisible).','—'),
+  mRe('06','16:20','0,5° S'),
+  nd('07','11:22'),
+  xv('09','10h','Mars en conjonction avec le Soleil','Mars passe derrière le Soleil (invisible).','—'),
+  xv('10','08h','Jupiter à l\'opposition','Jupiter au plus proche et au plus brillant, visible toute la nuit.','Gémeaux','imp'),
+  ph('10','15:48','LQ'),
+  mSp('10','23:50','1,6° N'),
+  apo('13','20:48','405 437'),
+  mAn('14','19:28','0,6° N'),
+  ph('18','19:52','NM'),
+  xv('21','16h','Mercure en conjonction supérieure','Mercure passe derrière le Soleil (invisible).','—'),
+  na('22','00:03'),
+  xv('22','20h','Vénus à l\'aphélie','Vénus au point le plus éloigné du Soleil.','—'),
+  mSa('23','12:31','4,3° S'),
+  ph('26','04:47','FQ'),
+  mPl('27','21:07','1,1° S'),
+  per('29','21:53','365 878'),
+  mJu('31','02:31','3,8° S'),
+  mPo('31','13:45','3,0° N'), SATE ]},
 "Février": { events:[
-  ["01","22:09","PLEINE LUNE","Face visible de la Lune entièrement éclairée.","Cancer"],
-  ["03","02:48","Regulus à 0,4° S de la Lune","La Lune passe près de l'étoile Regulus.","Lion"],
-  ["11","03:19","Antarès à 0,7° N de la Lune","La Lune passe près de l'étoile Antarès.","Scorpion"],
-  ["17","12:01","🌑 NOUVELLE LUNE (diurne)","Invisible ce jour-là (conjonction en journée).","Verseau"],
-  ["18","23:03","Mercure 0,1° N de la Lune (occultation)","La Lune passe devant Mercure.","Verseau"],
-  ["19","23:54","Saturne à 4,6° S de la Lune","Rapprochement apparent Saturne-Lune.","Poissons"],
-  ["24","02:43","Pléiades à 1,2° S de la Lune","La Lune passe près des Pléiades.","Taureau"],
-  ["27","21:34","Pollux à 3,0° N de la Lune","La Lune passe près de Pollux.","Gémeaux"], SAT ]},
+  ph('01','22:09','FM'),
+  mRe('03','02:48','0,4° S'),
+  nd('03','19:18'),
+  mSp('07','08:26','1,8° N'),
+  ph('09','12:43','LQ'),
+  apo('10','16:52'),
+  mAn('11','03:19','0,7° N'),
+  ph('17','12:01','NM'),
+  xv('17','12:12','Éclipse solaire annulaire','Annulaire sur l\'Antarctique ; non visible depuis Paris ni Bizerte.','@sun','imp eclipse'),
+  na('18','06:19'),
+  mMe('18','23:03','0,1° N',true),
+  xv('19','11h','Mercure au périhélie','Mercure au point le plus proche du Soleil.','—'),
+  xv('19','18h','Mercure à sa plus grande élongation (18,1° E)','Meilleur moment pour observer Mercure en soirée, bas à l\'ouest après le coucher du Soleil.','Verseau','imp'),
+  mSa('19','23:54','4,6° S'),
+  mPl('24','02:43','1,2° S'),
+  ph('24','12:28','FQ'),
+  per('24','23:18','370 132'),
+  mJu('27','06:26','4,0° S'),
+  mPo('27','21:34','3,0° N'), SATE ]},
 "Mars": { events:[
-  ["06","17:24","Spica à 1,8° N de la Lune","La Lune passe près de Spica.","Vierge"],
-  ["17","21:51","Mars à 1,5° S de la Lune","Rapprochement apparent Mars-Lune.","Poissons"],
-  ["19","01:23","🌑 NOUVELLE LUNE","Meilleure nuit d'observation du mois.","Poissons"],
-  ["25","19:18","PREMIER QUARTIER","Moitié de la face visible de la Lune éclairée.","Gémeaux"],
-  ["27","03:18","Pollux à 3,0° N de la Lune","La Lune passe près de Pollux.","Gémeaux"],
-  ["29","19:00","Regulus à 0,4° S de la Lune","La Lune passe près de Regulus.","Lion"], SAT ]},
+  mRe('02','12:00',null),
+  nd('03','04:35'),
+  xv('03','11:34','Éclipse totale de Lune','Totalité visible depuis l\'Asie-Pacifique et les Amériques ; Lune sous l\'horizon en Europe et au Maghreb (non visible depuis Paris ni Bizerte).','@phase:FM','imp eclipse'),
+  ph('03','11:38','FM'),
+  mSp('06','17:24','1,8° N'),
+  xv('07','11h','Mercure en conjonction inférieure','Mercure passe entre la Terre et le Soleil (invisible).','—'),
+  mAn('10','11:32',null),
+  apo('10','13:43'),
+  ph('11','09:39','LQ'),
+  xv('15','19h','Mercure à 3,4° N de Mars','Rapprochement apparent entre Mercure et Mars au crépuscule.','Poissons','imp'),
+  mMe('17','14:07','2,0° N'),
+  na('17','15:22'),
+  mMa('17','21:51','1,5° S'),
+  ph('19','01:23','NM'),
+  mVe('20','12:39','4,6° S'),
+  xv('20','14:46','Équinoxe de printemps','Le Soleil traverse l\'équateur céleste vers le nord : jour et nuit quasi égaux.','@sun','imp'),
+  xv('22','10h','Neptune en conjonction avec le Soleil','Neptune derrière le Soleil (invisible).','—'),
+  per('22','11:40'),
+  mPl('23','08:32','1,1° S'),
+  xv('25','08h','Saturne en conjonction avec le Soleil','Saturne derrière le Soleil (invisible).','—'),
+  ph('25','19:18','FQ'),
+  xv('26','07h','Mars au périhélie','Mars au point le plus proche du Soleil.','—'),
+  mJu('26','12:13','3,9° S'),
+  mPo('27','03:18','3,0° N'),
+  mRe('29','19:00','0,4° S'),
+  nd('30','11:34'), SATE ]},
 "Avril": { events:[
-  ["02","02:12","PLEINE LUNE","Face visible de la Lune entièrement éclairée.","Balance"],
-  ["03","01:32","Spica à 1,8° N de la Lune","La Lune passe près de Spica.","Vierge"],
-  ["06","19:21","Antarès à 0,6° N de la Lune","La Lune passe près d'Antarès.","Scorpion"],
-  ["16","00:45","Mars à 3,7° S de la Lune","Rapprochement apparent Mars-Lune.","Bélier"],
-  ["17","11:52","🌑 NOUVELLE LUNE (diurne)","Invisible ce jour-là (conjonction en journée).","Poissons"],
-  ["22","19h","Pluie d'étoiles filantes des Lyrides","Débris de la comète Thatcher.","Lyre"],
-  ["22","22:06","Jupiter à 3,6° S de la Lune","Rapprochement apparent Jupiter-Lune.","Cancer"],
-  ["24","02:32","PREMIER QUARTIER","Moitié de la face visible de la Lune éclairée.","Gémeaux"],
-  ["26","00:37","Regulus à 0,2° S de la Lune","La Lune passe très près de Regulus.","Lion"], SAT ]},
+  ph('02','02:12','FM'),
+  mSp('03','01:32','1,8° N'),
+  xv('03','23h','Mercure à sa plus grande élongation (27,8° O)','Meilleur moment pour observer Mercure le matin avant le lever du Soleil.','Poissons','imp'),
+  mAn('06','19:21','0,6° N'),
+  apo('07','08:32'),
+  ph('10','04:52','LQ'),
+  na('13','23:43'),
+  mMa('16','00:45','3,7° S'),
+  ph('17','11:52','NM'),
+  per('19','06:57'),
+  mVe('19','08:49','4,8° S'),
+  mPl('19','16:28','1,0° S'),
+  xv('19','19h','Mars à 1,2° N de Saturne','Rapprochement apparent entre Mars et Saturne.','Poissons','imp'),
+  xv('20','10h','Mercure à 0,5° S de Saturne','Rapprochement apparent entre Mercure et Saturne.','Poissons','imp'),
+  xv('20','22h','Mercure à 1,7° S de Mars','Rapprochement apparent entre Mercure et Mars.','Poissons','imp'),
+  met('22','19h','Lyrides','Lyre'),
+  mJu('22','22:06','3,6° S'),
+  mPo('23','08:59','3,2° N'),
+  ph('24','02:32','FQ'),
+  xv('24','04:17','Vénus à 3,4° S des Pléiades','Rapprochement apparent entre Vénus et l\'amas des Pléiades.','Taureau','imp'),
+  mRe('26','00:37','0,2° S'),
+  nd('26','14:36'),
+  mSp('30','08:17','1,8° N'), SATE ]},
 "Mai": { events:[
-  ["04","02:20","Antarès à 0,5° N de la Lune","La Lune passe près d'Antarès.","Scorpion"],
-  ["09","21:10","DERNIER QUARTIER","Moitié de la face visible de la Lune éclairée.","Verseau"],
-  ["16","20:01","🌑 NOUVELLE LUNE","Meilleure nuit d'observation du mois.","Taureau"],
-  ["19","01:50","Vénus à 2,9° S de la Lune","Rapprochement apparent Vénus-Lune.","Taureau"], SAT ]},
+  ph('01','17:23','FM'),
+  mAn('04','02:20','0,5° N'),
+  apo('04','22:30','405 843'),
+  met('05','08h','Êta-Aquarides','Verseau'),
+  ph('09','21:10','LQ'),
+  na('11','04:36'),
+  xv('14','14h','Mercure en conjonction supérieure','Mercure passe derrière le Soleil (invisible).','—'),
+  xv('15','04h','Vénus au périhélie','Vénus au point le plus proche du Soleil.','—'),
+  ph('16','20:01','NM'),
+  per('17','13:48'),
+  xv('18','10h','Mercure au périhélie','Mercure au point le plus proche du Soleil.','—'),
+  mVe('19','01:50','2,9° S'),
+  mJu('20','12:39','3,1° S'),
+  mPo('20','16:30','3,4° N'),
+  xv('22','16h','Uranus en conjonction avec le Soleil','Uranus derrière le Soleil (invisible).','—'),
+  mRe('23','06:41','0,0° N',true),
+  ph('23','11:11','FQ'),
+  nd('23','15:26'),
+  mSp('27','14:09','1,9° N'),
+  mAn('31','08:32','0,4° N'),
+  ph('31','08:45','FM',' · LUNE BLEUE','2ᵉ pleine Lune du mois (« Lune bleue »).','blue'), SATE ]},
 "Juin": { events:[
-  ["09","20h","Vénus à 1,6° N de Jupiter","Rapprochement apparent Vénus-Jupiter.","Gémeaux"],
-  ["15","02:54","🌑 NOUVELLE LUNE","Meilleure nuit d'observation du mois.","Gémeaux"],
-  ["17","20:21","Vénus à 0,3° S de la Lune (occultation)","La Lune passe devant Vénus.","Gémeaux"],
-  ["21","21:55","PREMIER QUARTIER","Moitié de la face visible de la Lune éclairée.","Vierge"],
-  ["23","20:11","Spica à 2,2° N de la Lune","La Lune passe près de Spica.","Vierge"],
-  ["29","23:57","PLEINE LUNE","Face visible de la Lune entièrement éclairée.","Sagittaire"], SAT ]},
+  apo('01','04:32'),
+  na('07','06:19'),
+  xv('07','16:17','Vénus à 4,6° S de Pollux','Rapprochement apparent entre Vénus et Pollux.','Gémeaux'),
+  ph('08','10:00','LQ'),
+  xv('09','20h','Vénus à 1,6° N de Jupiter','Rapprochement apparent entre les deux planètes les plus brillantes.','Gémeaux','imp'),
+  mPl('13','13:15','1,0° S'),
+  per('14','23:18','357 196'),
+  ph('15','02:54','NM'),
+  xv('15','20h','Mercure à sa plus grande élongation (24,5° E)','Meilleur moment pour observer Mercure en soirée.','Gémeaux','imp'),
+  mMe('16','19:32','2,6° S'),
+  mPo('17','02:08','3,6° N'),
+  mJu('17','06:54','2,5° S'),
+  mVe('17','20:21','0,3° S',true),
+  mRe('19','14:31','0,3° N'),
+  nd('19','17:57'),
+  xv('21','08:25','Solstice d\'été','Jour le plus long et nuit la plus courte de l\'hémisphère nord.','@sun','imp'),
+  ph('21','21:55','FQ'),
+  mSp('23','20:11','2,2° N'),
+  xv('25','12h','Mercure à 3,8° S de Jupiter','Rapprochement apparent entre Mercure et Jupiter.','Cancer','imp'),
+  mAn('27','14:32','0,5° N'),
+  apo('28','07:11'),
+  xv('28','18:32','Mars à 4,3° S des Pléiades','Rapprochement apparent entre Mars et l\'amas des Pléiades.','Taureau'),
+  ph('29','23:57','FM'), SATE ]},
 "Juillet": { events:[
-  ["07","19:29","DERNIER QUARTIER","Moitié de la face visible de la Lune éclairée.","Bélier"],
-  ["10","22:54","Pléiades à 1,1° S de la Lune","La Lune passe près des Pléiades.","Taureau"],
-  ["14","09:43","🌑 NOUVELLE LUNE (diurne)","Invisible ce jour-là (conjonction en journée).","Cancer"],
-  ["17","00:07","Regulus à 0,5° N de la Lune","La Lune passe près de Regulus.","Lion"],
-  ["24","21:00","Antarès à 0,6° N de la Lune","La Lune passe près d'Antarès.","Scorpion"], SAT ]},
+  xv('01','10h','Mercure à l\'aphélie','Mercure au point le plus éloigné du Soleil.','—'),
+  na('04','07:51'),
+  xv('06','18h','Terre à l\'aphélie','La Terre est au point le plus éloigné du Soleil sur son orbite.','—'),
+  ph('07','19:29','LQ'),
+  xv('09','14:36','Vénus à 0,9° N de Regulus','Rapprochement apparent entre Vénus et Regulus.','Lion','imp'),
+  mPl('10','22:54','1,1° S'),
+  xv('13','01h','Mercure en conjonction inférieure','Mercure passe entre la Terre et le Soleil (invisible).','—'),
+  per('13','07:50'),
+  ph('14','09:43','NM'),
+  mRe('17','00:07','0,5° N'),
+  nd('17','00:27'),
+  mVe('17','16:31','2,0° N'),
+  mSp('21','03:21','2,4° N'),
+  ph('21','11:06','FQ'),
+  mAn('24','21:00','0,6° N'),
+  apo('25','16:45'),
+  met('28','10h','Delta-Aquarides','Verseau'),
+  xv('29','12h','Jupiter en conjonction avec le Soleil','Jupiter derrière le Soleil (invisible).','—'),
+  ph('29','14:36','FM'),
+  na('31','11:54'), SATE ]},
 "Août": { events:[
-  ["06","02:21","DERNIER QUARTIER","Moitié de la face visible de la Lune éclairée.","Taureau"],
-  ["10","22:38","Pollux à 3,6° N de la Lune","La Lune passe près de Pollux.","Gémeaux"],
-  ["12","17:37","🌑 NOUVELLE LUNE (limite du jour)","Conjonction en toute fin d'après-midi.","Lion"],
-  ["13","02h","Pluie d'étoiles filantes des Perséides","Une des pluies les plus actives de l'année.","Persée"],
-  ["20","02:46","PREMIER QUARTIER","Moitié de la face visible de la Lune éclairée.","Scorpion"], SAT ]},
+  xv('02','08h','Mercure à sa plus grande élongation (ouest, matin)','Meilleur moment pour observer Mercure avant le lever du Soleil.','—','imp'),
+  ph('06','02:21','LQ'),
+  mPl('07','06:23','1,2° S'),
+  mMa('09','05:31','4,4° S'),
+  per('10','11:18'),
+  mPo('10','22:38','3,6° N'),
+  mMe('11','12:48','2,1° S'),
+  ph('12','17:37','NM'),
+  xv('12','17:46','Éclipse solaire totale','Totale sur le Groenland, l\'Islande et le nord de l\'Espagne ; partielle en Europe et au nord de l\'Afrique (couverture variable selon le lieu). Soleil bas à l\'ouest : horizon dégagé et lunettes ISO 12312-2 obligatoires.','@sun','imp eclipse'),
+  met('13','02h','Perséides','Persée'),
+  nd('13','09:56'),
+  xv('14','09h','Mercure au périhélie','Mercure au point le plus proche du Soleil.','—'),
+  xv('15','06h','Vénus à sa plus grande élongation (est, soir)','Vénus à son écart maximal avec le Soleil, visible le soir.','—','imp'),
+  mVe('16','08:47','2,1° N'),
+  mSp('17','11:49','2,4° N'),
+  ph('20','02:46','FQ'),
+  mAn('21','04:18','0,6° N'),
+  apo('22','08:20'),
+  xv('27','17h','Mercure en conjonction supérieure','Mercure passe derrière le Soleil (invisible).','—'),
+  na('27','18:47'),
+  xv('28','04:13','Éclipse partielle de Lune','Partielle (magnitude ≈ 0,93) ; visible depuis l\'Europe, l\'Afrique et les Amériques. En Europe de l\'Ouest la Lune est basse à l\'ouest à l\'aube : horizon dégagé nécessaire.','@phase:FM','imp eclipse'),
+  ph('28','04:18','FM'), SATE ]},
 "Septembre": { events:[
-  ["06","18:24","Mars à 3,0° S de la Lune","Rapprochement apparent Mars-Lune.","Vierge"],
-  ["08","18:13","Jupiter 0,8° S de la Lune (occultation)","La Lune passe devant Jupiter.","Lion"],
-  ["09","19:36","Regulus à 0,5° N de la Lune","La Lune passe près de Regulus.","Lion"],
-  ["11","03:27","🌑 NOUVELLE LUNE","Meilleure nuit d'observation du mois.","Vierge"],
-  ["13","20:53","Spica à 2,4° N de la Lune","La Lune passe près de Spica.","Vierge"],
-  ["18","20:44","PREMIER QUARTIER","Moitié de la face visible de la Lune éclairée.","Sagittaire"],
-  ["23","00:06","Équinoxe d'automne","Jour et nuit quasi égaux.","Vierge"],
-  ["26","00h","Neptune à l'opposition","Neptune au plus proche et au plus brillant.","Poissons"],
-  ["26","01:49","Mercure à 0,8° N de Spica","Rapprochement apparent Mercure-Spica.","Vierge"], SAT ]},
+  xv('01','13:24','Vénus à 1,2° S de Spica','Rapprochement apparent entre Vénus et Spica.','Vierge','imp'),
+  mPl('03','12:03','1,2° S'),
+  ph('04','07:51','LQ'),
+  mMa('06','18:24','3,0° S'),
+  per('06','20:26','368 255'),
+  mPo('07','06:32','3,6° N'),
+  mJu('08','18:13','0,8° S',true),
+  nd('09','19:17'),
+  mRe('09','19:36','0,5° N'),
+  ph('11','03:27','NM'),
+  mSp('13','20:53','2,4° N'),
+  mVe('14','11:10','0,5° S',true),
+  mAn('17','12:18','0,6° N'),
+  ph('18','20:44','FQ'),
+  apo('19','03:00','404 217'),
+  xv('23','00:06','Équinoxe d\'automne','Le Soleil traverse l\'équateur céleste vers le sud : jour et nuit quasi égaux.','@sun','imp'),
+  na('24','02:40'),
+  xv('26','00h','Neptune à l\'opposition','Neptune au plus proche et au plus brillant (télescope / jumelles).','Poissons','imp'),
+  xv('26','01:49','Mercure à 0,8° N de Spica','Rapprochement apparent entre Mercure et Spica.','Vierge','imp'),
+  ph('26','16:49','FM'),
+  mPl('30','17:39','1,1° S'), SATE ]},
 "Octobre": { events:[
-  ["07","02:57","Regulus à 0,6° N de la Lune","La Lune passe près de Regulus.","Lion"],
-  ["10","15:50","🌑 NOUVELLE LUNE (diurne)","Invisible ce jour-là (conjonction en journée).","Balance"],
-  ["12","20:08","Mercure à 2,1° N de la Lune","Rapprochement apparent Mercure-Lune.","Balance"],
-  ["14","20:25","Antarès à 0,4° N de la Lune","La Lune passe très près d'Antarès.","Scorpion"],
-  ["21","18h","Pluie d'étoiles filantes des Orionides","Débris de la comète de Halley.","Orion"],
-  ["26","04:12","PLEINE LUNE","Face visible de la Lune entièrement éclairée.","Bélier"],
-  ["28","01:11","Pléiades à 1,0° S de la Lune","La Lune passe près des Pléiades.","Taureau"],
-  ["31","18:00","Pollux à 4,0° N de la Lune","La Lune passe près de Pollux.","Gémeaux"], SAT ]},
+  per('01','20:41','369 338'),
+  ph('03','13:25','LQ'),
+  xv('04','12h','Saturne à l\'opposition','Saturne au plus proche et au plus brillant, visible toute la nuit (anneaux observables au télescope).','Poissons','imp'),
+  mPo('04','12:27','3,8° N'),
+  mMa('05','05:30','1,2° S',true),
+  mJu('06','10:18','0,2° S',true),
+  nd('07','01:19'),
+  mRe('07','02:57','0,6° N'),
+  ph('10','15:50','NM'),
+  mVe('12','02:30','3,1° S'),
+  xv('12','10h','Mercure à sa plus grande élongation (est, soir)','Meilleur moment pour observer Mercure en soirée.','—','imp'),
+  mMe('12','20:08','2,1° N'),
+  mAn('14','20:25','0,4° N'),
+  apo('16','22:56','404 639'),
+  ph('18','16:13','FQ'),
+  na('21','08:53'),
+  met('21','18h','Orionides','Orion'),
+  xv('24','03h','Vénus en conjonction inférieure','Vénus passe entre la Terre et le Soleil (invisible).','—'),
+  ph('26','04:12','FM'),
+  mPl('28','01:11','1,0° S'),
+  per('28','18:01','364 411'),
+  mPo('31','18:00','4,0° N'), SATE ]},
 "Novembre": { events:[
-  ["01","20:28","DERNIER QUARTIER","Moitié de la face visible de la Lune éclairée.","Lion"],
-  ["02","23:11","Jupiter 0,5° N de la Lune (occultation)","La Lune passe devant Jupiter.","Lion"],
-  ["05","19h","Pluie d'étoiles filantes des Taurides Sud","Météores issus de la comète Encke.","Taureau"],
-  ["09","07:02","🌑 NOUVELLE LUNE (diurne)","Invisible ce jour-là (conjonction en journée).","Scorpion"],
-  ["11","03:58","Antarès à 0,3° N de la Lune","La Lune passe très près d'Antarès.","Scorpion"],
-  ["12","18h","Pluie d'étoiles filantes des Taurides Nord","Météores issus de l'astéroïde 2004 TG10.","Taureau"],
-  ["18","00h","Pluie d'étoiles filantes des Léonides","Météores de la comète Tempel-Tuttle.","Lion"],
-  ["25","23h","Uranus à l'opposition","Uranus au plus proche et au plus brillant.","Taureau"],
-  ["28","01:27","Pollux à 4,2° N de la Lune","La Lune passe près de Pollux.","Gémeaux"],
-  ["30","19:32","Mars à 3,3° N de la Lune","Rapprochement apparent Mars-Lune.","Sagittaire"], SAT ]},
+  ph('01','20:28','LQ'),
+  mMa('02','14:23','1,1° N',true),
+  mJu('02','23:11','0,5° N',true),
+  nd('03','03:02'),
+  mRe('03','08:40','0,8° N'),
+  xv('04','14h','Mercure en conjonction inférieure','Mercure passe entre la Terre et le Soleil (invisible).','—'),
+  met('05','19h','Taurides Sud','Taureau'),
+  mVe('07','11:31','1,1° N',true),
+  mSp('07','12:40','2,4° N'),
+  ph('09','07:02','NM'),
+  xv('10','09h','Mercure au périhélie','Mercure au point le plus proche du Soleil.','—'),
+  xv('10','13:49','Vénus à 0,1° S de Spica','Rapprochement apparent entre Vénus et Spica.','Vierge','imp'),
+  mAn('11','03:58','0,3° N'),
+  met('12','18h','Taurides Nord','Taureau'),
+  apo('13','17:50','405 619'),
+  xv('16','04h','Mars à 1,2° N de Jupiter','Rapprochement apparent entre Mars et Jupiter.','Lion','imp'),
+  ph('17','11:48','FQ'),
+  na('17','11:49'),
+  met('18','00h','Léonides','Lion'),
+  xv('20','23h','Mercure à sa plus grande élongation (19,6° O)','Meilleur moment pour observer Mercure le matin.','Balance','imp'),
+  mPl('24','11:18','0,9° S'),
+  ph('24','14:53','FM',' · SUPERLUNE',SUPEREXPL+' Périgée le 25 nov. (359 348 km).','super'),
+  xv('25','07:47','Mars à 1,6° N de Regulus','Rapprochement apparent entre Mars et Regulus.','Lion','imp'),
+  per('25','20:58','359 348'),
+  xv('25','23h','Uranus à l\'opposition','Uranus au plus proche et au plus brillant (jumelles, ciel sombre).','Taureau','imp'),
+  mPo('28','01:27','4,2° N'),
+  nd('30','03:34'),
+  mJu('30','09:18','1,2° N',true),
+  mRe('30','14:35','1,1° N'),
+  mMa('30','19:32','3,3° N'), SATE ]},
 "Décembre": { events:[
-  ["04","18:36","Spica à 2,5° N de la Lune","La Lune passe près de Spica.","Vierge"],
-  ["09","00:52","🌑 NOUVELLE LUNE","Meilleure nuit d'observation du mois.","Sagittaire"],
-  ["21","20:50","Solstice d'hiver","Jour le plus court, nuit la plus longue.","Sagittaire"],
-  ["21","22:37","Pléiades à 1,0° S de la Lune","La Lune passe près des Pléiades.","Taureau"],
-  ["22","22h","Pluie d'étoiles filantes des Ursides","Météores de la comète 8P/Tuttle.","Petite Ourse"],
-  ["24","01:28","PLEINE LUNE","Face visible de la Lune entièrement éclairée.","Gémeaux"],
-  ["27","17:32","Jupiter à 1,5° N de la Lune","Rapprochement apparent Jupiter-Lune.","Lion"],
-  ["27","22:44","Regulus à 1,4° N de la Lune","La Lune passe près de Regulus.","Lion"],
-  ["30","18:59","DERNIER QUARTIER","Moitié de la face visible de la Lune éclairée.","Vierge"], SAT ]}
+  ph('01','06:09','LQ'),
+  mSp('04','18:36','2,5° N'),
+  ph('09','00:52','NM'),
+  apo('11','06:46'),
+  xv('12','15:35','Jupiter à 1,3° N de Regulus','Rapprochement apparent entre Jupiter et Regulus.','Lion','imp'),
+  na('14','13:04'),
+  met('14','13h','Géminides','Gémeaux'),
+  ph('17','05:43','FQ'),
+  xv('21','20:50','Solstice d\'hiver','Jour le plus court et nuit la plus longue de l\'hémisphère nord.','@sun','imp'),
+  mPl('21','22:37','1,0° S'),
+  met('22','22h','Ursides','Petite Ourse'),
+  ph('24','01:28','FM',' · SUPERLUNE',SUPEREXPL+' Périgée le même jour à 08:30.','super'),
+  xv('24','08h','Mercure à l\'aphélie','Mercure au point le plus éloigné du Soleil.','—'),
+  per('24','08:30'),
+  mPo('25','11:41','4,4° N'),
+  xv('25','21h','Vénus au périhélie','Vénus au point le plus proche du Soleil.','—'),
+  nd('27','07:55'),
+  mJu('27','17:32','1,5° N'),
+  mRe('27','22:44','1,4° N'),
+  ph('30','18:59','LQ'), SATE ]}
 };
+// chronological order inside each month (satellite card stays last)
+MONTHS.forEach((m, mi) => {
+  const evs = data[m].events.filter(e => e[0] !== '—').sort((a, b) => gmtMs(mi, a[0], a[1]) - gmtMs(mi, b[0], b[1]));
+  data[m].events = [...evs, SATE];
+});
+const ALL_EVENTS = [];
+MONTHS.forEach((m, mi) => data[m].events.forEach(e => { if (e[0] !== '—') ALL_EVENTS.push({ mi, e, ms: gmtMs(mi, e[0], e[1]) }); }));
+ALL_EVENTS.sort((a, b) => a.ms - b.ms);
 
 function evConstel(mi, e) {
-  const m = e[2].match(/NOUVELLE LUNE|PLEINE LUNE|PREMIER QUARTIER|DERNIER QUARTIER/);
-  if (!m) return e[4];
-  const ty = { 'NOUVELLE LUNE':0, 'PREMIER QUARTIER':1, 'PLEINE LUNE':2, 'DERNIER QUARTIER':3 }[m[0]];
-  return eclConstel(norm(sunLon(gmtMs(mi, e[0], e[1])) + ty * 90));
+  const c = e[4], ms = gmtMs(mi, e[0], e[1]);
+  if (c === '@moon') return eclConstel(moonEq(ms).lon);
+  if (c === '@sun') return eclConstel(sunLon(ms));
+  if (c.startsWith('@phase:')) { const ty = { NM:0, FQ:1, FM:2, LQ:3 }[c.slice(7)]; return eclConstel(norm(sunLon(ms) + ty * 90)); }
+  return c;
 }
 const starDec = { "Antarès":-26.4, "Spica":-11.2, "Regulus":12.0, "Pollux":28.0, "Pléiades":24.1 };
 function altBadge(title) {
   for (const k in starDec) {
     if (title.includes(k)) {
-      const alt = 90 - Math.abs(LOCS[currentLocation].lat - starDec[k]);
-      const low = alt < 20;
+      const alt = 90 - Math.abs(LOCS[currentLocation].lat - starDec[k]), low = alt < 20;
       return `<span class="ml-1 px-1.5 py-0.5 rounded text-[10px] ${low ? 'bg-orange-900/40 text-orange-300' : 'bg-green-900/30 text-green'}">↑ ${alt.toFixed(0)}° max${low ? ' (bas)' : ''}</span>`;
     }
   }
@@ -632,7 +874,7 @@ function altBadge(title) {
 }
 
 // ====================================================================
-//  STARS / GALAXIES / MANAZIL / SEASONS
+//  STARS / GALAXIES / MANAZIL / SEASONS / SPOTS
 // ====================================================================
 // [rank, name, mag, constellation, url, arabic, translit, dec, RA(h)]
 const topStars = [
@@ -687,6 +929,9 @@ const topStars = [
 ["49","Hamal","2,01","Bélier","https://fr.wikipedia.org/wiki/Hamal","الحَمَل","Al-Hamal",23.5,2.120],
 ["50","Diphda","2,04","Baleine","https://fr.wikipedia.org/wiki/Diphda","الضِّفدَع","Ad-Difda'",-18.0,0.727]
 ];
+buildStarWiki();
+const magOf = s => parseFloat(s[2].replace(',', '.'));
+// [rank, name, mag, constellation, conditions, url, arabic, dec]
 const topGalaxies = [
 ["1","Grand Nuage de Magellan (LMC)","0,9","Dorade / Table","Œil nu, hémisphère sud","https://fr.wikipedia.org/wiki/Grand_Nuage_de_Magellan","سحابة ماجلان الكبرى",-69.8],
 ["2","Petit Nuage de Magellan (SMC)","2,7","Toucan","Œil nu, hémisphère sud","https://fr.wikipedia.org/wiki/Petit_Nuage_de_Magellan","سحابة ماجلان الصغرى",-72.8],
@@ -716,34 +961,20 @@ function visBadge(dec) {
   return `<span class="text-green text-xs">✓ ${alt.toFixed(0)}° max</span>`;
 }
 const manazilAlQamar = [
-["1","الشَّرَطَان","Ash-Sharatan","Les deux signes / cornes","Bélier"],
-["2","البُطَين","Al-Butayn","Le petit ventre","Bélier"],
-["3","الثُّرَيّا","Ath-Thurayya","Les Pléiades","Taureau"],
-["4","الدَّبَران","Ad-Dabaran","Le suiveur (des Pléiades)","Taureau"],
-["5","الهَقْعَة","Al-Haq'ah","La marque blanche (tête du cheval)","Orion"],
-["6","الهَنْعَة","Al-Han'ah","La marque courbée","Gémeaux"],
-["7","الذِّراع","Adh-Dhira'","Le bras (avant-patte du lion)","Gémeaux"],
-["8","النَّثْرَة","An-Nathrah","L'éternuement (museau du lion)","Cancer"],
-["9","الطَّرْف","At-Tarf","Le regard (œil du lion)","Lion"],
-["10","الجَبْهَة","Al-Jabhah","Le front (du lion)","Lion"],
-["11","الزُّبْرَة","Az-Zubrah","La crinière (du lion)","Lion"],
-["12","الصَّرْفَة","As-Sarfah","Le changement (fin de la chaleur)","Lion"],
-["13","العَوَّاء","Al-'Awwa'","L'aboyeuse","Vierge"],
-["14","السِّماك الأَعْزَل","As-Simak Al-A'zal","L'élevé désarmé (Spica)","Vierge"],
-["15","الغَفْر","Al-Ghafr","La couverture / le pardon","Vierge"],
-["16","الزُّبانَى","Az-Zubana","Les pinces (de la Balance)","Balance"],
-["17","الإكْلِيل","Al-Iklil","La couronne","Scorpion"],
-["18","القَلْب","Al-Qalb","Le cœur (Antarès)","Scorpion"],
-["19","الشَّوْلَة","Ash-Shawlah","Le dard levé (queue du scorpion)","Scorpion"],
-["20","النَّعائِم","An-Na'a'im","Les autruches","Sagittaire"],
-["21","البَلْدَة","Al-Baldah","La contrée (région vide)","Sagittaire"],
-["22","سَعْد الذَّابِح","Sa'd Adh-Dhabih","La chance de l'égorgeur","Capricorne"],
-["23","سَعْد بُلَع","Sa'd Bula'","La chance de l'avaleur","Verseau"],
-["24","سَعْد السُّعُود","Sa'd As-Su'ud","La chance des chances","Verseau"],
-["25","سَعْد الأَخْبِيَة","Sa'd Al-Akhbiyah","La chance des tentes","Verseau"],
-["26","الفَرْغ المُقَدَّم","Al-Fargh Al-Muqaddam","Le déversoir avant","Pégase"],
-["27","الفَرْغ المُؤَخَّر","Al-Fargh Al-Mu'akhkhar","Le déversoir arrière","Pégase"],
-["28","بَطْن الحُوت","Batn Al-Hut","Le ventre du poisson","Poissons"]
+["1","الشَّرَطَان","Ash-Sharatan","Les deux signes / cornes","Bélier"],["2","البُطَين","Al-Butayn","Le petit ventre","Bélier"],
+["3","الثُّرَيّا","Ath-Thurayya","Les Pléiades","Taureau"],["4","الدَّبَران","Ad-Dabaran","Le suiveur (des Pléiades)","Taureau"],
+["5","الهَقْعَة","Al-Haq'ah","La marque blanche (tête du cheval)","Orion"],["6","الهَنْعَة","Al-Han'ah","La marque courbée","Gémeaux"],
+["7","الذِّراع","Adh-Dhira'","Le bras (avant-patte du lion)","Gémeaux"],["8","النَّثْرَة","An-Nathrah","L'éternuement (museau du lion)","Cancer"],
+["9","الطَّرْف","At-Tarf","Le regard (œil du lion)","Lion"],["10","الجَبْهَة","Al-Jabhah","Le front (du lion)","Lion"],
+["11","الزُّبْرَة","Az-Zubrah","La crinière (du lion)","Lion"],["12","الصَّرْفَة","As-Sarfah","Le changement (fin de la chaleur)","Lion"],
+["13","العَوَّاء","Al-'Awwa'","L'aboyeuse","Vierge"],["14","السِّماك الأَعْزَل","As-Simak Al-A'zal","L'élevé désarmé (Spica)","Vierge"],
+["15","الغَفْر","Al-Ghafr","La couverture / le pardon","Vierge"],["16","الزُّبانَى","Az-Zubana","Les pinces (de la Balance)","Balance"],
+["17","الإكْلِيل","Al-Iklil","La couronne","Scorpion"],["18","القَلْب","Al-Qalb","Le cœur (Antarès)","Scorpion"],
+["19","الشَّوْلَة","Ash-Shawlah","Le dard levé (queue du scorpion)","Scorpion"],["20","النَّعائِم","An-Na'a'im","Les autruches","Sagittaire"],
+["21","البَلْدَة","Al-Baldah","La contrée (région vide)","Sagittaire"],["22","سَعْد الذَّابِح","Sa'd Adh-Dhabih","La chance de l'égorgeur","Capricorne"],
+["23","سَعْد بُلَع","Sa'd Bula'","La chance de l'avaleur","Verseau"],["24","سَعْد السُّعُود","Sa'd As-Su'ud","La chance des chances","Verseau"],
+["25","سَعْد الأَخْبِيَة","Sa'd Al-Akhbiyah","La chance des tentes","Verseau"],["26","الفَرْغ المُقَدَّم","Al-Fargh Al-Muqaddam","Le déversoir avant","Pégase"],
+["27","الفَرْغ المُؤَخَّر","Al-Fargh Al-Mu'akhkhar","Le déversoir arrière","Pégase"],["28","بَطْن الحُوت","Batn Al-Hut","Le ventre du poisson","Poissons"]
 ];
 const seasonConstellations = {
   "Hiver": ["Orion","Taureau","Gémeaux","Cocher","Grand Chien","Petit Chien"],
@@ -779,15 +1010,15 @@ const SPOTS = {
 // ====================================================================
 //  STATE
 // ====================================================================
-const today = new Date();
 function computeDefaultMonth() {
   const mi = today.getMonth();
-  const remaining = data[MONTHS[mi]].events.some(e => e[0] !== '—' && parseInt(e[0], 10) >= today.getDate());
+  const remaining = data[MONTHS[mi]].events.some(e => e[0] !== '—' && gmtMs(mi, e[0], e[1]) >= LOAD_MS);
   return remaining ? mi : (mi + 1) % 12;
 }
 let selectedMonth = computeDefaultMonth();
 let currentView = 'calendar';
 let readyDirty = true;
+let evFilter = 'all';
 let uid = 0;
 function toggleDetail(id) { $(id).classList.toggle('open'); }
 
@@ -819,40 +1050,117 @@ function changeLocation(loc) {
 $('locBizerte').onclick = () => changeLocation('Bizerte');
 $('locParis').onclick = () => changeLocation('Paris');
 $('defaultLocSelect').onchange = e => { saveDefaultLoc(e.target.value); changeLocation(e.target.value); };
+$('refreshBtn').onclick = () => { LOAD_MS = Date.now(); today = new Date(LOAD_MS); selectedMonth = computeDefaultMonth(); changeLocation(currentLocation); };
 
 // ====================================================================
-//  CALENDAR : OVERVIEW + EVENTS
+//  CALENDAR : INSTANT CARD
 // ====================================================================
-function refDayFor(mi) { return mi === today.getMonth() ? today.getDate() : 15; }
-
-function moonGridHtml(mi, L) {
-  const dim = new Date(Date.UTC(2026, mi + 1, 0)).getUTCDate();
-  const startDow = (new Date(Date.UTC(2026, mi, 1)).getUTCDay() + 6) % 7;
-  const head = ['LUN','MAR','MER','JEU','VEN','SAM','DIM'].map(d => `<div class="text-center text-[9px] font-bold ${d === 'VEN' || d === 'SAM' ? 'text-green' : 'text-gray-500'}">${d}</div>`).join('');
-  const cells = []; const dark = [];
-  for (let i = 0; i < startDow; i++) cells.push('<div></div>');
-  for (let d = 1; d <= dim; d++) {
-    const dayMs = Date.UTC(2026, mi, d);
-    const off = tzOffset(L.tz, new Date(dayMs + 12 * 3600000));
-    const t = dayMs - off * 60000 + 22 * 3600000;
-    const e = elongAt(t), ill = (1 - Math.cos(e * R)) / 2;
-    const dow = new Date(dayMs).getUTCDay(), wkd = (dow === 5 || dow === 6);
-    const isToday = (mi === today.getMonth() && d === today.getDate());
-    if (ill < 0.25) dark.push(d);
-    cells.push(`<div class="relative rounded border ${wkd ? 'border-green-700/60 bg-green-900/20' : 'border-border bg-panel2/60'} py-1 text-center">
-      ${isToday ? '<span class="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-red-500 dot-pulse"></span>' : ''}
-      <div class="text-[10px] text-gray-400">${d}</div><div class="text-base leading-none">${moonEmoji(e)}</div><div class="text-[9px] text-gray-500">${(ill * 100).toFixed(0)}%</div></div>`);
+function getSessions(mi, L) {
+  const lp = localParts(LOAD_MS, L.tz), ly = +lp.year, lm = +lp.month - 1, ld = +lp.day;
+  const isCur = (ly === 2026 && lm === mi);
+  let eve = null, morn = null;
+  if (isCur) {
+    for (let k = 0; k < 4 && !eve; k++) { const w = nightWindows(2026, mi, ld + k, L); if (w.eve[1] > LOAD_MS) eve = { start: w.eve[0], end: w.eve[1], p: w.p }; }
+    for (let k = 0; k < 4 && !morn; k++) { const w = nightWindows(2026, mi, ld + k, L); if (w.morn[1] > LOAD_MS) morn = { start: w.morn[0], end: w.morn[1], p: w.p }; }
+  } else {
+    const w = nightWindows(2026, mi, 15, L);
+    eve = { start: w.eve[0], end: w.eve[1], p: w.p }; morn = { start: w.morn[0], end: w.morn[1], p: w.p };
   }
-  // contiguous dark ranges
-  const ranges = []; let s = null, prev = null;
-  dark.forEach(d => { if (s === null) { s = d; prev = d; } else if (d === prev + 1) prev = d; else { ranges.push([s, prev]); s = d; prev = d; } });
-  if (s !== null) ranges.push([s, prev]);
-  const darkTxt = ranges.length ? ranges.map(r => r[0] === r[1] ? `${r[0]}` : `${r[0]}–${r[1]}`).join(', ') : '—';
-  return { html: `<div class="grid grid-cols-7 gap-1 mb-1">${head}</div><div class="grid grid-cols-7 gap-1">${cells.join('')}</div>`, darkTxt, darkCount: dark.length };
+  let def = 'eve';
+  if (isCur) {
+    if (LOAD_MS >= morn.start && LOAD_MS <= morn.end) def = 'morn';
+    else if (LOAD_MS >= eve.start && LOAD_MS <= eve.end) def = 'eve';
+    else def = (morn.start < eve.start) ? 'morn' : 'eve';
+  }
+  return { isCur, eve, morn, def };
+}
+function instantHtml(L) {
+  const T = ms => fmtTime(ms, L.tz);
+  const lp = localParts(LOAD_MS, L.tz), y = +lp.year, m = +lp.month - 1, d = +lp.day;
+  const ang = getAngles(currentLocation), P = prayerTimes(Date.UTC(y, m, d), L, ang);
+  const sd = sunEq(LOAD_MS), Hd = ((LOAD_MS - P.noon) / 60000 / 4) * R;
+  const sa = Math.asin(Math.sin(L.lat * R) * Math.sin(sd.dec * R) + Math.cos(L.lat * R) * Math.cos(sd.dec * R) * Math.cos(Hd)) / R;
+  const sky = sa > -0.833 ? '☀️ Jour' : sa > -6 ? '🌇 Crépuscule civil' : sa > -12 ? '🌆 Crépuscule nautique' : sa > -18 ? '🌃 Crépuscule astronomique' : '🌌 Nuit noire';
+  const mp = moonAltAz(LOAD_MS, L.lat, L.lng), cst = eclConstel(mp.lon), mz = manazilAlQamar[manzilIndex(mp.lon)];
+  const full = new Date(LOAD_MS).toLocaleString('fr-FR', { weekday:'long', day:'numeric', month:'long', year:'numeric', hour:'2-digit', minute:'2-digit', second:'2-digit', timeZone: L.tz });
+  const S = getSessions(m, L);
+  const sessTxt = (lab, s) => (LOAD_MS >= s.start && LOAD_MS <= s.end) ? `<b class="text-gold">${lab} en cours</b> (jusqu'à ${T(s.end)})` : `${lab} ${relLabel(s.start)} (${T(s.start)} → ${T(s.end)})`;
+  const ne = ALL_EVENTS.find(o => o.ms >= LOAD_MS), ni = ALL_EVENTS.find(o => o.ms >= LOAD_MS && (o.e[5] || '').includes('imp'));
+  const evLine = (lab, o) => o ? `<div class="text-xs">${lab} : <a href="javascript:void(0)" onclick="selectedMonth=${o.mi};renderCalendar()" class="text-sky underline">${o.e[2]}</a> — <span class="text-gold">${new Date(o.ms).toLocaleDateString('fr-FR', { day:'2-digit', month:'short', timeZone:L.tz })} ${T(o.ms)}</span> <span class="text-gray-500">(${relLabel(o.ms)})</span></div>` : '';
+  return `<div class="bg-panel border border-gold/40 rounded-lg p-3 mb-3">
+    <div class="flex justify-between items-start gap-2 mb-1"><div class="text-gold font-bold text-sm">🕐 Instantané — date et heure exactes du chargement</div></div>
+    <div class="text-[11px] text-gray-300 mb-2">${full} <span class="text-gray-500">(${L.flag} ${currentLocation})</span></div>
+    <div class="grid gap-1 sm:grid-cols-2 text-xs">
+      <div>${sky} <span class="text-gray-500">(Soleil ${sa.toFixed(1)}°)</span></div>
+      <div>${moonEmoji(mp.elong)} ${phaseName(mp.elong)} · ${(mp.illum * 100).toFixed(0)} % · âge ${mp.age.toFixed(1)} j · ${mp.alt > 0 ? `${compass(mp.az)} ${mp.alt.toFixed(0)}°` : 'sous l\'horizon'}</div>
+      <div>🌌 Lune dans ${constelLink(cst, false)} · manzil <span class="arabic text-gold">${mz[0]} ${mz[1]}</span></div>
+      <div>🕌 Fajr ${T(P.fajr)} · Lever ${T(P.sunrise)} · Maghrib ${T(P.maghrib)} · Icha ${T(P.isha)} <span class="text-gray-500">(${ang.fajr}°/${ang.isha}°)</span></div>
+    </div>
+    <div class="mt-2 space-y-0.5"><div class="text-xs">🌆 ${sessTxt('Soirée', S.eve)}</div><div class="text-xs">🌅 ${sessTxt('Aube', S.morn)}</div>${evLine('⏭ Prochain événement', ne)}${evLine('⭐ Prochain événement important', ni)}</div></div>`;
 }
 
+// ====================================================================
+//  CALENDAR : MOON GRID (white frame = full, black frame = new, gradient = illumination)
+// ====================================================================
+function moonCardHtml(mi, L) {
+  const T = ms => fmtTime(ms, L.tz);
+  const dim = new Date(Date.UTC(2026, mi + 1, 0)).getUTCDate();
+  const startDow = (new Date(Date.UTC(2026, mi, 1)).getUTCDay() + 6) % 7;
+  const ltod = localHM(LOAD_MS, L.tz);
+  const fullDays = new Set(), newDays = new Set();
+  PHASES_RAW.forEach(([ty, iso]) => {
+    if (ty !== 0 && ty !== 2) return;
+    const p = localParts(Date.parse(iso + ':00Z'), L.tz);
+    if (+p.year === 2026 && +p.month - 1 === mi) (ty === 2 ? fullDays : newDays).add(+p.day);
+  });
+  const lp = localParts(LOAD_MS, L.tz), todayD = (+lp.year === 2026 && +lp.month - 1 === mi) ? +lp.day : -1;
+  const head = ['LUN','MAR','MER','JEU','VEN','SAM','DIM'].map(x => `<div class="text-center text-[9px] font-bold ${x === 'VEN' || x === 'SAM' ? 'text-green' : 'text-gray-500'}">${x}</div>`).join('');
+  const cells = []; let darkCount = 0; const dark = [];
+  for (let i = 0; i < startDow; i++) cells.push('<div></div>');
+  for (let d = 1; d <= dim; d++) {
+    const t = dayStartMs(2026, mi, d, L) + ltod * 60000;
+    const e = elongAt(t), ill = (1 - Math.cos(e * R)) / 2, waxing = e < 180;
+    const Lg = 4 + 90 * ill, lo = Math.max(2, Lg - 18), hi = Math.min(97, Lg + 6);
+    const bg = `linear-gradient(${waxing ? 90 : 270}deg, hsl(0 0% ${lo}%), hsl(0 0% ${hi}%))`;
+    const txt = Lg > 55 ? '#111' : '#e5e5e5', sub = Lg > 55 ? '#444' : '#9a9a9a';
+    const isFull = fullDays.has(d), isNew = newDays.has(d);
+    const border = isFull ? '2px solid #ffffff' : isNew ? '2px solid #000000' : '1px solid #222';
+    const shadow = isNew ? '0 0 0 1px #6b6b6b' : isFull ? '0 0 6px rgba(255,255,255,.55)' : 'none';
+    const dow = new Date(Date.UTC(2026, mi, d)).getUTCDay();
+    if (ill < 0.25) { darkCount++; dark.push(d); }
+    cells.push(`<div class="relative rounded text-center py-1" style="background:${bg};border:${border};box-shadow:${shadow};color:${txt}">
+      ${(dow === 5 || dow === 6) ? '<span class="absolute top-0.5 left-0.5 w-1.5 h-1.5 rounded-full" style="background:#22c55e"></span>' : ''}
+      ${d === todayD ? '<span class="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-red-500 dot-pulse"></span>' : ''}
+      <div class="text-[10px] font-bold">${d}</div><div class="text-sm leading-none">${moonEmoji(e)}</div><div class="text-[8px]" style="color:${sub}">${(ill * 100).toFixed(0)}%</div></div>`);
+  }
+  const ranges = []; let s0 = null, pv = null;
+  dark.forEach(d => { if (s0 === null) { s0 = d; pv = d; } else if (d === pv + 1) pv = d; else { ranges.push([s0, pv]); s0 = d; pv = d; } });
+  if (s0 !== null) ranges.push([s0, pv]);
+  const darkTxt = ranges.length ? ranges.map(r => r[0] === r[1] ? `${r[0]}` : `${r[0]}–${r[1]}`).join(', ') : '—';
+  const names = ['🌑 Nouvelle Lune','🌓 Premier quartier','🌕 Pleine Lune','🌗 Dernier quartier'];
+  const phaseItems = [];
+  PHASES_RAW.forEach(([ty, iso]) => {
+    const ms = Date.parse(iso + ':00Z'), p = localParts(ms, L.tz);
+    if (+p.year === 2026 && +p.month - 1 === mi) {
+      const cst = eclConstel(norm(sunLon(ms) + ty * 90));
+      const tag = SUPER_ISO.has(iso) ? ' <span class="text-gold">⭐ Superlune</span>' : BLUE_ISO.has(iso) ? ' <span class="text-sky">🔵 Lune bleue</span>' : '';
+      phaseItems.push(`<div class="flex justify-between gap-2 text-xs border-b border-border/50 py-1"><span>${names[ty]}${tag}</span><span class="text-gold whitespace-nowrap">${p.day}/${p.month} ${T(ms)}</span><span class="text-right">${constelLink(cst, false)}</span></div>`);
+    }
+  });
+  return `<div class="bg-panel border border-border rounded-lg p-3">
+    <div class="text-sky font-bold text-xs mb-2">🌙 Lune du mois (éclairement à ${String(Math.floor(ltod / 60)).padStart(2, '0')}:${String(ltod % 60).padStart(2, '0')}, heure du chargement)</div>
+    <div class="grid grid-cols-7 gap-1 mb-1">${head}</div><div class="grid grid-cols-7 gap-1">${cells.join('')}</div>
+    <div class="text-[10px] text-gray-500 mt-2 leading-relaxed"><span style="border:2px solid #fff;padding:0 4px;border-radius:3px">&nbsp;</span> cadre blanc = pleine Lune · <span style="border:2px solid #000;box-shadow:0 0 0 1px #6b6b6b;padding:0 4px;border-radius:3px">&nbsp;</span> cadre noir = nouvelle Lune · fond = éclairement (dégradé → croissante, ← décroissante) · <span class="text-green">●</span> VEN/SAM</div>
+    <div class="text-[11px] text-gray-300 mt-2">🌌 Nuits sombres (Lune &lt; 25 %) : <b class="text-gold">${darkCount} nuit${darkCount > 1 ? 's' : ''}</b> — jours ${darkTxt}</div>
+    <div class="mt-2">${phaseItems.join('') || '<div class="text-xs text-gray-500">—</div>'}</div></div>`;
+}
+
+// ====================================================================
+//  CALENDAR : STAR ROSE (compass rose, Soirée / Aube)
+// ====================================================================
+let ROSE = null;
 function eventsInWindows(mi, L) {
-  const evs = data[MONTHS[mi]].events.filter(e => e[0] !== '—').map(e => ({ ms: gmtMs(mi, e[0], e[1]), title: e[2] }));
+  const evs = data[MONTHS[mi]].events.filter(e => e[0] !== '—').map(e => ({ ms: gmtMs(mi, e[0], e[1]), title: e[2], imp: (e[5] || '').includes('imp') }));
   const dim = new Date(Date.UTC(2026, mi + 1, 0)).getUTCDate();
   const eve = [], morn = [], seen = new Set();
   for (let d = 0; d <= dim + 1; d++) {
@@ -866,132 +1174,173 @@ function eventsInWindows(mi, L) {
   eve.sort((a, b) => a.ms - b.ms); morn.sort((a, b) => a.ms - b.ms);
   return { eve, morn };
 }
-
-function buildOverview(mi, L) {
-  const month = MONTHS[mi], T = ms => fmtTime(ms, L.tz);
-  const dim = new Date(Date.UTC(2026, mi + 1, 0)).getUTCDate();
-  const refD = refDayFor(mi), ang = getAngles(currentLocation);
-  const w = nightWindows(2026, mi, refD, L), wF = nightWindows(2026, mi, 1, L), wL = nightWindows(2026, mi, dim, L);
-  const eveMid = (w.eve[0] + w.eve[1]) / 2, mornMid = (w.morn[0] + w.morn[1]) / 2;
-  const sEve = skySnapshot(eveMid, L), sMorn = skySnapshot(mornMid, L);
-  const refLabel = new Date(Date.UTC(2026, mi, refD)).toLocaleDateString('fr-FR', { weekday:'short', day:'2-digit', month:'short', timeZone:'UTC' });
-  const win = (a, b) => `${T(a)} → ${T(b)}${localDayKey(a, L.tz) !== localDayKey(b, L.tz) ? ' <span class="text-gray-500 text-[10px]">(+1 j)</span>' : ''}`;
-
-  // phases of the month
-  const names = ['🌑 Nouvelle Lune','🌓 Premier quartier','🌕 Pleine Lune','🌗 Dernier quartier'];
-  const phaseItems = [];
-  PHASES_RAW.forEach(([ty, iso]) => {
-    const ms = Date.parse(iso + ':00Z'), p = localParts(ms, L.tz);
-    if (+p.year === 2026 && +p.month - 1 === mi) {
-      const cst = eclConstel(norm(sunLon(ms) + ty * 90));
-      phaseItems.push(`<div class="flex justify-between gap-2 text-xs border-b border-border/50 py-1"><span>${names[ty]}</span><span class="text-gold whitespace-nowrap">${p.day}/${p.month} ${T(ms)}</span><span class="text-right">${constelLink(cst, false)}</span></div>`);
-    }
-  });
-  const grid = moonGridHtml(mi, L);
-
-  // direction block
-  const bk = bestDir(sEve), maxN = Math.max(...sEve.sectors.map(s => s.n), 1);
-  const bestStars = sEve.sectors[bk].list.slice().sort((a, b) => a.mag - b.mag).slice(0, 5).map(x => x.name).join(', ') || '—';
-  const bars = sEve.sectors.map((s, k) => `<div class="flex items-center gap-1 text-[10px]"><span class="w-16 text-gray-400">${DIR_LONG[k]}</span>
-    <div class="flex-1 h-1.5 bg-panel2 rounded"><div class="h-full rounded ${k === bk ? 'bg-gold' : 'bg-sky/50'}" style="width:${s.n / maxN * 100}%"></div></div>
-    <span class="w-4 text-right ${k === bk ? 'text-gold font-bold' : 'text-gray-500'}">${s.n}</span></div>`).join('');
-  const gcTxt = sEve.gc.alt > 0 ? `centre de la Voie lactée à <b>${sEve.gc.alt.toFixed(0)}°</b> (${DIR_LONG[Math.round(sEve.gc.az / 45) % 8]})${sEve.gc.alt < 15 ? ' — très bas, ciel très sombre requis' : ''}` : 'centre de la Voie lactée sous l\'horizon à cette heure';
-
-  // night cards
-  const ev = eventsInWindows(mi, L);
-  const dayFmt = ms => new Date(ms).toLocaleDateString('fr-FR', { day:'2-digit', month:'short', timeZone: L.tz });
-  const evHtml = list => list.length ? list.map(e => `<div class="text-[11px] py-0.5"><span class="text-sky">${dayFmt(e.ms)}</span> <span class="text-gold">${T(e.ms)}</span> · ${linkify(e.title)}${altBadge(e.title)}</div>`).join('') : '<div class="text-[11px] text-gray-500">Aucun événement dans cette fenêtre ce mois-ci.</div>';
-  const card = (title, subtitle, winTxt, firstTxt, lastTxt, snap, list) => {
-    const k = bestDir(snap), top = snap.sectors[k].list.slice().sort((a, b) => a.mag - b.mag).slice(0, 4).map(x => x.name).join(', ') || '—';
-    return `<div class="bg-panel border border-border rounded-lg p-3">
-      <div class="text-gold font-bold text-sm">${title}</div>
-      <div class="text-[10px] text-gray-500 mb-2">${subtitle}</div>
-      <div class="text-xs mb-1">📅 ${refLabel} : <b class="text-gold">${winTxt}</b></div>
-      <div class="text-[10px] text-gray-500 mb-2">1ᵉʳ : ${firstTxt} · ${dim} : ${lastTxt}</div>
-      <div class="text-xs mb-1">🌙 ${moonStatus(snap.moon)}</div>
-      <div class="text-xs mb-2">🧭 Meilleure direction : <b class="text-gold">${DIR_LONG[k]}</b> (${snap.sectors[k].n} étoiles brillantes : ${top})</div>
-      <div class="text-sky text-[11px] font-bold mb-1">Événements du mois dans cette fenêtre</div>${evHtml(list)}</div>`;
-  };
-  const cardEve = card('🌆 Soirée', 'Maghrib + 30 min → Icha + 2 h', win(w.eve[0], w.eve[1]), win(wF.eve[0], wF.eve[1]), win(wL.eve[0], wL.eve[1]), sEve, ev.eve);
-  const cardMorn = card('🌅 Avant l\'aube', 'Fajr − 1 h → Fajr + 1 h', win(w.morn[0], w.morn[1]), win(wF.morn[0], wF.morn[1]), win(wL.morn[0], wL.morn[1]), sMorn, ev.morn);
-
-  return `
-    <div class="text-gold font-bold text-sm mb-2">📋 Aperçu général — ${month} 2026</div>
-    <div class="grid gap-3 sm:grid-cols-2 mb-3">
-      <div class="bg-panel border border-border rounded-lg p-3">
-        <div class="text-sky font-bold text-xs mb-2">🌙 Lune du mois (illumination à 22 h)</div>
-        ${grid.html}
-        <div class="text-[11px] text-gray-300 mt-2">🌌 Nuits sombres (Lune &lt; 25 %) : <b class="text-gold">${grid.darkCount} nuit${grid.darkCount > 1 ? 's' : ''}</b> — jours ${grid.darkTxt}</div>
-        <div class="mt-2">${phaseItems.join('') || '<div class="text-xs text-gray-500">—</div>'}</div>
-      </div>
-      <div class="bg-panel border border-border rounded-lg p-3">
-        <div class="text-sky font-bold text-xs mb-2">🧭 Direction la plus riche en étoiles à l'œil nu</div>
-        <div class="text-[10px] text-gray-500 mb-2">${refLabel}, ${T(eveMid)} (milieu de la fenêtre du soir) — étoiles du top 50 à plus de 15° au-dessus de l'horizon</div>
-        <div class="text-sm mb-2"><b class="text-gold">${DIR_LONG[bk]}</b> · ${sEve.sectors[bk].n} étoiles sur ${sEve.total} <span class="text-gray-400 text-xs">(${bestStars})</span></div>
-        <div class="space-y-1 mb-2">${bars}</div>
-        <div class="text-[11px] text-gray-300">🌌 ${gcTxt}.</div>
-      </div>
+function roseCardHtml() {
+  return `<div class="bg-panel border border-border rounded-lg p-3">
+    <div class="flex items-center justify-between gap-2 mb-2">
+      <div class="text-sky font-bold text-xs">🧭 Direction la plus riche en étoiles à l'œil nu</div>
+      <div class="flex gap-1"><button id="roseBtnEve" class="px-2 py-1 rounded text-[11px] border">🌆 Soirée</button><button id="roseBtnMorn" class="px-2 py-1 rounded text-[11px] border">🌅 Aube</button></div>
     </div>
-    <div class="grid gap-3 sm:grid-cols-2 mb-2">${cardEve}${cardMorn}</div>
-    <div class="text-[10px] text-gray-600 mb-4">🕌 Maghrib = coucher du Soleil (${T(w.p.maghrib)} le ${refLabel}) · Icha ${T(w.p.isha)} · Fajr ${T(w.p.fajr)} — calcul astronomique ${currentLocation} (Fajr ${ang.fajr}° / Icha ${ang.isha}°)${w.p.approx ? ' · approximation (crépuscule non atteint)' : ''}. Réglable dans le footer.</div>`;
+    <div class="relative mx-auto" style="max-width:440px">
+      <svg id="roseSvg" viewBox="0 0 340 340" class="w-full h-auto block"></svg>
+      <div id="roseTL" class="absolute top-0 left-0 text-[9px] leading-tight bg-black/75 border border-border rounded px-1.5 py-1 pointer-events-none" style="max-width:30%"></div>
+      <div id="roseTR" class="absolute top-0 right-0 text-[9px] leading-tight bg-black/75 border border-border rounded px-1.5 py-1 pointer-events-none text-right" style="max-width:30%"></div>
+      <div id="roseBL" class="absolute bottom-0 left-0 text-[9px] leading-tight bg-black/75 border border-border rounded px-1.5 py-1 pointer-events-none" style="max-width:30%"></div>
+      <div id="roseBR" class="absolute bottom-0 right-0 text-[9px] leading-tight bg-black/75 border border-border rounded px-1.5 py-1 pointer-events-none text-right" style="max-width:30%"></div>
+    </div>
+    <div class="mt-2 flex items-center gap-2"><span class="text-[10px] text-gray-400 whitespace-nowrap">🕐 <span id="roseTime"></span></span>
+      <input id="roseSlider" type="range" min="0" max="60" step="5" value="0" class="flex-1 accent-yellow-400"></div>
+    <div class="text-[9px] text-gray-600 mb-2">Rose : centre = zénith, bord = horizon, N en haut, E à droite. Cercles = hauteur 15°/30°/45°/60°/75°. Étoiles du top 50 ; blanches = au-dessus de 15° (comptées), grises = plus basses. Cliquez une étoile → Wikipédia.</div>
+    <div id="roseDirs" class="flex flex-wrap gap-1 mb-2"></div>
+    <div id="roseBest" class="text-xs mb-2"></div>
+    <details class="mb-2"><summary class="text-sky text-[11px] font-bold"><span class="sum-arrow">▸</span> Toutes les étoiles visibles <span id="roseAllCount"></span></summary><div id="roseAll" class="mt-1"></div></details>
+    <div class="text-sky text-[11px] font-bold mb-1">Événements du mois dans cette fenêtre</div><div id="roseEvents"></div></div>`;
+}
+function initRose(mi, L) {
+  const S = getSessions(mi, L);
+  ROSE = { mi, L, S, ev: eventsInWindows(mi, L), key: S.def, cur: null, t: 0 };
+  $('roseBtnEve').onclick = () => setSession('eve');
+  $('roseBtnMorn').onclick = () => setSession('morn');
+  $('roseSlider').oninput = e => { ROSE.t = ROSE.cur.start + (+e.target.value) * 60000; drawRose(); };
+  setSession(S.def);
+}
+function setSession(key) {
+  ROSE.key = key; const s = ROSE.S[key]; ROSE.cur = s;
+  const total = Math.max(5, Math.round((s.end - s.start) / 60000 / 5) * 5);
+  const sl = $('roseSlider'); sl.max = total;
+  const t0 = ROSE.S.isCur ? Math.min(Math.max(LOAD_MS, s.start), s.end) : s.start;
+  const off = Math.round((t0 - s.start) / 60000 / 5) * 5; sl.value = off;
+  ROSE.t = s.start + off * 60000;
+  drawRose();
+}
+function roseSvgInner(list, bk, moon, gc) {
+  const cx = 170, cy = 170, Rr = 105;
+  const P = (az, alt) => { const r = Rr * (90 - alt) / 90, a = az * R; return [cx + r * Math.sin(a), cy - r * Math.cos(a)]; };
+  let s = `<circle cx="${cx}" cy="${cy}" r="${Rr}" fill="#050505" stroke="#777" stroke-width="1.3"/>`;
+  [15, 30, 45, 60, 75].forEach(a => { const r = Rr * (90 - a) / 90; s += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#303030" stroke-dasharray="3 3"/><text x="${cx + 3}" y="${cy - r + 9}" font-size="7" fill="#777">${a}°</text>`; });
+  s += `<line x1="${cx}" y1="${cy - Rr}" x2="${cx}" y2="${cy + Rr}" stroke="#262626"/><line x1="${cx - Rr}" y1="${cy}" x2="${cx + Rr}" y2="${cy}" stroke="#262626"/>`;
+  const a1 = (bk * 45 - 22.5) * R, a2 = (bk * 45 + 22.5) * R;
+  s += `<path d="M${cx} ${cy} L${cx + Rr * Math.sin(a1)} ${cy - Rr * Math.cos(a1)} A${Rr} ${Rr} 0 0 1 ${cx + Rr * Math.sin(a2)} ${cy - Rr * Math.cos(a2)} Z" fill="rgba(255,209,102,.14)" stroke="#ffd166" stroke-width="1.7" stroke-dasharray="5 3"/>`;
+  for (let az = 0; az < 360; az += 5) {
+    const len = az % 30 === 0 ? 9 : az % 10 === 0 ? 6 : 3, a = az * R;
+    s += `<line x1="${cx + Rr * Math.sin(a)}" y1="${cy - Rr * Math.cos(a)}" x2="${cx + (Rr + len) * Math.sin(a)}" y2="${cy - (Rr + len) * Math.cos(a)}" stroke="${az % 30 === 0 ? '#aaa' : '#555'}" stroke-width="${az % 30 === 0 ? 1.2 : 0.7}"/>`;
+    if (az % 30 === 0) s += `<text x="${cx + (Rr + 17) * Math.sin(a)}" y="${cy - (Rr + 17) * Math.cos(a)}" font-size="7.5" fill="#888" text-anchor="middle" dominant-baseline="middle">${az}°</text>`;
+  }
+  ['N','NE','E','SE','S','SO','O','NO'].forEach((c, k) => {
+    const a = k * 45 * R, card = k % 2 === 0;
+    s += `<text x="${cx + (Rr + 32) * Math.sin(a)}" y="${cy - (Rr + 32) * Math.cos(a)}" font-size="${card ? 13 : 9}" font-weight="${card ? 900 : 500}" fill="${c === 'N' ? '#f87171' : card ? '#ffd166' : '#6ec6ff'}" text-anchor="middle" dominant-baseline="middle">${c}</text>`;
+  });
+  list.filter(o => o.alt > 0).sort((a, b) => magOf(b.s) - magOf(a.s)).forEach(o => {
+    const [x, y] = P(o.az, o.alt), mg = magOf(o.s), rad = Math.max(1.7, 4.6 - (mg + 1.5) * 0.9), counted = o.alt >= 15;
+    s += `<a href="${starUrl(o.s[1])}" target="_blank" rel="noopener"><circle cx="${x}" cy="${y}" r="${rad}" fill="${counted ? '#ffffff' : '#8a8a8a'}" stroke="${counted ? '#ffd166' : 'none'}" stroke-width=".7"><title>${o.s[1]} · mag ${o.s[2]} · ${o.alt.toFixed(0)}° ${compass(o.az)} · ${o.s[3]}</title></circle>${mg <= 1.3 ? `<text x="${x + rad + 2}" y="${y + 2.5}" font-size="7.5" fill="${counted ? '#e5e5e5' : '#8a8a8a'}">${o.s[1]}</text>` : ''}</a>`;
+  });
+  if (gc.alt > 0) { const [x, y] = P(gc.az, gc.alt); s += `<a href="https://fr.wikipedia.org/wiki/Voie_lact%C3%A9e" target="_blank" rel="noopener"><circle cx="${x}" cy="${y}" r="5" fill="none" stroke="#c084fc" stroke-width="1.5"/><text x="${x + 7}" y="${y + 2.5}" font-size="7" fill="#c084fc">Voie lactée (centre)</text><title>Centre de la Voie lactée · ${gc.alt.toFixed(0)}°</title></a>`; }
+  if (moon.alt > 0) { const [x, y] = P(moon.az, moon.alt); s += `<a href="${links['Lune']}" target="_blank" rel="noopener"><circle cx="${x}" cy="${y}" r="9" fill="rgba(255,209,102,.18)" stroke="#ffd166"/><text x="${x}" y="${y + 1}" font-size="14" text-anchor="middle" dominant-baseline="central">${moonEmoji(moon.elong)}</text><title>Lune · ${(moon.illum * 100).toFixed(0)} % · ${moon.alt.toFixed(0)}° ${compass(moon.az)}</title></a>`; }
+  s += `<circle cx="${cx}" cy="${cy}" r="1.6" fill="#888"/><text x="${cx + 4}" y="${cy - 3}" font-size="6.5" fill="#666">zénith</text>`;
+  return s;
+}
+function drawRose() {
+  const { L, cur, t, key } = ROSE, T = ms => fmtTime(ms, L.tz);
+  const list = starsAt(t, L), vis = list.filter(o => o.alt >= 15);
+  const sectors = Array.from({ length: 8 }, () => ({ n: 0, items: [] }));
+  vis.forEach(o => { const k = Math.round(o.az / 45) % 8; sectors[k].n++; sectors[k].items.push(o); });
+  let bk = 0, bs = -1;
+  sectors.forEach((sc, k) => { const v = sc.n * 100 + sc.items.reduce((a, o) => a + (3 - magOf(o.s)), 0); if (v > bs) { bs = v; bk = k; } });
+  const moon = moonAltAz(t, L.lat, L.lng), gc = altAz(t, L.lat, L.lng, 266.42, -29.0);
+  $('roseSvg').innerHTML = roseSvgInner(list, bk, moon, gc);
+  const lab = key === 'eve' ? '🌆 Soirée' : '🌅 Aube', sub = key === 'eve' ? 'Maghrib+30 → Icha+2 h' : 'Fajr−1 h → Fajr+1 h';
+  const dayLbl = new Date(cur.start).toLocaleDateString('fr-FR', { weekday:'short', day:'2-digit', month:'short', timeZone: L.tz });
+  const endsNext = localDayKey(cur.start, L.tz) !== localDayKey(cur.end, L.tz) ? ' (+1 j)' : '';
+  $('roseTL').innerHTML = `<b class="text-gold">${lab}</b><br>${T(cur.start)} → ${T(cur.end)}${endsNext}<br><span class="text-gray-500">${dayLbl}<br>${sub}</span>`;
+  $('roseTR').innerHTML = `<b class="text-gold">🌙 Lune</b><br>${(moon.illum * 100).toFixed(0)} % · ${moon.alt > 0 ? `${compass(moon.az)} ${moon.alt.toFixed(0)}°` : 'sous l\'horizon'}<br><span class="text-gray-500">${moon.illum > 0.5 && moon.alt > 0 ? 'ciel lumineux' : 'ciel sombre'}</span>`;
+  $('roseBL').innerHTML = `<b class="text-gold">🧭 ${DIR_LONG[bk]}</b><br>${sectors[bk].n} étoile${sectors[bk].n > 1 ? 's' : ''} &gt; 15°<br><span class="text-gray-500">sur ${vis.length} visibles</span>`;
+  const near = Math.abs(t - LOAD_MS) < 3 * 60000;
+  $('roseBR').innerHTML = `<b class="text-gold">🕐 ${T(t)}</b><br><span class="text-gray-500">${near ? '≈ maintenant' : relLabel(t)}</span>`;
+  $('roseTime').textContent = `${T(t)}${near ? ' (maintenant)' : ''}`;
+  $('roseBtnEve').className = 'px-2 py-1 rounded text-[11px] border ' + (key === 'eve' ? 'bg-sky text-night font-bold border-sky' : 'bg-panel2 text-gray-300 border-border');
+  $('roseBtnMorn').className = 'px-2 py-1 rounded text-[11px] border ' + (key === 'morn' ? 'bg-sky text-night font-bold border-sky' : 'bg-panel2 text-gray-300 border-border');
+  $('roseDirs').innerHTML = sectors.map((sc, k) => `<span class="px-1.5 py-0.5 rounded text-[10px] border ${k === bk ? 'border-gold text-gold bg-yellow-900/20 font-bold' : 'border-border text-gray-400'}">${['N','NE','E','SE','S','SO','O','NO'][k]} ${sc.n}</span>`).join('');
+  const best = sectors[bk].items.slice().sort((a, b) => magOf(a.s) - magOf(b.s));
+  $('roseBest').innerHTML = `Secteur le plus riche : <b class="text-gold">${DIR_LONG[bk]}</b> — ${best.length ? best.slice(0, 8).map(o => `${starLink(o.s[1], 'text-sky', false)} <span class="text-gray-500">(${o.alt.toFixed(0)}°)</span>`).join(', ') : 'aucune étoile du top 50 > 15°'}.`;
+  $('roseAllCount').textContent = `(${vis.length})`;
+  $('roseAll').innerHTML = vis.slice().sort((a, b) => magOf(a.s) - magOf(b.s)).map(o => `<div class="flex justify-between gap-2 text-[11px] border-b border-border/40 py-0.5">
+    <span>${starLink(o.s[1], 'text-sky', false)} <span class="text-gray-500">mag ${o.s[2]}</span></span><span>${constelLink(o.s[3], false)}</span><span class="text-gray-400 whitespace-nowrap">${compass(o.az)} ${o.alt.toFixed(0)}°</span></div>`).join('') || '<div class="text-[11px] text-gray-500">—</div>';
+  const evl = ROSE.ev[key];
+  $('roseEvents').innerHTML = evl.length ? evl.map(e => `<div class="text-[11px] py-0.5"><span class="text-sky">${new Date(e.ms).toLocaleDateString('fr-FR', { day:'2-digit', month:'short', timeZone: L.tz })}</span> <span class="text-gold">${T(e.ms)}</span> · ${e.imp ? '⭐ ' : ''}${linkify(e.title)}${altBadge(e.title)}</div>`).join('') : '<div class="text-[11px] text-gray-500">Aucun événement de ce mois dans cette fenêtre.</div>';
+}
+
+// ====================================================================
+//  CALENDAR : EVENTS LIST (underline = day-part)
+// ====================================================================
+const FILTERS = [['all','Tous',null],['imp','⭐ Importants',null],['jour','☀️ Journée','jour'],['soiree','🌆 Soirée','soiree'],['nuit','🌌 Nuit','nuit'],['aube','🌅 Aube','aube']];
+function setEvFilter(f) { evFilter = f; renderEvents(); }
+function renderEvents() {
+  const mi = selectedMonth, month = MONTHS[mi], L = LOCS[currentLocation];
+  const lpNow = localParts(LOAD_MS, L.tz), isCur = (+lpNow.year === 2026 && +lpNow.month - 1 === mi);
+  const items = data[month].events.map(e => {
+    const sat = e[0] === '—', ms = sat ? null : gmtMs(mi, e[0], e[1]);
+    return { e, sat, ms, cst: sat ? '—' : evConstel(mi, e), dp: sat ? null : classify(ms, L), imp: !sat && (e[5] || '').includes('imp') };
+  });
+  let closest = null;
+  if (isCur) { let md = Infinity; items.forEach(it => { if (it.sat) return; const d = Math.abs(it.ms - LOAD_MS); if (d < md) { md = d; closest = it; } }); }
+  const filtered = items.filter(it => it.sat ? evFilter === 'all' : (evFilter === 'all' ? true : evFilter === 'imp' ? it.imp : it.dp === evFilter));
+  const filt = FILTERS.map(f => `<button onclick="setEvFilter('${f[0]}')" class="px-2 py-1 rounded text-[11px] border ${evFilter === f[0] ? 'bg-sky text-night font-bold border-sky' : 'bg-panel2 text-gray-300 border-border'}" ${f[2] ? `style="border-bottom:3px solid ${DP[f[2]].c}"` : ''}>${f[1]}</button>`).join('');
+  uid = 0;
+  const build = (it, mobile) => {
+    const { e, sat } = it, id = (mobile ? 'card-' : 'row-') + (uid++), isRed = it === closest;
+    const detail = sat ? satelliteDetailHtml() : arabicDetailHtml(it.cst);
+    const lt = getLocalTime(mi, e[0], e[1]);
+    const dpc = sat ? '' : DP[it.dp].c;
+    const dateLbl = sat ? '' : new Date(it.ms).toLocaleDateString('fr-FR', { day:'2-digit', month:'short', timeZone: L.tz });
+    const expl = e[3] + ((e[5] || '').includes('meteor') ? moonNote(it.ms) : '');
+    const timeBlock = sat ? `<div class="text-gold font-black text-lg leading-none">🛰️</div>` :
+      `<div class="text-gold font-black ${mobile ? 'text-lg' : 'text-base'} leading-none"><span class="uline" style="text-decoration-color:${dpc}">${lt}</span></div>
+       <div class="text-[10px] font-bold" style="color:${dpc}">${DP[it.dp].label}</div>
+       <div class="text-gray-500 text-[10px]">(${e[1]} GMT)</div><div class="text-gray-500 text-[10px]">${relLabel(it.ms)}</div>`;
+    const titleHtml = `${it.imp ? '⭐ ' : ''}${linkify(e[2])}${sat ? '' : altBadge(e[2])}`;
+    const special = (e[5] || '').includes('super') || (e[5] || '').includes('eclipse') || (e[5] || '').includes('blue');
+    if (mobile) return `<div class="flex gap-2 sm:hidden">
+      <div class="relative w-4 flex-shrink-0"><div class="absolute left-1/2 top-0 bottom-0 w-0.5 -translate-x-1/2 timeline-line"></div>
+        <div class="absolute left-1/2 top-4 -translate-x-1/2 -translate-y-1/2 w-3 h-3 rounded-full border-2 border-night ${isRed ? 'bg-red-500 dot-pulse' : 'bg-sky'}"></div></div>
+      <div class="bg-panel border ${special ? 'border-gold/60' : 'border-border'} rounded-lg p-3 flex-1 mb-2 clickable ${isRed ? 'ring-1 ring-red-500/50' : ''}" onclick="toggleDetail('${id}')">
+        <div class="flex justify-between items-start mb-1"><span class="text-sky font-bold text-sm">${dateLbl} ${isRed ? '<span class="text-red-400 text-[10px]">● proche</span>' : ''}</span><span class="text-right">${timeBlock}</span></div>
+        <div class="font-medium text-sm mb-1">${titleHtml}</div><div class="text-gray-400 text-xs mb-1">${expl}</div>
+        ${sat ? '<div class="text-gray-500 text-[10px]">(clic pour les liens)</div>' : (it.cst !== '—' ? `<div class="text-green text-xs">🌌 ${constelLink(it.cst)} <span class="text-gray-500 text-[10px]">(clic pour détail)</span></div>` : '')}
+        <div id="${id}" class="detail-card">${detail}</div></div></div>`;
+    return `<tr class="border-b border-border hover:bg-panel2 clickable ${isRed ? 'bg-red-950/20' : ''} ${special ? 'bg-yellow-900/10' : ''}" onclick="toggleDetail('${id}')">
+      <td class="relative w-8 p-0"><div class="absolute left-1/2 top-0 bottom-0 w-0.5 -translate-x-1/2 timeline-line"></div>
+        <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-3 rounded-full border-2 border-night ${isRed ? 'bg-red-500 dot-pulse' : 'bg-sky'}"></div></td>
+      <td class="py-2 px-3 text-sky font-bold whitespace-nowrap">${dateLbl}${isRed ? ' <span class="text-red-400 text-[10px]">● proche</span>' : ''}</td>
+      <td class="py-2 px-3 whitespace-nowrap">${timeBlock}</td>
+      <td class="py-2 px-3">${titleHtml}</td><td class="py-2 px-3 text-gray-400">${expl}</td>
+      <td class="py-2 px-3 whitespace-nowrap">${sat || it.cst === '—' ? '' : constelLink(it.cst)}</td></tr>
+      <tr class="detail-row" id="${id}"><td colspan="6" class="bg-panel2 px-4 py-2">${detail}</td></tr>`;
+  };
+  $('evSection').innerHTML = `<div class="flex flex-wrap gap-1 mb-1">${filt}</div>
+    <div class="text-[10px] text-gray-500 mb-2">L'heure est soulignée selon le moment : <span style="color:${DP.jour.c}">☀️ journée</span> · <span style="color:${DP.soiree.c}">🌆 soirée</span> (Maghrib+30 → Icha+2 h) · <span style="color:${DP.nuit.c}">🌌 nuit</span> · <span style="color:${DP.aube.c}">🌅 aube</span> (Fajr ±1 h) — ${filtered.filter(i => !i.sat).length} événement(s).</div>
+    <div class="flex flex-col sm:hidden">${filtered.map(it => build(it, true)).join('') || '<div class="text-xs text-gray-500">Aucun événement pour ce filtre.</div>'}</div>
+    <div class="hidden sm:block overflow-x-auto rounded-lg border border-border"><table class="w-full bg-panel text-sm">
+      <thead><tr class="bg-panel2 text-gold text-xs"><th class="py-2 px-3 w-8"></th><th class="py-2 px-3 text-left">Date</th>
+      <th class="py-2 px-3 text-left">Heure locale (GMT)</th><th class="py-2 px-3 text-left">Événement</th>
+      <th class="py-2 px-3 text-left">Explication</th><th class="py-2 px-3 text-left">Constellation</th></tr></thead>
+      <tbody>${filtered.map(it => build(it, false)).join('')}</tbody></table></div>`;
 }
 
 function renderCalendar() {
-  const mi = selectedMonth, month = MONTHS[mi], evs = data[month].events, L = LOCS[currentLocation];
+  const mi = selectedMonth, L = LOCS[currentLocation];
   $('monthSelect').innerHTML = MONTHS.map((m, i) => `<option value="${i}" ${i === mi ? 'selected' : ''}>${m} 2026 — ${data[m].events.filter(e => e[0] !== '—').length} événements${i === today.getMonth() ? ' • mois actuel' : ''}</option>`).join('');
-
   const offH = tzOffset(L.tz, new Date(Date.UTC(2026, mi, 15, 12))) / 60;
   let note = '';
   if (currentLocation === 'Paris' && mi === 2) note = ' · ⏰ heure d\'été à partir du 29 mars (2h→3h)';
   if (currentLocation === 'Paris' && mi === 9) note = ' · ⏰ retour à l\'heure d\'hiver le 25 octobre (3h→2h)';
   $('monthMeta').textContent = `${L.flag} ${L.label} · heure locale UTC${offH >= 0 ? '+' : ''}${offH}${note}`;
-
-  let closestIdx = -1;
-  if (mi === today.getMonth()) {
-    let minDiff = Infinity;
-    evs.forEach((e, i) => { if (e[0] === '—') return; const d = Math.abs(parseInt(e[0], 10) - today.getDate()); if (d < minDiff) { minDiff = d; closestIdx = i; } });
-  }
-  uid = 0;
-  const cards = evs.map((e, i) => {
-    const isRed = i === closestIdx, isSat = e[0] === '—', id = 'card-' + (uid++);
-    const cst = isSat ? '—' : evConstel(mi, e);
-    const detail = isSat ? satelliteDetailHtml() : arabicDetailHtml(cst);
-    const lt = getLocalTime(mi, e[0], e[1]);
-    return `<div class="flex gap-2 sm:hidden">
-      <div class="relative w-4 flex-shrink-0"><div class="absolute left-1/2 top-0 bottom-0 w-0.5 -translate-x-1/2 timeline-line"></div>
-        <div class="absolute left-1/2 top-4 -translate-x-1/2 -translate-y-1/2 w-3 h-3 rounded-full border-2 border-night ${isRed ? 'bg-red-500 dot-pulse' : 'bg-sky'}"></div></div>
-      <div class="bg-panel border border-border rounded-lg p-3 flex-1 mb-2 clickable ${isRed ? 'ring-1 ring-red-500/50' : ''}" onclick="toggleDetail('${id}')">
-        <div class="flex justify-between items-start mb-1">
-          <span class="text-sky font-bold text-sm">${isSat ? '' : e[0] + ' ' + month.slice(0, 3).toLowerCase()} ${isRed ? '<span class="text-red-400 text-[10px]">● proche</span>' : ''}</span>
-          <span class="text-right"><div class="text-gold font-black text-lg leading-none">${lt}</div>${isSat ? '' : `<div class="text-gray-500 text-[11px]">(${e[1]} GMT)</div>`}</span></div>
-        <div class="font-medium text-sm mb-1">${linkify(e[2])}${altBadge(e[2])}</div>
-        <div class="text-gray-400 text-xs mb-1">${e[3]}</div>
-        ${isSat ? '<div class="text-gray-500 text-[10px]">(clic pour les liens)</div>' : `<div class="text-green text-xs">🌌 ${constelLink(cst)} <span class="text-gray-500 text-[10px]">(clic pour détail)</span></div>`}
-        <div id="${id}" class="detail-card">${detail}</div></div></div>`;
-  }).join('');
-  const rows = evs.map((e, i) => {
-    const isRed = i === closestIdx, isSat = e[0] === '—', id = 'row-' + (uid++);
-    const cst = isSat ? '—' : evConstel(mi, e);
-    const detail = isSat ? satelliteDetailHtml() : arabicDetailHtml(cst);
-    const lt = getLocalTime(mi, e[0], e[1]);
-    return `<tr class="border-b border-border hover:bg-panel2 clickable ${isRed ? 'bg-red-950/20' : ''}" onclick="toggleDetail('${id}')">
-      <td class="relative w-8 p-0"><div class="absolute left-1/2 top-0 bottom-0 w-0.5 -translate-x-1/2 timeline-line"></div>
-        <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-3 rounded-full border-2 border-night ${isRed ? 'bg-red-500 dot-pulse' : 'bg-sky'}"></div></td>
-      <td class="py-2 px-3 text-sky font-bold whitespace-nowrap">${isSat ? '' : e[0] + ' ' + month.slice(0, 3).toLowerCase()}${isRed ? ' <span class="text-red-400 text-[10px]">● proche</span>' : ''}</td>
-      <td class="py-2 px-3 whitespace-nowrap"><div class="text-gold font-black text-base leading-none">${lt}</div>${isSat ? '' : `<div class="text-gray-500 text-xs">(${e[1]} GMT)</div>`}</td>
-      <td class="py-2 px-3">${linkify(e[2])}${altBadge(e[2])}</td><td class="py-2 px-3 text-gray-400">${e[3]}</td>
-      <td class="py-2 px-3 whitespace-nowrap">${isSat ? '' : constelLink(cst)}</td></tr>
-      <tr class="detail-row" id="${id}"><td colspan="6" class="bg-panel2 px-4 py-2">${detail}</td></tr>`;
-  }).join('');
-
-  $('monthEvents').innerHTML = buildOverview(mi, L) + `
+  $('monthEvents').innerHTML = `
+    ${instantHtml(L)}
+    <div class="text-gold font-bold text-sm mb-2">📋 Aperçu général — ${MONTHS[mi]} 2026</div>
+    <div class="grid gap-3 sm:grid-cols-2 mb-4">${moonCardHtml(mi, L)}${roseCardHtml()}</div>
     <div class="text-gold font-bold text-sm mb-2">📅 Détail des événements</div>
-    <div class="flex flex-col sm:hidden">${cards}</div>
-    <div class="hidden sm:block overflow-x-auto rounded-lg border border-border"><table class="w-full bg-panel text-sm">
-      <thead><tr class="bg-panel2 text-gold text-xs"><th class="py-2 px-3 w-8"></th><th class="py-2 px-3 text-left">Date</th>
-      <th class="py-2 px-3 text-left">Heure locale (GMT)</th><th class="py-2 px-3 text-left">Événement</th>
-      <th class="py-2 px-3 text-left">Explication</th><th class="py-2 px-3 text-left">Constellation</th></tr></thead>
-      <tbody>${rows}</tbody></table></div>`;
+    <div id="evSection"></div>`;
+  initRose(mi, L);
+  renderEvents();
 }
 function setMonth(i) { selectedMonth = (i + 12) % 12; renderCalendar(); }
 $('monthSelect').onchange = e => setMonth(parseInt(e.target.value, 10));
@@ -1000,12 +1349,13 @@ $('monthNext').onclick = () => setMonth(selectedMonth + 1);
 let touchX = 0;
 $('monthEvents').addEventListener('touchstart', e => { touchX = e.changedTouches[0].screenX; });
 $('monthEvents').addEventListener('touchend', e => {
+  if (e.target.closest && (e.target.closest('input[type=range]') || e.target.closest('#roseSvg'))) return;
   const dx = e.changedTouches[0].screenX - touchX;
   if (Math.abs(dx) > 70) setMonth(selectedMonth + (dx < 0 ? 1 : -1));
 });
 
 // ====================================================================
-//  NAVIGATION (now inside the footer)
+//  NAVIGATION (inside the footer)
 // ====================================================================
 function renderNav() {
   const L = LOCS[currentLocation];
@@ -1069,7 +1419,7 @@ async function fillWeather() {
   try {
     const j = await fetchWx(loc);
     if (loc !== currentLocation) return;
-    const D = j.daily, H = j.hourly, now = nowLocalISO(L.tz);
+    const D = j.daily, H = j.hourly, now = nowLocalISO(L.tz);   // = instant of page load
     let ni = -1;
     for (let i = 0; i < D.time.length - 1; i++) { if (now < D.sunrise[i + 1]) { ni = i; break; } }
     if (ni < 0) ni = D.time.length - 2;
@@ -1093,9 +1443,10 @@ async function fillWeather() {
     const score = Math.round(Math.max(0, Math.min(100, 100 - (pCloud + pRain + pHum + pVis + pWind + pMoon))));
     const [lab, col] = ivoLabel(score);
     const hh = t => t.slice(11, 16);
+    const nowHour = now.slice(0, 13);
     const chips = idx.map((k, n) => {
-      const c = g(H.cloud_cover, k), cc = c < 25 ? '#4ade80' : c < 60 ? '#ffd166' : '#f87171';
-      return `<div class="min-w-[56px] text-center rounded bg-panel2 p-1 flex-shrink-0">
+      const c = g(H.cloud_cover, k), cc = c < 25 ? '#4ade80' : c < 60 ? '#ffd166' : '#f87171', isNow = H.time[k].slice(0, 13) === nowHour;
+      return `<div class="min-w-[56px] text-center rounded ${isNow ? 'bg-yellow-900/30 ring-1 ring-gold' : 'bg-panel2'} p-1 flex-shrink-0">
         <div class="text-[10px] text-gray-400">${hh(H.time[k])}${moonUp[n] ? ' 🌙' : ''}</div>
         <div class="text-xs font-bold" style="color:${cc}">☁ ${c}%</div>
         <div class="text-[10px] text-sky">💧 ${g(H.relative_humidity_2m, k)}%</div>
@@ -1103,7 +1454,7 @@ async function fillWeather() {
     }).join('');
     const row = (ico, txt, pen) => `<div class="flex justify-between text-xs border-b border-border/50 py-1"><span class="text-gray-300">${ico} ${txt}</span><span class="${pen > 0.5 ? 'text-orange-300' : 'text-gray-500'}">${pen > 0.5 ? '−' + pen.toFixed(0) : '0'}</span></div>`;
     box.innerHTML = `
-      <div class="text-[11px] text-gray-500 mb-2">Nuit du ${sSet.slice(8, 10)}/${sSet.slice(5, 7)} · coucher ${hh(sSet)} → lever ${hh(sRise)} (${L.flag} ${loc}) · ${temp.toFixed(0)}°C en moyenne</div>
+      <div class="text-[11px] text-gray-500 mb-2">Nuit du ${sSet.slice(8, 10)}/${sSet.slice(5, 7)} · coucher ${hh(sSet)} → lever ${hh(sRise)} (${L.flag} ${loc}) · ${temp.toFixed(0)}°C en moyenne · nuit déterminée à l'heure du chargement (${now.slice(11)})</div>
       <div class="flex items-center gap-3 mb-3">
         <div class="text-center"><div class="text-4xl font-black" style="color:${col}">${score}</div><div class="text-[10px] text-gray-500">/ 100</div></div>
         <div class="flex-1"><div class="text-sm font-bold mb-1" style="color:${col}">${lab} — Indice de visibilité à l'œil nu</div>
@@ -1128,7 +1479,7 @@ function buildMoonSection() {
   const base = Date.UTC(y, m - 1, d);
   let prev = moonDay(base - 86400000, L);
   let prevLon = moonAltAz(prev.start + 22 * 3600000, L.lat, L.lng).lon;
-  const rows = []; let tonight = null;
+  const rows = [];
   for (let i = 0; i < 7; i++) {
     const day = base + i * 86400000, ev = moonDay(day, L);
     const t22 = ev.start + 22 * 3600000, p = moonAltAz(t22, L.lat, L.lng);
@@ -1136,7 +1487,6 @@ function buildMoonSection() {
     const delay = (ev.rise && prev.rise) ? Math.round((ev.rise - prev.rise) / 60000 - 1440) : null;
     const dLon = norm(p.lon - prevLon);
     const label = new Date(day).toLocaleDateString('fr-FR', { weekday:'short', day:'2-digit', month:'short', timeZone:'UTC' });
-    if (i === 0) tonight = { p, cst, mz, ev };
     rows.push(`<tr class="border-b border-border ${i === 0 ? 'bg-panel2/60' : ''}">
       <td class="py-1.5 px-2 whitespace-nowrap text-sky font-bold">${label}${i === 0 ? ' •' : ''}</td>
       <td class="py-1.5 px-2 whitespace-nowrap">${moonEmoji(p.elong)} ${(p.illum * 100).toFixed(0)}% <span class="text-gray-500 text-[10px]">${p.age.toFixed(1)} j</span></td>
@@ -1149,19 +1499,21 @@ function buildMoonSection() {
       <td class="py-1.5 px-2 whitespace-nowrap text-gray-400">+${dLon.toFixed(1)}°</td></tr>`);
     prev = ev; prevLon = p.lon;
   }
-  const t = tonight;
+  const nowM = moonAltAz(LOAD_MS, L.lat, L.lng), cstN = eclConstel(nowM.lon), mzN = manazilAlQamar[manzilIndex(nowM.lon)], today0 = moonDay(base, L);
   const summary = `<div class="bg-panel border border-gold/40 rounded-lg p-3 mb-3">
-    <div class="text-gold font-bold text-sm mb-1">${moonEmoji(t.p.elong)} Ce soir à 22h (${currentLocation})</div>
-    <div class="text-gray-200 text-xs">${phaseName(t.p.elong)} · ${(t.p.illum * 100).toFixed(0)} % éclairée · âge ${t.p.age.toFixed(1)} j · dans ${constelLink(t.cst, false)} (λ ${t.p.lon.toFixed(0)}°) ·
-      manzil <span class="arabic text-gold">${t.mz[0]} ${t.mz[1]}</span>
-      · ${t.p.alt > 0 ? `direction <b>${compass(t.p.az)}</b>, hauteur <b>${t.p.alt.toFixed(0)}°</b>` : 'sous l\'horizon à 22h'}</div></div>`;
+    <div class="text-gold font-bold text-sm mb-1">${moonEmoji(nowM.elong)} Lune à l'instant du chargement (${fmtTime(LOAD_MS, L.tz)}, ${currentLocation})</div>
+    <div class="text-gray-200 text-xs">${phaseName(nowM.elong)} · ${(nowM.illum * 100).toFixed(0)} % éclairée · âge ${nowM.age.toFixed(1)} j · dans ${constelLink(cstN, false)} (λ ${nowM.lon.toFixed(0)}°) ·
+      manzil <span class="arabic text-gold">${mzN[0]} ${mzN[1]}</span> ·
+      ${nowM.alt > 0 ? `direction <b>${compass(nowM.az)}</b>, hauteur <b>${nowM.alt.toFixed(0)}°</b>` : 'sous l\'horizon'}
+      · lever ${today0.rise ? fmtTime(today0.rise, L.tz) : '—'} · coucher ${today0.set ? fmtTime(today0.set, L.tz) : '—'}</div></div>`;
 
   const monthCells = Array.from({ length: 12 }, () => [[], [], [], []]);
   PHASES_RAW.forEach(([ty, iso]) => {
     const ms = Date.parse(iso + ':00Z'), parts = localParts(ms, L.tz);
     if (+parts.year !== 2026) return;
     const cst = eclConstel(norm(sunLon(ms) + ty * 90));
-    monthCells[+parts.month - 1][ty].push(`<div class="whitespace-nowrap">${parts.day} <span class="text-gray-500 text-[10px]">${fmtTime(ms, L.tz)}</span> · ${constelLink(cst, false)}</div>`);
+    const tag = SUPER_ISO.has(iso) ? ' ⭐' : BLUE_ISO.has(iso) ? ' 🔵' : '';
+    monthCells[+parts.month - 1][ty].push(`<div class="whitespace-nowrap">${parts.day}${tag} <span class="text-gray-500 text-[10px]">${fmtTime(ms, L.tz)}</span> · ${constelLink(cst, false)}</div>`);
   });
   const mrows = MONTHS.map((mn, i) => `<tr class="border-b border-border ${i === today.getMonth() ? 'bg-panel2/60' : ''}">
     <td class="py-1.5 px-2 text-sky font-bold whitespace-nowrap">${mn.slice(0, 4)}.</td>
@@ -1171,8 +1523,8 @@ function buildMoonSection() {
     <p>🧭 <b class="text-gold">Mouvement vers l'est :</b> parmi les étoiles, la Lune avance d'environ <b>13,2° par jour</b> (≈ 0,55° par heure, soit un diamètre lunaire par heure) et fait le tour du ciel en <b>27,3 jours</b>.</p>
     <p>☀️ <b class="text-gold">Par rapport au Soleil</b> (≈ 1°/jour) elle gagne ≈ <b>12,2°/jour</b> : d'où le cycle de phases de 29,5 jours.</p>
     <p>⏱️ <b class="text-gold">Conséquence :</b> la Lune se lève en moyenne <b>≈ 50 min plus tard chaque jour</b> (≈ 25-35 min autour de la pleine Lune d'automne, jusqu'à ≈ 70 min selon saison et latitude).</p>
-    <p>📐 <b class="text-gold">Hauteur au méridien</b> = 90° − latitude + déclinaison. La déclinaison lunaire oscille entre ≈ −28° et +28° en 27 jours (cycle de 18,6 ans proche de son maximum en 2025-2026) : à ${currentLocation}, la Lune culmine entre ≈ ${(90 - LOCS[currentLocation].lat - 28).toFixed(0)}° et ≈ ${(90 - LOCS[currentLocation].lat + 28).toFixed(0)}°.</p>
-    <p>🌕 <b class="text-gold">Où la trouver chaque mois :</b> la pleine Lune est toujours à l'opposé du Soleil (haute en hiver, basse en été), la nouvelle Lune dans la constellation du Soleil, les quartiers à ≈ 90° de part et d'autre.</p></div>`;
+    <p>📐 <b class="text-gold">Hauteur au méridien</b> = 90° − latitude + déclinaison. La déclinaison lunaire oscille entre ≈ −28° et +28° en 27 jours (cycle de 18,6 ans proche de son maximum en 2025-2026) : à ${currentLocation}, la Lune culmine entre ≈ ${(90 - L.lat - 28).toFixed(0)}° et ≈ ${(90 - L.lat + 28).toFixed(0)}°.</p>
+    <p>🌕 <b class="text-gold">Où la trouver chaque mois :</b> la pleine Lune est toujours à l'opposé du Soleil (haute en hiver, basse en été), la nouvelle Lune dans la constellation du Soleil, les quartiers à ≈ 90° de part et d'autre. ⭐ = superlune, 🔵 = Lune bleue.</p></div>`;
 
   const phaseTable = `<div class="overflow-x-auto rounded-lg border border-border mb-3"><table class="w-full bg-panel text-xs">
     <thead><tr class="bg-panel2 text-gold"><th class="py-1.5 px-2 text-left">Phase</th><th class="py-1.5 px-2 text-left">Âge</th><th class="py-1.5 px-2 text-left">Élongation</th><th class="py-1.5 px-2 text-left">Lever ≈</th><th class="py-1.5 px-2 text-left">Coucher ≈</th><th class="py-1.5 px-2 text-left">Où chercher</th></tr></thead><tbody>
@@ -1209,13 +1561,14 @@ function spotsHtml(loc) {
 function buildSpotsSection() {
   const other = currentLocation === 'Paris' ? 'Bizerte' : 'Paris', L = LOCS[currentLocation];
   return `<div class="text-[11px] text-gray-500 mb-2">Indicatif : vérifiez toujours la pollution lumineuse (<a class="wikilink text-sky" href="https://www.lightpollutionmap.info/#zoom=9&lat=${L.lat}&lon=${L.lng}" target="_blank" rel="noopener">carte autour de ${currentLocation}</a>), l'accès de nuit, la sécurité et la réglementation locale.</div>
-    <div class="text-sky font-bold text-xs mb-2">${LOCS[currentLocation].flag} ${currentLocation}</div>${spotsHtml(currentLocation)}
+    <div class="text-sky font-bold text-xs mb-2">${L.flag} ${currentLocation}</div>${spotsHtml(currentLocation)}
     <details class="mt-3"><summary class="text-sky font-bold text-xs mb-2"><span class="sum-arrow">▸</span> ${LOCS[other].flag} ${other}</summary><div class="mt-2">${spotsHtml(other)}</div></details>
     <div class="bg-panel2/60 rounded-lg p-2.5 mt-3 text-[11px] text-gray-300"><b class="text-gold">Conseils :</b> arrivez au crépuscule (adaptation de l'œil : 20-30 min), lumière rouge uniquement, horizon nord/est dégagé, évitez la pleine Lune pour le ciel profond, habillez-vous chaudement et prévenez un proche.</div>`;
 }
 
 function buildReadyHtml() {
   const L = LOCS[currentLocation];
+  const arWiki = ar => `https://ar.wikipedia.org/w/index.php?search=${encodeURIComponent(ar)}`;
   const tools = `<div class="grid gap-2 mb-4 sm:grid-cols-3">
     ${[['🗺️ Pollution lumineuse',`https://www.lightpollutionmap.info/#zoom=9&lat=${L.lat}&lon=${L.lng}`,`Centrée sur ${currentLocation}`],
        ['🗺️ Dark Sky Map','https://djlorenz.github.io/astronomy/lp/overlay/dark.html','Trouver un endroit sombre'],
@@ -1225,21 +1578,19 @@ function buildReadyHtml() {
        ['🪐 Stellarium Web','https://stellarium-web.org','Planétarium interactif']
       ].map(l => `<a href="${l[1]}" target="_blank" rel="noopener" class="bg-panel border border-border rounded-lg p-2.5 hover:bg-panel2"><div class="text-gold font-bold text-xs">${l[0]}</div><div class="text-gray-400 text-[11px]">${l[2]}</div></a>`).join('')}</div>`;
 
-  const [ty, tm, td] = nowLocalISO(L.tz).slice(0, 10).split('-').map(Number);
-  const t22 = Date.UTC(ty, tm - 1, td) - tzOffset(L.tz, new Date()) * 60000 + 22 * 3600000;
-  const tonightMz = manzilIndex(moonAltAz(t22, L.lat, L.lng).lon);
+  const tonightMz = manzilIndex(moonAltAz(LOAD_MS, L.lat, L.lng).lon);
 
   const starsRows = topStars.map(s => `<tr class="border-b border-border hover:bg-panel2">
     <td class="py-1.5 px-3 text-gray-500">${s[0]}</td><td class="py-1.5 px-3"><a class="wikilink text-sky" href="${s[4]}" target="_blank" rel="noopener">${s[1]}</a></td>
-    <td class="py-1.5 px-3 arabic text-gold text-sm">${s[5]}</td><td class="py-1.5 px-3 text-gold font-bold">${s[2]}</td>
+    <td class="py-1.5 px-3 arabic text-gold text-sm"><a href="${arWiki(s[5])}" target="_blank" rel="noopener">${s[5]}</a></td><td class="py-1.5 px-3 text-gold font-bold">${s[2]}</td>
     <td class="py-1.5 px-3 text-gray-400">${constelLink(s[3], false)}</td><td class="py-1.5 px-3 whitespace-nowrap">${visBadge(s[7])}</td></tr>`).join('');
   const galRows = topGalaxies.map(g => `<tr class="border-b border-border hover:bg-panel2">
     <td class="py-1.5 px-3 text-gray-500">${g[0]}</td><td class="py-1.5 px-3"><a class="wikilink text-green" href="${g[5]}" target="_blank" rel="noopener">${g[1]}</a></td>
-    <td class="py-1.5 px-3 arabic text-gold text-sm">${g[6]}</td><td class="py-1.5 px-3 text-gold font-bold">${g[2]}</td>
+    <td class="py-1.5 px-3 arabic text-gold text-sm"><a href="${arWiki(g[6])}" target="_blank" rel="noopener">${g[6]}</a></td><td class="py-1.5 px-3 text-gold font-bold">${g[2]}</td>
     <td class="py-1.5 px-3 text-gray-400">${constelLink(g[3], false)}</td><td class="py-1.5 px-3 text-gray-500 text-xs">${g[4]}</td><td class="py-1.5 px-3 whitespace-nowrap">${visBadge(g[7])}</td></tr>`).join('');
   const mzRows = manazilAlQamar.map((z, i) => `<tr class="border-b border-border hover:bg-panel2 ${i === tonightMz ? 'bg-yellow-900/20' : ''}">
     <td class="py-1.5 px-3 text-gray-500">${z[0]}${i === tonightMz ? ' 🌙' : ''}</td>
-    <td class="py-1.5 px-3 arabic text-gold text-base"><a href="https://ar.wikipedia.org/w/index.php?search=${encodeURIComponent(z[1])}" target="_blank" rel="noopener">${z[1]}</a></td>
+    <td class="py-1.5 px-3 arabic text-gold text-base"><a href="${arWiki(z[1])}" target="_blank" rel="noopener">${z[1]}</a></td>
     <td class="py-1.5 px-3 text-sky italic text-xs">${z[2]}</td><td class="py-1.5 px-3 text-gray-300">${z[3]}</td>
     <td class="py-1.5 px-3 text-gray-400">${constelLink(z[4], false)}</td></tr>`).join('');
   const tbl = (head, body) => `<div class="overflow-x-auto rounded-lg border border-border"><table class="w-full bg-panel text-sm"><thead><tr class="bg-panel2 text-gold text-xs">${head.map(h => `<th class="py-2 px-3 text-left">${h}</th>`).join('')}</tr></thead><tbody>${body}</tbody></table></div>`;
@@ -1249,9 +1600,9 @@ function buildReadyHtml() {
     ${sec('🌙 La Lune : où la trouver, jour après jour', buildMoonSection(), true)}
     ${sec('📍 Meilleurs lieux d\'observation', buildSpotsSection(), false)}
     ${sec('🍂 Constellations par saison', `<div class="flex gap-1.5 mb-3" id="seasonBtns"></div><div id="seasonList" class="grid gap-2 sm:grid-cols-2"></div>`, false)}
-    ${sec('⭐ Top 50 des étoiles les plus brillantes à l\'œil nu', `<div class="text-[11px] text-gray-500 mb-2">Colonne « Visible » calculée pour ${currentLocation} (hauteur maximale au méridien).</div>` + tbl(['#','Étoile','اسم عربي','Magnitude','Constellation',`Visible (${currentLocation})`], starsRows), false)}
+    ${sec('⭐ Top 50 des étoiles les plus brillantes à l\'œil nu', `<div class="text-[11px] text-gray-500 mb-2">Nom → Wikipédia FR · nom arabe → Wikipédia arabe. Colonne « Visible » calculée pour ${currentLocation} (hauteur maximale au méridien).</div>` + tbl(['#','Étoile','اسم عربي','Magnitude','Constellation',`Visible (${currentLocation})`], starsRows), false)}
     ${sec('🌌 Top 20 des galaxies les plus brillantes à l\'œil nu', tbl(['#','Galaxie','اسم عربي','Magnitude','Constellation','Conditions',`Visible (${currentLocation})`], galRows), false)}
-    ${sec('🌙 Manazil al-Qamar — منازل القمر (28 stations lunaires)', `<p class="text-gray-500 text-xs mb-2">Système traditionnel arabe divisant le zodiaque en 28 stations que la Lune traverse en ≈ 27,3 jours. La station de ce soir est surlignée. Liens : nom arabe → Wikipédia arabe · constellation → Wikipédia · <a class="wikilink text-sky" href="https://en.wikipedia.org/wiki/Lunar_mansion" target="_blank" rel="noopener">article « Lunar mansion »</a> · <a class="wikilink text-sky" href="https://fr.wikipedia.org/w/index.php?search=mansions+lunaires+arabes" target="_blank" rel="noopener">recherche FR</a>.</p>` + tbl(['#','اسم عربي','Translittération','Signification','Constellation'], mzRows), false)}
+    ${sec('🌙 Manazil al-Qamar — منازل القمر (28 stations lunaires)', `<p class="text-gray-500 text-xs mb-2">Système traditionnel arabe divisant le zodiaque en 28 stations que la Lune traverse en ≈ 27,3 jours. La station de l'instant du chargement est surlignée. Liens : nom arabe → Wikipédia arabe · constellation → Wikipédia · <a class="wikilink text-sky" href="https://en.wikipedia.org/wiki/Lunar_mansion" target="_blank" rel="noopener">article « Lunar mansion »</a> · <a class="wikilink text-sky" href="https://fr.wikipedia.org/w/index.php?search=mansions+lunaires+arabes" target="_blank" rel="noopener">recherche FR</a>.</p>` + tbl(['#','اسم عربي','Translittération','Signification','Constellation'], mzRows), false)}
     <p class="text-gray-500 text-[11px] mt-2">Magnitude apparente : plus bas (voire négatif) = plus brillant. Œil nu ≈ jusqu'à magnitude 6 sous ciel très sombre.</p>`;
 }
 function renderReady() {
